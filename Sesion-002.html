@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Aprendizaje N° 2 — Contenedores Avanzados y Layouts (Java Swing)</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 45px 20px 35px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.9rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; margin-top: 4px; }
+
+    .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.15s ease;
+    }
+
+    nav.toc a:hover, nav.toc a.active { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 26px 28px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.35rem;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.1rem; margin: 18px 0 8px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+    }
+
+    .step-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block { position: relative; margin: 14px 0 20px; }
+
+    .code-block .lang-tag {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 8px 0 8px 0;
+        letter-spacing: 0.5px;
+        z-index: 1;
+    }
+
+    .code-block .code-body {
+        display: flex;
+        background: var(--code-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .code-block pre {
+        background: transparent;
+        color: var(--code-fg);
+        padding: 34px 18px 18px 14px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre;
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .code-block pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+        font-size: inherit;
+    }
+
+    .line-numbers {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.03);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        color: #55627a;
+        text-align: right;
+        padding: 34px 10px 18px 12px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .line-numbers .line-no-row { display: block; }
+
+    .code-toolbar { position: absolute; top: 6px; right: 8px; display: flex; gap: 8px; z-index: 1; }
+
+    .copy-btn, .explain-btn, .classes-btn {
+        background: rgba(255,255,255,0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover, .explain-btn:hover, .classes-btn:hover { background: rgba(255,255,255,0.25); }
+    .copy-btn.copied { background: var(--success); border-color: var(--success); color: white; }
+    .explain-btn.active, .classes-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Resaltado simple de sintaxis Java */
+    .kw   { color: #60a5fa; }
+    .str  { color: #86efac; }
+    .cmt  { color: #64748b; font-style: italic; }
+    .typ  { color: #fbbf24; }
+    .met  { color: #c4b5fd; }
+
+    .explain-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .explain-panel[hidden] { display: none; }
+
+    .explain-row {
+        display: grid;
+        grid-template-columns: 30px minmax(120px, 1fr) 1.5fr;
+        gap: 10px 14px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        align-items: start;
+        background: var(--bg-card);
+    }
+
+    .explain-row:last-child { border-bottom: none; }
+    .explain-row:nth-child(even) { background: #f8fafc; }
+
+    .explain-line-no {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: right;
+        padding-top: 5px;
+    }
+
+    .explain-code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.78rem;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 5px 8px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .explain-code.is-blank {
+        color: var(--text-muted);
+        font-style: italic;
+        background: transparent;
+        border: 1px dashed var(--border);
+    }
+
+    .explain-text { font-size: 0.85rem; color: var(--text-main); padding-top: 4px; }
+
+    .classes-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: var(--bg-card); }
+    .classes-panel[hidden] { display: none; }
+    .classes-intro { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
+
+    .class-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; background: #f8fafc; }
+
+    .class-card .class-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: var(--primary);
+        background: #eef2ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    .class-card .class-pkg { font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
+    .class-card p { font-size: 0.85rem; margin-bottom: 4px; }
+
+    .class-card .nest-note {
+        font-size: 0.8rem;
+        color: #713f12;
+        background: #fef9c3;
+        border-left: 3px solid var(--warning);
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 6px;
+    }
+
+    .nest-diagram-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin: 14px 0 8px; }
+
+    .nest-diagram {
+        background: var(--code-bg);
+        color: #38bdf8;
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    /* Vista previa (mockup) HTML/CSS de la ventana Java */
+    .mockup-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .mockup-caption-top {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+
+    .bl-toggle-btn {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .bl-toggle-btn:hover { background: #eff6ff; }
+
+    .mockup-window {
+        display: inline-block;
+        width: 480px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+        transition: width 0.3s ease;
+    }
+
+    .mockup-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .mockup-titlebar-controls { display: flex; gap: 5px; }
+
+    .mockup-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+
+    .bl-window {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 300px;
+        background: #efefef;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .mockup-window.is-narrow { width: 260px; }
+
+    .bl-north {
+        flex: 0 0 auto;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-bottom: 1px solid #d0d0d0;
+    }
+
+    .bl-south {
+        flex: 0 0 auto;
+        padding: 10px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+        border-top: 1px solid #d0d0d0;
+    }
+
+    .bl-center { flex: 1 1 auto; overflow: auto; padding: 10px; }
+
+    .bl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+    .bl-btn {
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 11.5px;
+        color: #1f2937;
+        background: linear-gradient(180deg, #f7f7f7, #e2e2e2);
+        border: 1px solid #adadad;
+        border-radius: 3px;
+        padding: 8px 6px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        text-align: center;
+    }
+
+    .bl-north-label { font-family: Arial, sans-serif; font-weight: bold; font-size: 13px; color: #1f2937; }
+
+    .bl-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+
+    .bl-filter-label { font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; font-size: 11.5px; color: #1f2937; }
+
+    .bl-select { font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; font-size: 11.5px; padding: 2px 4px; }
+
+    .bl-checkbox-label, .bl-radio-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 11.5px;
+        color: #1f2937;
+        white-space: nowrap;
+    }
+
+    .bl-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; max-width: 620px; margin-left: auto; margin-right: auto; }
+
+    .mockup-note { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+    .req-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .req-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #f8fafc; }
+    .req-card-recommended { border-color: var(--success); background: #f0fdf4; }
+
+    .req-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .req-name { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+
+    .req-badge-open {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #14532d;
+        background: #dcfce7;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .req-tag { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .req-card p { font-size: 0.85rem; }
+
+    .req-link { display: inline-block; margin-top: 6px; font-size: 0.8rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .req-link:hover { text-decoration: underline; }
+
+    .criteria-group { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+    .criteria-group h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+    .criteria-group ul { list-style: none; margin-left: 0; }
+
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+    .checklist-item:hover { background: #f1f5f9; }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px;
+        width: 17px;
+        height: 17px;
+        accent-color: var(--success);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-item span.done { text-decoration: line-through; color: var(--text-muted); }
+
+    .progress-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 25px; }
+
+    .progress-wrap .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .progress-bar-bg { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-light), var(--success));
+        border-radius: 20px;
+        transition: width 0.35s ease;
+    }
+
+    .reset-btn {
+        margin-top: 12px;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        cursor: pointer;
+    }
+
+    .reset-btn:hover { background: #f1f5f9; }
+
+    footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 20px 16px; }
+    }
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    .gloss-term {
+        position: relative;
+        cursor: help;
+        border-bottom: 2px dotted var(--accent);
+    }
+
+    .gloss-term::after {
+        content: "\24D8";
+        font-size: 0.7em;
+        vertical-align: super;
+        margin-left: 2px;
+        color: var(--accent);
+        opacity: 0.85;
+    }
+
+    .gloss-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text-main);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 400;
+        line-height: 1.45;
+        width: max-content;
+        max-width: 260px;
+        white-space: normal;
+        z-index: 60;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        text-align: left;
+    }
+
+    .gloss-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: var(--text-main);
+    }
+
+    @media (max-width: 600px) {
+        .gloss-tooltip { max-width: 200px; font-size: 0.78rem; }
+    }
+
+    /* ---- Quiz autoevaluado ---- */
+    .quiz-intro { color: var(--text-muted); margin-bottom: 20px; }
+
+    .quiz-card {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+    .quiz-question { font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .quiz-option {
+        text-align: left;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text-main);
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .quiz-option:hover:not(:disabled) { background: #eef2ff; border-color: var(--primary-light); }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
+    .quiz-option.incorrect { background: #fee2e2; border-color: #ef4444; }
+
+    .quiz-feedback {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .quiz-feedback.is-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--text-main); }
+    .quiz-feedback.is-incorrect { background: #fef2f2; border: 1px solid #fecaca; color: var(--text-main); }
+
+    .quiz-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .quiz-score { font-weight: 600; color: var(--text-main); }
+
+    .quiz-retry-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .quiz-retry-btn:hover { background: #f1f5f9; }
+
+    /* ---- Errores comunes ---- */
+    .errors-wrap {
+        margin-top: 20px;
+        padding: 18px 20px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title {
+        color: #92400e;
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .error-item {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .error-what { color: #991b1b; margin-bottom: 4px; line-height: 1.5; }
+    .error-fix { color: #166534; line-height: 1.5; }
+
+    /* ---- Predice antes de revelar ---- */
+    .predict-box {
+        margin: 20px 0;
+        padding: 16px 18px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 10px;
+    }
+
+    .predict-question { margin-bottom: 12px; color: var(--text-main); line-height: 1.5; }
+
+    .predict-toggle {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-light);
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .predict-toggle:hover { background: #eff6ff; }
+
+    .predict-answer {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>GUÍA DE APRENDIZAJE N° 2</h1>
+    <p><strong>Unidad Didáctica:</strong> Taller de Lenguajes de Programación</p>
+    <p><strong>Tema:</strong> Contenedores Avanzados y Administradores de Diseño (Layouts) en Java Swing</p>
+    <div class="badges">
+        <span class="badge">🎮 Proyecto Base: GameStore Escolar</span>
+        <span class="badge">🎯 Módulo: Catálogo y Tienda de Recompensas</span>
+        <span class="badge">🪟 Java Swing</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#objetivo">I. Objetivo</a></li>
+        <li><a href="#requisitos">II. Requisitos</a></li>
+        <li><a href="#marco-teorico">III. Marco Teórico</a></li>
+        <li><a href="#actividades">IV. Actividades</a></li>
+        <li><a href="#criterios">V. Criterios de Entrega</a></li>
+        <li><a href="#quiz">VI. Quiz</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>Progreso de entrega</span>
+            <span id="progress-text">0 / 4 completado</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
+    </div>
+
+    <section id="objetivo">
+        <h2>I. Objetivo de la Guía</h2>
+        <div class="info-card">
+            <p>Diseñar interfaces gráficas complejas y organizadas en Java Swing utilizando contenedores avanzados
+            (<code>JPanel</code>, <code>JScrollPane</code>), administradores de diseño (<code>GridLayout</code>,
+            <code>BorderLayout</code>) y componentes interactivos de selección (<code>JCheckBox</code>,
+            <code>JRadioButton</code>, <code>JComboBox</code>).</p>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>II. Requisitos — Software e IDE de Desarrollo</h2>
+        <div class="info-card">
+            <p>Es la misma sesión de taller, así que necesitas lo mismo que en la Guía N° 1: todo
+            <strong>gratuito y de código abierto (open source)</strong>, sin licencias que comprar.</p>
+        </div>
+
+        <h3>1. Obligatorio: el JDK (motor de Java)</h3>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">OpenJDK</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Obligatorio · versión 17 o superior recomendada</p>
+                <p>Es el <strong>kit de desarrollo de Java</strong>: incluye el compilador (<code>javac</code>) y la
+                máquina virtual (JVM) necesarios para compilar y ejecutar el código de esta guía.</p>
+                <p>OpenJDK es la implementación de código abierto de Java (licencia GPL v2); una distribución
+                popular y fácil de instalar es <strong>Eclipse Temurin</strong>.</p>
+                <a class="req-link" href="https://adoptium.net" target="_blank" rel="noopener">adoptium.net (Eclipse Temurin / OpenJDK) ↗</a>
+            </div>
+        </div>
+
+        <h3>2. Elige un IDE (entorno de desarrollo)</h3>
+        <p style="margin-bottom:10px">Necesitas <strong>uno solo</strong> de estos, todos gratuitos y de código abierto:</p>
+        <div class="req-grid">
+            <div class="req-card req-card-recommended">
+                <div class="req-card-head">
+                    <span class="req-name">Apache NetBeans</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">★ Recomendado para esta guía</p>
+                <p>Proyecto de la Apache Software Foundation (licencia Apache 2.0). Su <strong>diseñador visual
+                (GUI Builder)</strong> también facilita ubicar paneles y probar administradores de diseño como
+                <code>BorderLayout</code> y <code>GridLayout</code> sin escribir todo a mano.</p>
+                <a class="req-link" href="https://netbeans.apache.org" target="_blank" rel="noopener">netbeans.apache.org ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">Eclipse IDE</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Alternativa</p>
+                <p>Uno de los IDEs de Java más usados en la industria. Gratuito y de código abierto
+                (Eclipse Public License).</p>
+                <a class="req-link" href="https://www.eclipse.org/downloads/" target="_blank" rel="noopener">eclipse.org/downloads ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">IntelliJ IDEA <em>Community</em></span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Alternativa · solo la edición Community</p>
+                <p><strong>Importante:</strong> solo la edición <strong>Community</strong> es gratuita y de código
+                abierto (Apache 2.0); la edición <em>Ultimate</em> es de pago y no se necesita para este curso.</p>
+                <a class="req-link" href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">jetbrains.com/idea/download ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">Visual Studio Code</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Opción ligera</p>
+                <p>Editor liviano (proyecto base "Code - OSS", licencia MIT) con la extensión gratuita
+                <strong>Extension Pack for Java</strong> para compilar, ejecutar y depurar.</p>
+                <a class="req-link" href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com ↗</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="marco-teorico">
+        <h2>III. Marco Teórico Breve</h2>
+
+        <h3>🧩 1. Administradores de Diseño (Layout Managers)</h3>
+        <div class="info-card">
+            <p>En la Guía N° 1 usaste <code>setLayout(null)</code> y coordenadas fijas (<code>setBounds</code>) para
+            ubicar cada componente a mano — algo parecido a pegar los muebles al piso con cinta métrica: si el
+            "cuarto" (la ventana) cambia de tamaño, los muebles no se mueven solos y todo se desordena.</p>
+            <p style="margin-top:8px">Un <strong>administrador de diseño</strong> (<em>Layout Manager</em>) resuelve
+            esto: en vez de darle a Java coordenadas exactas, le das <strong>reglas de organización</strong> (por
+            ejemplo, "divide la ventana en 5 zonas" o "acomoda todo en una cuadrícula de 3×2"), y es la propia
+            librería Swing la que calcula automáticamente la posición y el tamaño de cada componente, incluso si el
+            usuario redimensiona la ventana.</p>
+        </div>
+        <p>Los dos que usarás en esta guía:</p>
+        <ul>
+            <li><code>BorderLayout</code>: Divide el contenedor en cinco regiones (<code>BorderLayout.NORTH</code>,
+            <code>SOUTH</code>, <code>EAST</code>, <code>WEST</code>, <code>CENTER</code>).</li>
+            <li><code>GridLayout</code>: Organiza los componentes en una cuadrícula de filas y columnas con celdas
+            de igual tamaño.</li>
+        </ul>
+
+        <h3>🎛️ 2. Contenedores Avanzados y Componentes de Selección</h3>
+        <ul>
+            <li><code>JPanel</code>: Un subcontenedor que permite agrupar varios componentes para organizarlos
+            mejor dentro de un <code>JFrame</code>.</li>
+            <li><code>JScrollPane</code>: Añade barras de desplazamiento automáticas a un panel cuando el contenido
+            sobrepasa el tamaño visible.</li>
+            <li><code>JComboBox</code>, <code>JCheckBox</code>, <code>JRadioButton</code>: Componentes que permiten
+            al usuario elegir opciones mediante listas desplegables, casillas de verificación o botones de opción
+            única.</li>
+        </ul>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Errores Comunes al Empezar</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Mezclar setLayout(null) con setBounds() y BorderLayout al mismo tiempo en el mismo contenedor.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Cada contenedor (JFrame o JPanel) usa UN solo layout a la vez. Si usas BorderLayout, no llames a setBounds().</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Escribir add(boton) en vez de add(boton, BorderLayout.SOUTH) al trabajar con BorderLayout.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Siempre indica la zona explícita (NORTH, SOUTH, EAST, WEST o CENTER); si no, el componente reemplaza silenciosamente lo que había en CENTER.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Agregar muchos componentes con FlowLayout y sorprenderse de que "desaparecen" al achicar la ventana.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Es el comportamiento normal de FlowLayout: pasa a la siguiente línea o se recorta según el espacio disponible; usa JScrollPane si necesitas garantizar que todo se vea.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="actividades">
+        <h2>IV. Actividades Prácticas Paso a Paso</h2>
+
+        <span class="step-tag">PASO 1</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Estructuración de Paneles y Layouts)</h3>
+        <p>Crea una clase llamada <code>CatalogoTienda.java</code> que herede de <code>JFrame</code>. Vamos a
+        estructurar la ventana utilizando <code>BorderLayout</code> en el fondo y un <code>JPanel</code> con
+        <code>GridLayout</code> para mostrar las recompensas de forma ordenada, añadiendo además un
+        <code>JScrollPane</code>.</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code1">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code1">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code1">Copiar</button>
+            </div>
+            <pre id="code1"><code>import javax.swing.*;
+import java.awt.*;
+
+public class CatalogoTienda extends JFrame {
+    private JPanel panelNorte, panelCentro, panelSur;
+    private JLabel lblTituloCatalogo;
+    private JButton btnCanjear, btnCerrar;
+    private JScrollPane scrollPane;
+
+    public CatalogoTienda() {
+        setTitle("GameStore Escolar - Catálogo de Recompensas");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Uso de BorderLayout para la ventana principal (Trabajo 1)
+        setLayout(new BorderLayout());
+
+        // Panel Superior (Norte)
+        panelNorte = new JPanel();
+        lblTituloCatalogo = new JLabel("TIENDA VIRTUAL - CANJE DE PUNTOS");
+        lblTituloCatalogo.setFont(new Font("Arial", Font.BOLD, 14));
+        panelNorte.add(lblTituloCatalogo);
+        add(panelNorte, BorderLayout.NORTH);
+
+        // Panel Central con GridLayout para los productos (Trabajo 1)
+        panelCentro = new JPanel(new GridLayout(3, 2, 10, 10));
+        panelCentro.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Simulando elementos del catálogo
+        panelCentro.add(new JButton("Skin de Avatar (100 pts)"));
+        panelCentro.add(new JButton("Pase de Tarea (200 pts)"));
+        panelCentro.add(new JButton("Cursor Personalizado (50 pts)"));
+        panelCentro.add(new JButton("Insignia Dorada (150 pts)"));
+        panelCentro.add(new JButton("Fondo Exclusivo (80 pts)"));
+        panelCentro.add(new JButton("Bonus Sorpresa (300 pts)"));
+
+        // Envolver el panel central en un JScrollPane (Trabajo 1)
+        scrollPane = new JScrollPane(panelCentro);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Panel Inferior (Sur)
+        panelSur = new JPanel();
+        btnCanjear = new JButton("Canjear Seleccionado");
+        btnCerrar = new JButton("Salir");
+        panelSur.add(btnCanjear);
+        panelSur.add(btnCerrar);
+        add(panelSur, BorderLayout.SOUTH);
+    }
+
+    public static void main(String[] args) {
+        new CatalogoTienda().setVisible(true);
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code1" hidden></div>
+            <div class="explain-panel" id="explain-code1" hidden></div>
+        </div>
+
+        <div class="predict-box">
+            <p class="predict-question">🤔 <strong>Antes de seguir:</strong> si agregaras 6 botones con FlowLayout
+            a una ventana angosta, ¿qué crees que pasaría?</p>
+            <button type="button" class="predict-toggle" data-target="predict-s2-1">👀 Ver la respuesta</button>
+            <div class="predict-answer" id="predict-s2-1" hidden>
+                <p>No caben todos en una sola fila: FlowLayout los va acomodando uno al lado del otro, y en cuanto
+                no queda espacio horizontal, empieza automáticamente una nueva fila — como el texto de un párrafo
+                que salta de línea cuando ya no cabe una palabra más.</p>
+            </div>
+        </div>
+
+        <div class="mockup-wrap">
+            <p class="mockup-caption-top">🖼️ <strong>Vista previa de referencia:</strong> recreación en HTML/CSS
+            (usando flexbox y grid, el equivalente web de <code>BorderLayout</code>/<code>GridLayout</code>) de cómo
+            debería verse tu ventana Java. No es la aplicación real, es solo una guía visual.</p>
+            <button type="button" class="bl-toggle-btn" data-target="mockup1">↔️ Ver en ventana angosta</button>
+            <div class="mockup-window" id="mockup1">
+                <div class="mockup-titlebar">
+                    <span>GameStore Escolar - Catálogo de Recompensas</span>
+                    <span class="mockup-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="bl-window">
+                    <div class="bl-north"><span class="bl-north-label">TIENDA VIRTUAL - CANJE DE PUNTOS</span></div>
+                    <div class="bl-center">
+                        <div class="bl-grid">
+                            <div class="bl-btn">Skin de Avatar (100 pts)</div>
+                            <div class="bl-btn">Pase de Tarea (200 pts)</div>
+                            <div class="bl-btn">Cursor Personalizado (50 pts)</div>
+                            <div class="bl-btn">Insignia Dorada (150 pts)</div>
+                            <div class="bl-btn">Fondo Exclusivo (80 pts)</div>
+                            <div class="bl-btn">Bonus Sorpresa (300 pts)</div>
+                        </div>
+                    </div>
+                    <div class="bl-south">
+                        <div class="bl-btn">Canjear Seleccionado</div>
+                        <div class="bl-btn">Salir</div>
+                    </div>
+                </div>
+            </div>
+            <p class="bl-hint">↔ Presiona el botón de arriba y observa cómo <code>GridLayout</code> reacomoda los
+            botones solo, y cómo aparece una barra de desplazamiento (<code>JScrollPane</code>) cuando ya no caben —
+            nada de esto se programa a mano, a diferencia del <code>setLayout(null)</code> de la sesión anterior.</p>
+            <p class="mockup-note">* Los botones de esta vista son solo referencia visual (aún no tienen lógica de
+            clic programada).</p>
+        </div>
+
+        <span class="step-tag">PASO 2</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 2 (Integración de Componentes de Selección)</h3>
+        <p>Modificaremos la parte superior de nuestro catálogo para incorporar un filtro por categorías usando un
+        <code>JComboBox</code>, opciones adicionales con <code>JCheckBox</code> y tipos de envío o entrega mediante
+        <code>JRadioButton</code>.</p>
+        <p>Añade y actualiza los componentes de selección en la clase:</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code2">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code2">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code2">Copiar</button>
+            </div>
+            <pre id="code2"><code>import javax.swing.*;
+import java.awt.*;
+
+public class CatalogoTiendaAvanzado extends JFrame {
+    private JComboBox&lt;String&gt; cmbCategorias;
+    private JCheckBox chkNotificaciones;
+    private JRadioButton rbtDigital, rbtFisico;
+    private ButtonGroup grupoEnvio;
+    private JPanel panelFiltros, panelCentro, panelSur;
+
+    public CatalogoTiendaAvanzado() {
+        setTitle("GameStore Escolar - Catálogo Avanzado");
+        setSize(550, 450);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        // --- PANEL DE FILTROS Y SELECCIÓN (TRABAJO 2) ---
+        panelFiltros = new JPanel(new FlowLayout());
+
+        // JComboBox para filtrar categorías
+        cmbCategorias = new JComboBox&lt;&gt;(new String[]{"Todas las categorías", "Avatars", "Pases", "Accesorios"});
+        panelFiltros.add(new JLabel("Filtrar:"));
+        panelFiltros.add(cmbCategorias);
+
+        // JCheckBox para opciones extra
+        chkNotificaciones = new JCheckBox("Recibir alerta por correo");
+        panelFiltros.add(chkNotificaciones);
+
+        // JRadioButton y ButtonGroup para tipo de entrega
+        rbtDigital = new JRadioButton("Digital", true);
+        rbtFisico = new JRadioButton("Físico");
+        grupoEnvio = new ButtonGroup();
+        grupoEnvio.add(rbtDigital);
+        grupoEnvio.add(rbtFisico);
+
+        panelFiltros.add(rbtDigital);
+        panelFiltros.add(rbtFisico);
+
+        add(panelFiltros, BorderLayout.NORTH);
+
+        // --- PANEL CENTRAL CON GRILLA (TRABAJO 1) ---
+        panelCentro = new JPanel(new GridLayout(3, 2, 10, 10));
+        panelCentro.add(new JButton("Skin de Avatar (100 pts)"));
+        panelCentro.add(new JButton("Pase de Tarea (200 pts)"));
+        panelCentro.add(new JButton("Cursor Personalizado (50 pts)"));
+        panelCentro.add(new JButton("Insignia Dorada (150 pts)"));
+
+        JScrollPane scrollPane = new JScrollPane(panelCentro);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Panel Sur
+        panelSur = new JPanel();
+        panelSur.add(new JButton("Canjear Ítem"));
+        add(panelSur, BorderLayout.SOUTH);
+    }
+
+    public static void main(String[] args) {
+        new CatalogoTiendaAvanzado().setVisible(true);
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code2" hidden></div>
+            <div class="explain-panel" id="explain-code2" hidden></div>
+        </div>
+
+        <div class="mockup-wrap">
+            <p class="mockup-caption-top">🖼️ <strong>Vista previa de referencia:</strong> la misma ventana, ahora
+            con el panel de filtros del Paso 2. El combo, la casilla y los radio buttons son controles reales que
+            puedes usar.</p>
+            <button type="button" class="bl-toggle-btn" data-target="mockup2">↔️ Ver en ventana angosta</button>
+            <div class="mockup-window" id="mockup2">
+                <div class="mockup-titlebar">
+                    <span>GameStore Escolar - Catálogo Avanzado</span>
+                    <span class="mockup-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="bl-window">
+                    <div class="bl-north">
+                        <div class="bl-flow">
+                            <span class="bl-filter-label">Filtrar:</span>
+                            <select class="bl-select">
+                                <option>Todas las categorías</option>
+                                <option>Avatars</option>
+                                <option>Pases</option>
+                                <option>Accesorios</option>
+                            </select>
+                            <label class="bl-checkbox-label"><input type="checkbox">Recibir alerta por correo</label>
+                            <label class="bl-radio-label"><input type="radio" name="bl2-envio" checked>Digital</label>
+                            <label class="bl-radio-label"><input type="radio" name="bl2-envio">Físico</label>
+                        </div>
+                    </div>
+                    <div class="bl-center">
+                        <div class="bl-grid">
+                            <div class="bl-btn">Skin de Avatar (100 pts)</div>
+                            <div class="bl-btn">Pase de Tarea (200 pts)</div>
+                            <div class="bl-btn">Cursor Personalizado (50 pts)</div>
+                            <div class="bl-btn">Insignia Dorada (150 pts)</div>
+                        </div>
+                    </div>
+                    <div class="bl-south">
+                        <div class="bl-btn">Canjear Ítem</div>
+                    </div>
+                </div>
+            </div>
+            <p class="bl-hint">↔ Prueba también aquí el botón de ventana angosta: el <code>FlowLayout</code> del
+            panel de filtros pasa sus controles a una segunda línea cuando no caben, en vez de recortarlos.</p>
+            <p class="mockup-note">* El combo, la casilla y los radio buttons ya funcionan visualmente (puedes
+            elegirlos), pero el código de este paso todavía no programa qué hacer con esa elección ni con el clic en
+            "Canjear Ítem" — eso se resuelve agregando <code>ActionListener</code>s, como en la Sesión 1.</p>
+        </div>
+    </section>
+
+    <section id="criterios">
+        <h2>V. Criterios de Entrega y Evaluación</h2>
+        <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes presentar lo
+        siguiente:</p>
+
+        <div class="criteria-group">
+            <h3>📦 Evidencia Procedimental (P)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p1">
+                    <span>Código fuente funcional (<code>.java</code>) donde se aprecie claramente la combinación de
+                    <code>BorderLayout</code>, <code>GridLayout</code>, y el uso de <code>JPanel</code> con
+                    <code>JScrollPane</code>.</span>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p2">
+                    <span>Implementación correcta y visible en la interfaz del <code>JComboBox</code>,
+                    <code>JCheckBox</code> y los <code>JRadioButton</code> agrupados.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🧠 Sustentación Conceptual (C)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="c1">
+                    <span>Explicar en un breve informe por qué es mejor utilizar administradores de diseño
+                    (<em>Layouts</em>) en lugar de coordenadas fijas al programar interfaces adaptables.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🤝 Actitud (A)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="a1">
+                    <span>Orden en la jerarquía del código, nombres adecuados de variables y entrega dentro del
+                    plazo establecido en el cronograma de clases.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <h2>VI. Pon a Prueba lo que Aprendiste</h2>
+        <p class="quiz-intro">Responde estas preguntas para comprobar qué tanto entendiste de esta sesión.
+        Puedes intentarlo las veces que quieras — no se guarda ninguna nota.</p>
+        <div id="quiz-container"></div>
+        <div class="quiz-footer">
+            <span id="quiz-score" class="quiz-score">Progreso: 0 / 5 respondidas</span>
+            <button type="button" id="quiz-retry" class="quiz-retry-btn">🔄 Reintentar</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>Guía de Aprendizaje N° 2 · Taller de Lenguajes de Programación · Creado Por Ing Jsumire - Baycodec</p>
+    </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    /* ---- Resaltado de sintaxis básico para bloques Java ----
+       Un único pase con regex de alternancia: evita que el resaltado de
+       palabras clave vuelva a escanear (y corrompa) los <span> ya insertados
+       para comentarios/cadenas, y evita colorear texto dentro de ellos. */
+    const KEYWORDS = ["public","private","protected","class","extends","implements","new","void","static","final","import","return","if","else","null","this","super","package","interface","true","false"];
+    const TYPES = ["JFrame","JPanel","JLabel","JButton","JScrollPane","JComboBox","JCheckBox","JRadioButton","ButtonGroup","BorderLayout","GridLayout","FlowLayout","BorderFactory","Font","String"];
+
+    const TOKEN_RE = new RegExp(
+        [
+            "(//[^\\n]*)",
+            "(&quot;.*?&quot;)",
+            "(@\\w+)",
+            "\\b(" + KEYWORDS.join("|") + ")\\b",
+            "\\b(" + TYPES.join("|") + ")\\b"
+        ].join("|"),
+        "g"
+    );
+
+    function highlight(code) {
+        const escaped = code
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        return escaped.replace(TOKEN_RE, function (m, comment, str, ann, kw, typ) {
+            if (comment) return '<span class="cmt">' + comment + '</span>';
+            if (str) return '<span class="str">' + str + '</span>';
+            if (ann) return '<span class="met">' + ann + '</span>';
+            if (kw) return '<span class="kw">' + kw + '</span>';
+            if (typ) return '<span class="typ">' + typ + '</span>';
+            return m;
+        });
+    }
+
+    document.querySelectorAll(".code-block pre code").forEach(function (block) {
+        block.innerHTML = highlight(block.textContent);
+    });
+
+    /* ---- Numeración de líneas: para que el alumno vea cuántas líneas
+       tiene cada bloque de código. El gutter va FUERA de <pre><code>, así
+       los números no se cuelan al copiar el código ni al partirlo por
+       líneas en los paneles de explicación. ---- */
+    document.querySelectorAll(".code-block pre").forEach(function (pre) {
+        const codeEl = pre.querySelector("code");
+        if (!codeEl) return;
+
+        const lineCount = codeEl.textContent.split("\n").length;
+
+        const gutter = document.createElement("div");
+        gutter.className = "line-numbers";
+        for (let i = 1; i <= lineCount; i++) {
+            const row = document.createElement("span");
+            row.className = "line-no-row";
+            row.textContent = String(i);
+            gutter.appendChild(row);
+        }
+
+        const body = document.createElement("div");
+        body.className = "code-body";
+        pre.parentNode.insertBefore(body, pre);
+        body.appendChild(gutter);
+        body.appendChild(pre);
+
+        const codeBlock = pre.closest(".code-block");
+        const langTag = codeBlock ? codeBlock.querySelector(".lang-tag") : null;
+        if (langTag) {
+            langTag.textContent = langTag.textContent + " · " + lineCount + " LÍNEAS";
+        }
+    });
+
+    /* ---- Botones "Copiar" en los bloques de código ---- */
+    document.querySelectorAll(".copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const codeEl = document.getElementById(targetId);
+            const text = codeEl ? codeEl.textContent : "";
+
+            let settled = false;
+            const done = function () {
+                if (settled) return;
+                settled = true;
+                const original = btn.textContent;
+                btn.textContent = "¡Copiado!";
+                btn.classList.add("copied");
+                setTimeout(function () {
+                    btn.textContent = original;
+                    btn.classList.remove("copied");
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () {
+                    fallbackCopy(text, done);
+                });
+                setTimeout(function () {
+                    if (!settled) fallbackCopy(text, done);
+                }, 500);
+            } else {
+                fallbackCopy(text, done);
+            }
+        });
+    });
+
+    function fallbackCopy(text, cb) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* noop */ }
+        document.body.removeChild(ta);
+        cb();
+    }
+
+    /* ---- Explicación línea por línea de cada bloque de código ---- */
+    const EXPLANATIONS = {
+        code1: [
+            "Importa todas las clases de la librería Swing (JFrame, JPanel, JScrollPane, JButton, etc.) necesarias para crear la interfaz gráfica.",
+            "Importa las clases del paquete AWT, como BorderLayout, GridLayout y Font, usadas para organizar y dar estilo a los componentes.",
+            "Línea en blanco que separa los imports del resto del código.",
+            "Declara la clase CatalogoTienda, que hereda de JFrame para convertirse en una ventana.",
+            "Declara tres atributos JPanel: uno para cada región de la ventana (superior, central e inferior).",
+            "Declara la etiqueta que mostrará el título del catálogo.",
+            "Declara los dos botones de la parte inferior: canjear y cerrar.",
+            "Declara el JScrollPane que agregará barras de desplazamiento al panel central.",
+            "Línea en blanco que separa los atributos del constructor.",
+            "Constructor de la clase: el código de este bloque se ejecuta al crear un nuevo objeto CatalogoTienda.",
+            "Establece el texto que aparece en la barra de título de la ventana.",
+            "Define un tamaño inicial de 500x400 píxeles (el usuario podrá cambiarlo, a diferencia del Paso 1 de la sesión anterior).",
+            "Indica que la aplicación debe finalizar por completo cuando el usuario cierra la ventana.",
+            "Centra la ventana en la pantalla.",
+            "Línea en blanco.",
+            "Comentario que anuncia el cambio de estrategia: en vez de coordenadas fijas, ahora se usará un Layout Manager.",
+            "Aplica BorderLayout como administrador de diseño de la ventana: a partir de aquí, add(componente, ZONA) decide en qué región se coloca cada cosa.",
+            "Línea en blanco.",
+            "Comentario que anuncia la creación del panel superior (zona NORTE).",
+            "Crea el panel que ocupará la región NORTE de la ventana.",
+            "Crea la etiqueta con el título del catálogo.",
+            "Cambia la tipografía del título a Arial, negrita, tamaño 14.",
+            "Agrega la etiqueta de título DENTRO del panel superior (panelNorte), no directamente a la ventana.",
+            "Agrega panelNorte a la ventana, indicando explícitamente que va en la región NORTH de BorderLayout.",
+            "Línea en blanco.",
+            "Comentario que anuncia la creación del panel central con cuadrícula.",
+            "Crea el panel central con GridLayout(3, 2, 10, 10): 3 filas, 2 columnas, 10px de separación horizontal y vertical entre celdas.",
+            "Agrega un margen interno (padding) de 10px en los cuatro lados del panel central.",
+            "Línea en blanco.",
+            "Comentario que indica que a continuación se agregan los productos de ejemplo del catálogo.",
+            "Agrega el primer botón-producto a la cuadrícula del panel central.",
+            "Agrega el segundo botón-producto a la cuadrícula.",
+            "Agrega el tercer botón-producto a la cuadrícula.",
+            "Agrega el cuarto botón-producto a la cuadrícula.",
+            "Agrega el quinto botón-producto a la cuadrícula.",
+            "Agrega el sexto botón-producto a la cuadrícula (con 6 elementos se completan exactamente las 3 filas x 2 columnas definidas).",
+            "Línea en blanco.",
+            "Comentario que anuncia que el panel central se va a envolver en un JScrollPane.",
+            "Crea un JScrollPane que envuelve (contiene) al panelCentro: si el contenido no cabe, aparecerán barras de desplazamiento automáticamente.",
+            "Agrega el scrollPane (que por dentro contiene al panelCentro) a la ventana, en la región CENTER de BorderLayout.",
+            "Línea en blanco.",
+            "Comentario que anuncia la creación del panel inferior (zona SUR).",
+            "Crea el panel que ocupará la región SUR de la ventana.",
+            "Crea el botón para canjear el producto seleccionado.",
+            "Crea el botón para salir de la tienda.",
+            "Agrega el botón \"Canjear Seleccionado\" dentro del panel inferior (panelSur).",
+            "Agrega el botón \"Salir\" dentro del panel inferior (panelSur).",
+            "Agrega panelSur a la ventana, en la región SOUTH de BorderLayout.",
+            "Cierra el constructor CatalogoTienda().",
+            "Línea en blanco que separa el constructor del método main.",
+            "Punto de entrada del programa: aquí comienza la ejecución cuando se corre la clase.",
+            "Crea una instancia de la ventana y la hace visible en pantalla.",
+            "Cierra el método main.",
+            "Cierra la clase CatalogoTienda."
+        ],
+        code2: [
+            "Importa todas las clases de la librería Swing necesarias, incluyendo JComboBox, JCheckBox y JRadioButton.",
+            "Importa las clases del paquete AWT, como BorderLayout y FlowLayout.",
+            "Línea en blanco.",
+            "Declara la clase CatalogoTiendaAvanzado, que hereda de JFrame.",
+            "Declara el combo desplegable (lista de categorías) que el usuario podrá elegir. El <String> indica que solo contendrá elementos de tipo texto.",
+            "Declara la casilla de verificación para activar o no las notificaciones.",
+            "Declara los dos botones de opción única (radio) para elegir el tipo de entrega.",
+            "Declara el grupo que hará que \"Digital\" y \"Físico\" sean mutuamente excluyentes (solo se puede elegir uno).",
+            "Declara los tres paneles de esta ventana: filtros, central y sur.",
+            "Línea en blanco que separa los atributos del constructor.",
+            "Constructor de la clase: se ejecuta al crear un nuevo objeto CatalogoTiendaAvanzado.",
+            "Establece el texto que aparece en la barra de título de la ventana.",
+            "Define un tamaño inicial de 550x450 píxeles.",
+            "Indica que la aplicación debe finalizar por completo cuando el usuario cierra la ventana.",
+            "Centra la ventana en la pantalla.",
+            "Aplica BorderLayout como administrador de diseño de la ventana.",
+            "Línea en blanco.",
+            "Comentario que anuncia el bloque nuevo de este paso: el panel de filtros y selección.",
+            "Crea el panel de filtros usando FlowLayout: un layout simple que coloca los componentes uno junto a otro, en fila, ajustándose automáticamente.",
+            "Línea en blanco.",
+            "Comentario que indica que a continuación se configura el JComboBox.",
+            "Crea el combo desplegable y lo llena con un arreglo de 4 categorías; la primera será la opción visible por defecto.",
+            "Agrega una etiqueta \"Filtrar:\" al panel de filtros, justo antes del combo.",
+            "Agrega el combo desplegable (cmbCategorias) al panel de filtros.",
+            "Línea en blanco.",
+            "Comentario que indica que a continuación se configura el JCheckBox.",
+            "Crea la casilla de verificación con su texto; nace sin marcar.",
+            "Agrega la casilla de verificación al panel de filtros.",
+            "Línea en blanco.",
+            "Comentario que indica que a continuación se configuran los JRadioButton.",
+            "Crea el primer radio button \"Digital\"; el segundo parámetro true indica que empieza seleccionado.",
+            "Crea el segundo radio button \"Físico\", sin seleccionar.",
+            "Crea el ButtonGroup que agrupará ambos radio buttons.",
+            "Agrega rbtDigital al grupo.",
+            "Agrega rbtFisico al grupo (a partir de aquí, solo uno de los dos puede estar marcado a la vez).",
+            "Línea en blanco.",
+            "Agrega el radio button \"Digital\" al panel de filtros para que sea visible.",
+            "Agrega el radio button \"Físico\" al panel de filtros para que sea visible.",
+            "Línea en blanco.",
+            "Agrega panelFiltros completo (con el combo, el checkbox y los radio buttons) a la ventana, en la región NORTH de BorderLayout.",
+            "Línea en blanco.",
+            "Comentario que indica que a continuación se repite el panel central del Paso 1 (Trabajo 1).",
+            "Crea el panel central con GridLayout(3, 2, 10, 10): la misma cuadrícula de 3 filas y 2 columnas del Paso 1.",
+            "Agrega el primer botón-producto a la cuadrícula.",
+            "Agrega el segundo botón-producto a la cuadrícula.",
+            "Agrega el tercer botón-producto a la cuadrícula.",
+            "Agrega el cuarto botón-producto a la cuadrícula (aquí se muestran solo 4, dejando 2 celdas libres en la grilla 3x2).",
+            "Línea en blanco.",
+            "Crea el JScrollPane que envuelve al panelCentro, igual que en el Paso 1 (aquí se declara como variable local, solo para este constructor).",
+            "Agrega el scrollPane a la ventana, en la región CENTER de BorderLayout.",
+            "Línea en blanco.",
+            "Comentario que anuncia la creación del panel inferior.",
+            "Crea el panel que ocupará la región SUR de la ventana.",
+            "Crea el botón \"Canjear Ítem\" y lo agrega directamente al panel inferior, en un solo paso.",
+            "Agrega panelSur a la ventana, en la región SOUTH de BorderLayout.",
+            "Cierra el constructor CatalogoTiendaAvanzado().",
+            "Línea en blanco que separa el constructor del método main.",
+            "Punto de entrada del programa: aquí comienza la ejecución cuando se corre la clase.",
+            "Crea una instancia de la ventana y la hace visible en pantalla.",
+            "Cierra el método main.",
+            "Cierra la clase CatalogoTiendaAvanzado."
+        ]
+    };
+
+    function buildExplainPanel(targetId) {
+        const codeEl = document.getElementById(targetId);
+        const panel = document.getElementById("explain-" + targetId);
+        if (!codeEl || !panel || panel.dataset.built) return;
+
+        const lines = codeEl.textContent.split("\n");
+        const notes = EXPLANATIONS[targetId] || [];
+
+        const frag = document.createDocumentFragment();
+        lines.forEach(function (line, i) {
+            const row = document.createElement("div");
+            row.className = "explain-row";
+
+            const num = document.createElement("span");
+            num.className = "explain-line-no";
+            num.textContent = String(i + 1);
+
+            const codeSpan = document.createElement("code");
+            const trimmed = line.trim();
+            if (trimmed === "") {
+                codeSpan.className = "explain-code is-blank";
+                codeSpan.textContent = "(línea en blanco)";
+            } else {
+                codeSpan.className = "explain-code";
+                codeSpan.innerHTML = highlight(line);
+            }
+
+            const text = document.createElement("span");
+            text.className = "explain-text";
+            text.textContent = notes[i] || "Línea de código de apoyo dentro del bloque.";
+
+            row.appendChild(num);
+            row.appendChild(codeSpan);
+            row.appendChild(text);
+            frag.appendChild(row);
+        });
+
+        panel.appendChild(frag);
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".explain-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("explain-" + targetId);
+            if (!panel) return;
+
+            buildExplainPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? "🧠 Explicar línea por línea" : "✕ Ocultar explicación";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Clases usadas y por qué están anidadas unas dentro de otras ---- */
+    const CLASS_NOTES = {
+        code1: {
+            intro: "Aquí el anidamiento es de CONTENEDORES: un JPanel vive dentro de un JScrollPane, y ambos (junto a otros paneles) viven dentro del JFrame. BorderLayout y GridLayout no son componentes visibles: son \"reglas de organización\" que le asignas a un contenedor para que él mismo acomode a sus hijos.",
+            classes: [
+                {
+                    name: "JFrame",
+                    pkg: "javax.swing",
+                    desc: "Ventana principal de la aplicación. Es el contenedor raíz de todo lo demás.",
+                    nest: "CatalogoTienda \"extends JFrame\": la propia clase ES la ventana; usa setLayout(new BorderLayout()) para decidir cómo organizar a sus hijos directos (panelNorte, scrollPane, panelSur)."
+                },
+                {
+                    name: "BorderLayout",
+                    pkg: "java.awt",
+                    desc: "No es un componente visible, sino un administrador de diseño: divide el contenedor en 5 regiones (NORTH, SOUTH, EAST, WEST, CENTER).",
+                    nest: "Se le asigna al JFrame con setLayout(...); luego cada add(componente, ZONA) le dice a BorderLayout en qué región anidar ese componente."
+                },
+                {
+                    name: "JPanel",
+                    pkg: "javax.swing",
+                    desc: "Subcontenedor \"invisible\" que agrupa varios componentes para organizarlos como una unidad.",
+                    nest: "panelNorte y panelSur se anidan directamente dentro del JFrame (add(panelNorte, BorderLayout.NORTH)); panelCentro se anida dentro del JScrollPane en vez de ir directo a la ventana."
+                },
+                {
+                    name: "GridLayout",
+                    pkg: "java.awt",
+                    desc: "Administrador de diseño que organiza a los hijos de un contenedor en una cuadrícula de filas y columnas de igual tamaño.",
+                    nest: "Se le asigna a panelCentro en su propio constructor (new JPanel(new GridLayout(3,2,10,10))); todo lo que se agregue después con panelCentro.add(...) queda anidado dentro de esa cuadrícula."
+                },
+                {
+                    name: "JButton",
+                    pkg: "javax.swing",
+                    desc: "Botón interactivo. Aquí se usan seis para representar productos del catálogo, y dos más para las acciones de canjear/salir.",
+                    nest: "Los 6 botones-producto se anidan dentro de panelCentro (que usa GridLayout); los botones \"Canjear Seleccionado\" y \"Salir\" se anidan dentro de panelSur."
+                },
+                {
+                    name: "JScrollPane",
+                    pkg: "javax.swing",
+                    desc: "Contenedor especial que añade barras de desplazamiento automáticas cuando el contenido que envuelve no cabe en el espacio visible.",
+                    nest: "Se crea \"envolviendo\" a panelCentro (new JScrollPane(panelCentro)): panelCentro queda anidado DENTRO del JScrollPane, y ese JScrollPane (no panelCentro directamente) es lo que se agrega a la ventana."
+                },
+                {
+                    name: "Font",
+                    pkg: "java.awt",
+                    desc: "Clase auxiliar (no visual) que describe el estilo de un texto: tipografía, tamaño y si es negrita/cursiva.",
+                    nest: "No se agrega a ningún contenedor con add(): se le entrega directamente a lblTituloCatalogo mediante setFont(...), así que \"vive dentro\" de esa etiqueta."
+                },
+                {
+                    name: "BorderFactory",
+                    pkg: "javax.swing",
+                    desc: "Clase de utilidad (no es un componente) que fabrica bordes decorativos, como márgenes internos.",
+                    nest: "Se usa dentro de panelCentro.setBorder(...) para darle un margen interno de 10px al panel; no se anida como hijo, solo modifica la apariencia del panel."
+                }
+            ],
+            diagram: "CatalogoTienda (extends JFrame)\n"
+                + "  setLayout(new BorderLayout())\n"
+                + " │\n"
+                + " ├── panelNorte             (JPanel)      ── add(panelNorte, NORTH)\n"
+                + " │      └── lblTituloCatalogo  (JLabel)    ── panelNorte.add(...)\n"
+                + " │             └── Font (Arial, negrita)   ── setFont(...)\n"
+                + " │\n"
+                + " ├── scrollPane             (JScrollPane) ── add(scrollPane, CENTER)\n"
+                + " │      └── panelCentro        (JPanel, GridLayout 3x2)\n"
+                + " │             └── 6x JButton (productos)  ── panelCentro.add(...)\n"
+                + " │\n"
+                + " └── panelSur               (JPanel)      ── add(panelSur, SOUTH)\n"
+                + "        ├── JButton \"Canjear Seleccionado\"\n"
+                + "        └── JButton \"Salir\""
+        },
+        code2: {
+            intro: "Aquí se suma un tercer tipo de anidamiento: componentes de selección (JComboBox, JCheckBox, JRadioButton) que también viven dentro de un panel, más un ButtonGroup que NO es un contenedor visual, sino una relación lógica entre dos JRadioButton.",
+            classes: [
+                {
+                    name: "JComboBox<String>",
+                    pkg: "javax.swing",
+                    desc: "Lista desplegable de opciones; el <String> indica que cada opción de la lista es un texto.",
+                    nest: "Se crea aparte y se anida dentro de panelFiltros con panelFiltros.add(cmbCategorias), igual que cualquier otro componente."
+                },
+                {
+                    name: "JCheckBox",
+                    pkg: "javax.swing",
+                    desc: "Casilla de verificación que el usuario puede marcar o desmarcar de forma independiente.",
+                    nest: "Se anida dentro de panelFiltros con panelFiltros.add(chkNotificaciones)."
+                },
+                {
+                    name: "JRadioButton",
+                    pkg: "javax.swing",
+                    desc: "Botón de opción única: se usa cuando quieres que el usuario elija SOLO UNA opción entre varias relacionadas.",
+                    nest: "rbtDigital y rbtFisico se anidan dentro de panelFiltros (igual que cualquier componente); además, ambos se anidan lógicamente dentro de un ButtonGroup para quedar relacionados entre sí."
+                },
+                {
+                    name: "ButtonGroup",
+                    pkg: "javax.swing",
+                    desc: "No es un componente visible: es un objeto que agrupa varios JRadioButton (o JCheckBox) para que sean mutuamente excluyentes.",
+                    nest: "No se agrega a ningún panel con add(): en vez de eso, cada radio button se anida DENTRO del grupo con grupoEnvio.add(rbtDigital) / grupoEnvio.add(rbtFisico). Es un anidamiento lógico, no visual."
+                },
+                {
+                    name: "FlowLayout",
+                    pkg: "java.awt",
+                    desc: "Administrador de diseño simple: coloca los componentes uno junto a otro, en fila, y los pasa a la siguiente línea si no caben.",
+                    nest: "Se le asigna a panelFiltros en su constructor (new JPanel(new FlowLayout())); todo lo que se agregue después con panelFiltros.add(...) queda anidado y organizado por ese FlowLayout."
+                },
+                {
+                    name: "JPanel / BorderLayout / GridLayout / JScrollPane / JButton",
+                    pkg: "javax.swing · java.awt",
+                    desc: "Los mismos contenedores y administradores de diseño del Paso 1: estructuran la ventana en regiones y organizan el catálogo en cuadrícula.",
+                    nest: "Se anidan exactamente igual que en el Paso 1: panelFiltros y panelSur van directo al JFrame; panelCentro va dentro de un JScrollPane."
+                }
+            ],
+            diagram: "CatalogoTiendaAvanzado (extends JFrame)\n"
+                + "  setLayout(new BorderLayout())\n"
+                + " │\n"
+                + " ├── panelFiltros            (JPanel, FlowLayout) ── add(panelFiltros, NORTH)\n"
+                + " │      ├── JLabel \"Filtrar:\"\n"
+                + " │      ├── cmbCategorias        (JComboBox<String>)\n"
+                + " │      ├── chkNotificaciones    (JCheckBox)\n"
+                + " │      ├── rbtDigital           (JRadioButton) ──┐\n"
+                + " │      └── rbtFisico            (JRadioButton) ──┴── ambos anidados también en grupoEnvio (ButtonGroup)\n"
+                + " │\n"
+                + " ├── scrollPane              (JScrollPane) ── add(scrollPane, CENTER)\n"
+                + " │      └── panelCentro          (JPanel, GridLayout 3x2)\n"
+                + " │             └── 4x JButton (productos)\n"
+                + " │\n"
+                + " └── panelSur                (JPanel) ── add(panelSur, SOUTH)\n"
+                + "        └── JButton \"Canjear Ítem\""
+        }
+    };
+
+    function buildClassesPanel(targetId) {
+        const panel = document.getElementById("classes-" + targetId);
+        const data = CLASS_NOTES[targetId];
+        if (!panel || !data || panel.dataset.built) return;
+
+        const intro = document.createElement("p");
+        intro.className = "classes-intro";
+        intro.textContent = data.intro;
+        panel.appendChild(intro);
+
+        data.classes.forEach(function (cls) {
+            const card = document.createElement("div");
+            card.className = "class-card";
+
+            const nameLine = document.createElement("div");
+            const nameEl = document.createElement("span");
+            nameEl.className = "class-name";
+            nameEl.textContent = cls.name;
+            const pkgEl = document.createElement("span");
+            pkgEl.className = "class-pkg";
+            pkgEl.textContent = cls.pkg;
+            nameLine.appendChild(nameEl);
+            nameLine.appendChild(pkgEl);
+
+            const descEl = document.createElement("p");
+            descEl.textContent = cls.desc;
+
+            const nestEl = document.createElement("p");
+            nestEl.className = "nest-note";
+            nestEl.textContent = "Anidamiento: " + cls.nest;
+
+            card.appendChild(nameLine);
+            card.appendChild(descEl);
+            card.appendChild(nestEl);
+            panel.appendChild(card);
+        });
+
+        const diagramTitle = document.createElement("div");
+        diagramTitle.className = "nest-diagram-title";
+        diagramTitle.textContent = "Diagrama de anidamiento de este código:";
+        panel.appendChild(diagramTitle);
+
+        const diagram = document.createElement("div");
+        diagram.className = "nest-diagram";
+        diagram.textContent = data.diagram;
+        panel.appendChild(diagram);
+
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".classes-btn").forEach(function (btn) {
+        const originalLabel = btn.textContent;
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("classes-" + targetId);
+            if (!panel) return;
+
+            buildClassesPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? originalLabel : "✕ Ocultar clases";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Vista previa: alternar entre ventana ancha y angosta,
+       para demostrar en vivo cómo BorderLayout/GridLayout/FlowLayout
+       reacomodan a sus hijos automáticamente. ---- */
+    document.querySelectorAll(".bl-toggle-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const win = document.getElementById(targetId);
+            if (!win) return;
+
+            win.classList.toggle("is-narrow");
+            const narrow = win.classList.contains("is-narrow");
+            btn.textContent = narrow ? "↔️ Ver en ventana ancha" : "↔️ Ver en ventana angosta";
+        });
+    });
+
+    /* ---- Checklist de criterios de entrega con persistencia local ---- */
+    const STORAGE_KEY = "guia2-checklist";
+    const checkboxes = Array.from(document.querySelectorAll(".checklist-item input[type=checkbox]"));
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    function loadState() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveState(state) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { /* almacenamiento no disponible: se ignora */ }
+    }
+
+    function updateProgress() {
+        const total = checkboxes.length;
+        const checked = checkboxes.filter(function (cb) { return cb.checked; }).length;
+        const pct = total ? Math.round((checked / total) * 100) : 0;
+        progressFill.style.width = pct + "%";
+        progressText.textContent = checked + " / " + total + " completado";
+    }
+
+    function applyLabelStyle(cb) {
+        const span = cb.parentElement.querySelector("span");
+        if (span) span.classList.toggle("done", cb.checked);
+    }
+
+    const state = loadState();
+    checkboxes.forEach(function (cb) {
+        const key = cb.getAttribute("data-key");
+        cb.checked = !!state[key];
+        applyLabelStyle(cb);
+
+        cb.addEventListener("change", function () {
+            const current = loadState();
+            current[key] = cb.checked;
+            saveState(current);
+            applyLabelStyle(cb);
+            updateProgress();
+        });
+    });
+    updateProgress();
+
+    document.getElementById("reset-checklist").addEventListener("click", function () {
+        saveState({});
+        checkboxes.forEach(function (cb) {
+            cb.checked = false;
+            applyLabelStyle(cb);
+        });
+        updateProgress();
+    });
+
+    /* ---- Resaltado del enlace activo en la navegación ---- */
+    const navLinks = Array.from(document.querySelectorAll("nav.toc a"));
+    const sections = navLinks.map(function (a) {
+        return document.querySelector(a.getAttribute("href"));
+    });
+
+    function onScroll() {
+        let currentIndex = 0;
+        const scrollPos = window.scrollY + 90;
+        sections.forEach(function (sec, i) {
+            if (sec && sec.offsetTop <= scrollPos) currentIndex = i;
+        });
+        navLinks.forEach(function (a, i) {
+            a.classList.toggle("active", i === currentIndex);
+        });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+})();
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    (function () {
+        var GLOSSARY = {
+    "BorderLayout": "Un organizador que divide la ventana en 5 zonas: NORTE, SUR, ESTE, OESTE y CENTRO, y coloca un componente en cada una.",
+    "FlowLayout": "Un organizador que coloca los componentes uno al lado del otro, como palabras en un renglón, pasando a la siguiente línea cuando ya no caben.",
+    "GridLayout": "Un organizador que acomoda los componentes en una cuadrícula de filas y columnas, todos del mismo tamaño.",
+    "JPanel": "Un panel — un contenedor invisible que agrupa varios componentes juntos, como una bandeja donde pones varias cosas para moverlas de una vez.",
+    "JComboBox": "Una lista desplegable donde el usuario elige una sola opción entre varias, haciendo clic para desplegarla.",
+    "JCheckBox": "Una casilla que el usuario puede marcar o desmarcar, para elegir una opción de tipo sí/no.",
+    "JRadioButton": "Un botón redondo de opción única: cuando hay varios agrupados, solo se puede seleccionar uno a la vez.",
+    "JScrollPane": "Un contenedor con barras de desplazamiento que permite ver contenido más grande de lo que cabe en la pantalla.",
+    "setLayout(null)": "Le dice a la ventana que NO use ningún organizador automático, y que tú mismo ubicarás cada componente a mano con setBounds().",
+    "ActionListener": "Un \"oyente\" que espera a que ocurra una acción (como un clic) y avisa al programa para que reaccione.",
+    "JFrame": "La ventana principal de tu programa, donde se colocan todos los demás componentes."
+};
+        var containers = document.querySelectorAll("#objetivo, #marco-teorico, #actividades, #criterios");
+        var activeTooltip = null;
+
+        function closeTooltip() {
+            if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; }
+        }
+
+        function showTooltip(el, text) {
+            closeTooltip();
+            var tip = document.createElement("span");
+            tip.className = "gloss-tooltip";
+            tip.textContent = text;
+            el.appendChild(tip);
+            var rect = tip.getBoundingClientRect();
+            if (rect.left < 8) {
+                tip.style.left = "calc(50% + " + (8 - rect.left) + "px)";
+            } else if (rect.right > window.innerWidth - 8) {
+                tip.style.left = "calc(50% - " + (rect.right - window.innerWidth + 8) + "px)";
+            }
+            activeTooltip = tip;
+        }
+
+        function attach(el, term) {
+            if (el.classList.contains("gloss-term")) return;
+            el.classList.add("gloss-term");
+            el.setAttribute("tabindex", "0");
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", "Ver definición de " + term);
+            el.addEventListener("mouseenter", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("mouseleave", closeTooltip);
+            el.addEventListener("focus", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("blur", closeTooltip);
+            el.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (activeTooltip && el.contains(activeTooltip)) {
+                    closeTooltip();
+                } else {
+                    showTooltip(el, GLOSSARY[term]);
+                }
+            });
+        }
+
+        containers.forEach(function (container) {
+            if (!container) return;
+            Array.from(container.querySelectorAll("code")).forEach(function (codeEl) {
+                if (codeEl.closest("pre")) return;
+                var key = codeEl.textContent.trim();
+                if (GLOSSARY.hasOwnProperty(key)) attach(codeEl, key);
+            });
+            Array.from(container.querySelectorAll("[data-term]")).forEach(function (el) {
+                var key = el.getAttribute("data-term");
+                if (GLOSSARY.hasOwnProperty(key)) attach(el, key);
+            });
+        });
+
+        document.addEventListener("click", closeTooltip);
+    })();
+
+    /* ---- Quiz autoevaluado ---- */
+    (function () {
+        var QUIZ = [
+    {
+        "q": "¿Cuántas zonas divide un BorderLayout?",
+        "options": [
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "correct": 2,
+        "explain": "BorderLayout divide la ventana en NORTE, SUR, ESTE, OESTE y CENTRO."
+    },
+    {
+        "q": "¿Qué layout organiza los componentes uno al lado del otro, pasando a la siguiente línea cuando no caben?",
+        "options": [
+            "GridLayout",
+            "BorderLayout",
+            "FlowLayout",
+            "null"
+        ],
+        "correct": 2,
+        "explain": "FlowLayout acomoda los componentes en fila, como palabras en un párrafo."
+    },
+    {
+        "q": "¿Para qué sirve un JScrollPane?",
+        "options": [
+            "Para mostrar barras de desplazamiento cuando el contenido no cabe",
+            "Para crear botones",
+            "Para conectar a una base de datos",
+            "Para organizar en filas y columnas"
+        ],
+        "correct": 0,
+        "explain": "JScrollPane agrega scroll (barras de desplazamiento) cuando el contenido es más grande que el espacio visible."
+    },
+    {
+        "q": "¿Qué componente permite elegir SOLO una opción entre varias, mostradas como botones redondos agrupados?",
+        "options": [
+            "JCheckBox",
+            "JRadioButton",
+            "JComboBox",
+            "JTextField"
+        ],
+        "correct": 1,
+        "explain": "Los JRadioButton agrupados con un ButtonGroup permiten seleccionar solo una opción a la vez."
+    },
+    {
+        "q": "Si usas setLayout(null), ¿qué debes hacer para ubicar cada componente?",
+        "options": [
+            "Nada, se acomodan solos",
+            "Usar setBounds() manualmente para cada uno",
+            "Usar CSS",
+            "Usar una base de datos"
+        ],
+        "correct": 1,
+        "explain": "Con layout null, tú decides la posición y el tamaño exactos con setBounds(x, y, ancho, alto)."
+    }
+];
+        var container = document.getElementById("quiz-container");
+        if (!container) return;
+        var answers = new Array(QUIZ.length).fill(null);
+
+        function renderScore() {
+            var scoreEl = document.getElementById("quiz-score");
+            if (!scoreEl) return;
+            var answered = answers.filter(function (a) { return a !== null; }).length;
+            var correct = answers.filter(function (a, i) { return a === QUIZ[i].correct; }).length;
+            scoreEl.textContent = answered === QUIZ.length
+                ? "Resultado: " + correct + " / " + QUIZ.length + " correctas" + (correct === QUIZ.length ? " 🎉 ¡Perfecto!" : "")
+                : "Progreso: " + answered + " / " + QUIZ.length + " respondidas";
+        }
+
+        function selectAnswer(qi, oi, card) {
+            answers[qi] = oi;
+            var opts = Array.from(card.querySelectorAll(".quiz-option"));
+            opts.forEach(function (btn) {
+                btn.classList.remove("correct", "incorrect");
+                btn.disabled = true;
+            });
+            var correct = QUIZ[qi].correct;
+            opts[correct].classList.add("correct");
+            if (oi !== correct) opts[oi].classList.add("incorrect");
+            var fb = card.querySelector(".quiz-feedback");
+            fb.hidden = false;
+            fb.className = "quiz-feedback " + (oi === correct ? "is-correct" : "is-incorrect");
+            fb.innerHTML = (oi === correct ? "✅ <strong>¡Correcto!</strong> " : "❌ <strong>No es correcto.</strong> ") + QUIZ[qi].explain;
+            renderScore();
+        }
+
+        function render() {
+            container.innerHTML = "";
+            QUIZ.forEach(function (item, qi) {
+                var card = document.createElement("div");
+                card.className = "quiz-card";
+
+                var qEl = document.createElement("p");
+                qEl.className = "quiz-question";
+                qEl.textContent = (qi + 1) + ". " + item.q;
+                card.appendChild(qEl);
+
+                var opts = document.createElement("div");
+                opts.className = "quiz-options";
+                item.options.forEach(function (optText, oi) {
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "quiz-option";
+                    btn.textContent = optText;
+                    btn.addEventListener("click", function () { selectAnswer(qi, oi, card); });
+                    opts.appendChild(btn);
+                });
+                card.appendChild(opts);
+
+                var fb = document.createElement("div");
+                fb.className = "quiz-feedback";
+                fb.hidden = true;
+                card.appendChild(fb);
+
+                container.appendChild(card);
+            });
+            renderScore();
+        }
+
+        var retryBtn = document.getElementById("quiz-retry");
+        if (retryBtn) {
+            retryBtn.addEventListener("click", function () {
+                answers = new Array(QUIZ.length).fill(null);
+                render();
+            });
+        }
+
+        render();
+    })();
+
+    /* ---- Predice antes de revelar ---- */
+    (function () {
+        document.querySelectorAll(".predict-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var target = document.getElementById(btn.getAttribute("data-target"));
+                if (!target) return;
+                var isHidden = target.hidden;
+                target.hidden = !isHidden;
+                btn.textContent = isHidden ? "\ud83d\ude48 Ocultar la respuesta" : "\ud83d\udc40 Ver la respuesta";
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Aprendizaje N° 7 — Conectividad JDBC (Java + MySQL)</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 45px 20px 35px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.9rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; margin-top: 4px; }
+
+    .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.15s ease;
+    }
+
+    nav.toc a:hover, nav.toc a.active { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 26px 28px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.35rem;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.1rem; margin: 18px 0 8px; }
+    section h4 { color: var(--primary); font-size: 0.95rem; margin: 14px 0 6px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+    }
+
+    .step-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block { position: relative; margin: 14px 0 20px; }
+
+    .code-block .lang-tag {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 8px 0 8px 0;
+        letter-spacing: 0.5px;
+        z-index: 1;
+    }
+
+    .code-block .code-body {
+        display: flex;
+        background: var(--code-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .code-block pre {
+        background: transparent;
+        color: var(--code-fg);
+        padding: 34px 18px 18px 14px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre;
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .code-block pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+        font-size: inherit;
+    }
+
+    .line-numbers {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.03);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        color: #55627a;
+        text-align: right;
+        padding: 34px 10px 18px 12px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .line-numbers .line-no-row { display: block; }
+
+    .code-toolbar { position: absolute; top: 6px; right: 8px; display: flex; gap: 8px; z-index: 1; }
+
+    .copy-btn, .explain-btn, .classes-btn {
+        background: rgba(255,255,255,0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover, .explain-btn:hover, .classes-btn:hover { background: rgba(255,255,255,0.25); }
+    .copy-btn.copied { background: var(--success); border-color: var(--success); color: white; }
+    .explain-btn.active, .classes-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Resaltado simple de sintaxis Java */
+    .kw   { color: #60a5fa; }
+    .str  { color: #86efac; }
+    .cmt  { color: #64748b; font-style: italic; }
+    .typ  { color: #fbbf24; }
+    .met  { color: #c4b5fd; }
+
+    .explain-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .explain-panel[hidden] { display: none; }
+
+    .explain-row {
+        display: grid;
+        grid-template-columns: 30px minmax(120px, 1fr) 1.5fr;
+        gap: 10px 14px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        align-items: start;
+        background: var(--bg-card);
+    }
+
+    .explain-row:last-child { border-bottom: none; }
+    .explain-row:nth-child(even) { background: #f8fafc; }
+
+    .explain-line-no {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: right;
+        padding-top: 5px;
+    }
+
+    .explain-code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.78rem;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 5px 8px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .explain-code.is-blank {
+        color: var(--text-muted);
+        font-style: italic;
+        background: transparent;
+        border: 1px dashed var(--border);
+    }
+
+    .explain-text { font-size: 0.85rem; color: var(--text-main); padding-top: 4px; }
+
+    .classes-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: var(--bg-card); }
+    .classes-panel[hidden] { display: none; }
+    .classes-intro { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
+
+    .class-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; background: #f8fafc; }
+
+    .class-card .class-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: var(--primary);
+        background: #eef2ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    .class-card .class-pkg { font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
+    .class-card p { font-size: 0.85rem; margin-bottom: 4px; }
+
+    .class-card .nest-note {
+        font-size: 0.8rem;
+        color: #713f12;
+        background: #fef9c3;
+        border-left: 3px solid var(--warning);
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 6px;
+    }
+
+    .nest-diagram-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin: 14px 0 8px; }
+
+    .nest-diagram {
+        background: var(--code-bg);
+        color: #38bdf8;
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    /* Vista previa de consola (terminal simulada) */
+    .console-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .console-caption {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+
+    .console-run-btn {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .console-run-btn:hover { background: #eff6ff; }
+    .console-run-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .console-window {
+        display: inline-block;
+        width: 560px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .console-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .console-titlebar-controls { display: flex; gap: 5px; }
+
+    .console-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+
+    .console-body {
+        background: #0b0f19;
+        color: #d1d5db;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.8rem;
+        line-height: 1.7;
+        padding: 14px 16px;
+        min-height: 170px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .console-cmd { color: #4ade80; }
+    .console-sep { color: #4b5563; }
+    .console-hint { color: #6b7280; font-style: italic; }
+    .console-cursor { color: #4ade80; }
+
+    .mockup-note { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+    .req-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .req-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #f8fafc; }
+    .req-card-recommended { border-color: var(--success); background: #f0fdf4; }
+
+    .req-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .req-name { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+
+    .req-badge-open {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #14532d;
+        background: #dcfce7;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .req-tag { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .req-card p { font-size: 0.85rem; }
+
+    .req-link { display: inline-block; margin-top: 6px; font-size: 0.8rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .req-link:hover { text-decoration: underline; }
+
+    .criteria-group { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+    .criteria-group h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+    .criteria-group ul { list-style: none; margin-left: 0; }
+
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+    .checklist-item:hover { background: #f1f5f9; }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px;
+        width: 17px;
+        height: 17px;
+        accent-color: var(--success);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-item span.done { text-decoration: line-through; color: var(--text-muted); }
+
+    .progress-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 25px; }
+
+    .progress-wrap .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .progress-bar-bg { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-light), var(--success));
+        border-radius: 20px;
+        transition: width 0.35s ease;
+    }
+
+    .reset-btn {
+        margin-top: 12px;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        cursor: pointer;
+    }
+
+    .reset-btn:hover { background: #f1f5f9; }
+
+    footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 20px 16px; }
+    }
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    .gloss-term {
+        position: relative;
+        cursor: help;
+        border-bottom: 2px dotted var(--accent);
+    }
+
+    .gloss-term::after {
+        content: "\24D8";
+        font-size: 0.7em;
+        vertical-align: super;
+        margin-left: 2px;
+        color: var(--accent);
+        opacity: 0.85;
+    }
+
+    .gloss-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text-main);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 400;
+        line-height: 1.45;
+        width: max-content;
+        max-width: 260px;
+        white-space: normal;
+        z-index: 60;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        text-align: left;
+    }
+
+    .gloss-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: var(--text-main);
+    }
+
+    @media (max-width: 600px) {
+        .gloss-tooltip { max-width: 200px; font-size: 0.78rem; }
+    }
+
+    /* ---- Quiz autoevaluado ---- */
+    .quiz-intro { color: var(--text-muted); margin-bottom: 20px; }
+
+    .quiz-card {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+    .quiz-question { font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .quiz-option {
+        text-align: left;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text-main);
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .quiz-option:hover:not(:disabled) { background: #eef2ff; border-color: var(--primary-light); }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
+    .quiz-option.incorrect { background: #fee2e2; border-color: #ef4444; }
+
+    .quiz-feedback {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .quiz-feedback.is-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--text-main); }
+    .quiz-feedback.is-incorrect { background: #fef2f2; border: 1px solid #fecaca; color: var(--text-main); }
+
+    .quiz-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .quiz-score { font-weight: 600; color: var(--text-main); }
+
+    .quiz-retry-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .quiz-retry-btn:hover { background: #f1f5f9; }
+
+    /* ---- Errores comunes ---- */
+    .errors-wrap {
+        margin-top: 20px;
+        padding: 18px 20px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title {
+        color: #92400e;
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .error-item {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .error-what { color: #991b1b; margin-bottom: 4px; line-height: 1.5; }
+    .error-fix { color: #166534; line-height: 1.5; }
+
+    /* ---- Predice antes de revelar ---- */
+    .predict-box {
+        margin: 20px 0;
+        padding: 16px 18px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 10px;
+    }
+
+    .predict-question { margin-bottom: 12px; color: var(--text-main); line-height: 1.5; }
+
+    .predict-toggle {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-light);
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .predict-toggle:hover { background: #eff6ff; }
+
+    .predict-answer {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>GUÍA DE APRENDIZAJE N° 7</h1>
+    <p><strong>Unidad Didáctica:</strong> Taller de Lenguajes de Programación</p>
+    <p><strong>Tema:</strong> Conectividad a Bases de Datos con JDBC en Java</p>
+    <div class="badges">
+        <span class="badge">🎮 Proyecto Base: GameStore Escolar</span>
+        <span class="badge">🎯 Módulo: Capa de Persistencia y CRUD con JDBC</span>
+        <span class="badge">🔌 Java + MySQL</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#objetivo">I. Objetivo</a></li>
+        <li><a href="#requisitos">II. Requisitos</a></li>
+        <li><a href="#marco-teorico">III. Marco Teórico</a></li>
+        <li><a href="#actividades">IV. Actividades</a></li>
+        <li><a href="#criterios">V. Criterios de Entrega</a></li>
+        <li><a href="#quiz">VI. Quiz</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>Progreso de entrega</span>
+            <span id="progress-text">0 / 4 completado</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
+    </div>
+
+    <section id="objetivo">
+        <h2>I. Objetivo de la Guía</h2>
+        <div class="info-card">
+            <p>Implementar la conectividad entre aplicaciones Java y bases de datos relacionales mediante la API
+            JDBC y el uso de <code>PreparedStatement</code> para realizar operaciones CRUD seguras.</p>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>II. Requisitos — Java + MySQL Conectados</h2>
+        <div class="info-card">
+            <p>Esta sesión une las dos sesiones anteriores: necesitas el <strong>JDK y un IDE</strong> (Sesión 4/5)
+            <em>y</em> el <strong>servidor MySQL con la base gamestore_db</strong> ya creada (Sesión 6), además de
+            una pieza nueva: el <strong>driver JDBC de MySQL</strong>. Todo gratuito y de código abierto.</p>
+        </div>
+
+        <h3>1. JDK y IDE (igual que en las guías anteriores)</h3>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">OpenJDK</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Obligatorio · versión 17 o superior</p>
+                <p>El compilador y la máquina virtual de Java. Distribución recomendada: Eclipse Temurin.</p>
+                <a class="req-link" href="https://adoptium.net" target="_blank" rel="noopener">adoptium.net ↗</a>
+            </div>
+            <div class="req-card req-card-recommended">
+                <div class="req-card-head">
+                    <span class="req-name">Apache NetBeans</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">★ Recomendado</p>
+                <p>Facilita agregar el .jar del conector MySQL como librería del proyecto desde su propio
+                administrador de dependencias.</p>
+                <a class="req-link" href="https://netbeans.apache.org" target="_blank" rel="noopener">netbeans.apache.org ↗</a>
+            </div>
+        </div>
+
+        <h3>2. Servidor de base de datos (de la Sesión 6)</h3>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">MySQL Server / MariaDB</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Debe estar corriendo (levantado) antes de ejecutar tu código Java</p>
+                <p>Necesitas el servidor <strong>activo</strong> en <code>localhost:3306</code> y la base
+                <code>gamestore_db</code> con sus tablas ya creadas en la Sesión 6 — JDBC se conecta a un servidor
+                en ejecución, no crea uno nuevo.</p>
+                <a class="req-link" href="https://dev.mysql.com/downloads/mysql/" target="_blank" rel="noopener">dev.mysql.com/downloads/mysql ↗</a>
+            </div>
+        </div>
+
+        <h3>3. El puente entre Java y MySQL: MySQL Connector/J</h3>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">MySQL Connector/J</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Obligatorio · driver JDBC</p>
+                <p>Es el driver JDBC oficial de MySQL (licencia GPL v2): un archivo <code>.jar</code> que le enseña
+                a Java cómo "hablar" el protocolo de MySQL. Sin agregarlo a las librerías de tu proyecto,
+                <code>DriverManager.getConnection(...)</code> fallará aunque tu código esté perfecto.</p>
+                <a class="req-link" href="https://dev.mysql.com/downloads/connector/j/" target="_blank" rel="noopener">dev.mysql.com/downloads/connector/j ↗</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="marco-teorico">
+        <h2>III. Marco Teórico Breve</h2>
+
+        <h3>🔌 1. Java Database Connectivity (JDBC)</h3>
+        <p>Es la API estándar de Java que permite la ejecución de operaciones contra bases de datos relacionales.
+        Utiliza un driver específico del motor (como MySQL Connector) para puentear la aplicación con el servidor
+        de bases de datos mediante la clase <code>DriverManager</code> y la interfaz <code>Connection</code>.</p>
+        <div class="info-card">
+            <p>Piensa en JDBC como un adaptador de enchufe universal: tu programa Java "habla" un idioma, y cada
+            motor de base de datos (MySQL, PostgreSQL, etc.) "habla" otro. El <em>driver</em> (MySQL Connector/J)
+            es el adaptador específico que traduce entre ambos; <code>DriverManager</code> es quien elige
+            automáticamente el adaptador correcto según la URL que le des (<code>jdbc:mysql://...</code>).</p>
+        </div>
+
+        <h3>🛡️ 2. Consultas Preparadas (<code>PreparedStatement</code>)</h3>
+        <p>A diferencia de <code>Statement</code>, la interfaz <code>PreparedStatement</code> permite compilar la
+        consulta SQL previamente y pasarle parámetros de forma segura (<code>?</code>), previniendo ataques de
+        inyección SQL y mejorando el rendimiento en consultas repetitivas. El manejo de los resultados de lectura
+        se realiza mediante la interfaz <code>ResultSet</code>.</p>
+        <div class="info-card">
+            <p>Piensa en <code>PreparedStatement</code> como un formulario impreso con espacios en blanco (los
+            <code>?</code>): la "pregunta" ya está fija e impresa, y tú solo rellenas los espacios con datos. Como
+            el formulario nunca cambia de estructura, no hay forma de que alguien "cuele" código SQL malicioso
+            escribiendo algo raro en un espacio en blanco — eso es justamente lo que previene la inyección SQL.</p>
+        </div>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Errores Comunes al Empezar</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Escribir mal el host, el puerto o el nombre de la base de datos en la URL de conexión.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Revisa que el servidor MySQL esté encendido y que la URL tenga exactamente el mismo nombre de base de datos que creaste en la Sesión 6.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Concatenar directamente valores del usuario dentro del SQL de un Statement en vez de usar PreparedStatement con ?.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Usa siempre PreparedStatement con ? para cualquier valor que venga de un formulario o del usuario; evita errores de sintaxis y ataques de inyección SQL.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Olvidar cerrar la Connection, o no usar try-with-resources.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Igual que con los archivos, usa try-with-resources para que Java cierre la conexión automáticamente, incluso si algo falla.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="actividades">
+        <h2>IV. Actividades Prácticas Paso a Paso</h2>
+
+        <span class="step-tag">PASO 1</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Clase de Conexión Centralizada)</h3>
+        <p>Crea una clase llamada <code>ConexionBD.java</code> para gestionar de forma centralizada la conexión con
+        la base de datos MySQL creada en la sesión anterior (<code>gamestore_db</code>). Asegúrate de incluir el
+        archivo JAR del conector de MySQL en las librerías de tu proyecto.</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code1">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code1">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code1">Copiar</button>
+            </div>
+            <pre id="code1"><code>import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConexionBD {
+    // Parámetros de conexión (Trabajo 1)
+    private static final String URL = "jdbc:mysql://localhost:3306/gamestore_db?useSSL=false&serverTimezone=UTC";
+    private static final String USUARIO = "root";
+    private static final String PASSWORD = ""; // Cambiar según la configuración local
+
+    // Método para obtener la conexión (Trabajo 1)
+    public static Connection obtenerConexion() {
+        Connection conexion = null;
+        try {
+            conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+            System.out.println("¡Conexión exitosa a la base de datos MySQL!");
+        } catch (SQLException e) {
+            System.out.println("Error al conectar con la base de datos: " + e.getMessage());
+        }
+        return conexion;
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code1" hidden></div>
+            <div class="explain-panel" id="explain-code1" hidden></div>
+        </div>
+
+        <span class="step-tag">PASO 2</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 2 (Implementación del CRUD mediante Consultas Preparadas)</h3>
+        <p>Crea una clase llamada <code>EstudianteDAO.java</code> que permita realizar las operaciones de inserción
+        y consulta (CRUD) utilizando <code>PreparedStatement</code> y <code>ResultSet</code>.</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code2">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code2">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code2">Copiar</button>
+            </div>
+            <pre id="code2"><code>import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class EstudianteDAO {
+
+    // Método para registrar un nuevo estudiante (Create - Trabajo 2)
+    public void insertarEstudiante(String nombre, int puntos) {
+        String sql = "INSERT INTO estudiantes (nombre, puntos) VALUES (?, ?)";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nombre);
+            pstmt.setInt(2, puntos);
+            pstmt.executeUpdate();
+            System.out.println("Estudiante registrado exitosamente en la BD.");
+
+        } catch (SQLException e) {
+            System.out.println("Error al insertar estudiante: " + e.getMessage());
+        }
+    }
+
+    // Método para listar estudiantes (Read - Trabajo 2)
+    public void listarEstudiantes() {
+        String sql = "SELECT id_estudiante, nombre, puntos FROM estudiantes";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            System.out.println("--- LISTA DE ESTUDIANTES (DESDE MYSQL) ---");
+            while (rs.next()) {
+                int id = rs.getInt("id_estudiante");
+                String nombre = rs.getString("nombre");
+                int puntos = rs.getInt("puntos");
+                System.out.println("ID: " + id + " | Nombre: " + nombre + " | Puntos: " + puntos);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al consultar estudiantes: " + e.getMessage());
+        }
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code2" hidden></div>
+            <div class="explain-panel" id="explain-code2" hidden></div>
+        </div>
+
+        <div class="predict-box">
+            <p class="predict-question">🤔 <strong>Antes de seguir:</strong> si una consulta PreparedStatement
+            tiene dos signos <code>?</code>, pero solo llamas a <code>setString()</code> una vez antes de
+            ejecutarla, ¿qué crees que pasará?</p>
+            <button type="button" class="predict-toggle" data-target="predict-s7-1">👀 Ver la respuesta</button>
+            <div class="predict-answer" id="predict-s7-1" hidden>
+                <p>Se lanza una excepción (SQLException) — cada ? es un parámetro obligatorio; si dejas alguno sin
+                asignar con un método setXxx(), JDBC no puede completar la consulta y el programa falla al
+                ejecutarla.</p>
+            </div>
+        </div>
+
+        <h4>Clase de ejecución</h4>
+        <p>Puedes crear una clase principal de prueba <code>PrincipalJDBC.java</code> para verificar la ejecución
+        de la capa de persistencia:</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code3">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code3">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code3">Copiar</button>
+            </div>
+            <pre id="code3"><code>public class PrincipalJDBC {
+    public static void main(String[] args) {
+        EstudianteDAO dao = new EstudianteDAO();
+
+        // Probando la inserción conectada a MySQL (Trabajo 2)
+        dao.insertarEstudiante("Lucía Pérez", 420);
+
+        // Probando la lectura de registros (Trabajo 2)
+        dao.listarEstudiantes();
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code3" hidden></div>
+            <div class="explain-panel" id="explain-code3" hidden></div>
+        </div>
+
+        <div class="console-wrap">
+            <p class="console-caption">🖥️ <strong>Vista previa de referencia:</strong> salida esperada al ejecutar
+            <code>PrincipalJDBC.java</code>, asumiendo que ya ejecutaste el script SQL de la Sesión 6 (Carlos
+            Mendoza y Ana Torres ya existen en <code>estudiantes</code>, con id 1 y 2) y que el servidor MySQL está
+            corriendo.</p>
+            <button type="button" class="console-run-btn" id="console-run">▶ Simular ejecución</button>
+            <div class="console-window">
+                <div class="console-titlebar">
+                    <span>Terminal — java PrincipalJDBC</span>
+                    <span class="console-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="console-body" id="console-body"><span class="console-hint">Presiona "▶ Simular ejecución" para ver la salida esperada en consola.</span></div>
+            </div>
+            <p class="mockup-note">* El mensaje "¡Conexión exitosa!" aparece DOS veces porque insertarEstudiante() y
+            listarEstudiantes() abren y cierran cada uno su propia Connection (try-with-resources) — no comparten
+            automáticamente la misma conexión. Esta simulación no compila ni ejecuta Java de verdad, y tampoco se
+            conecta a ninguna base de datos real.</p>
+        </div>
+    </section>
+
+    <section id="criterios">
+        <h2>V. Criterios de Entrega y Evaluación</h2>
+        <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
+        siguientes productos:</p>
+
+        <div class="criteria-group">
+            <h3>📦 Evidencia Procedimental (P)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p1">
+                    <span>Código fuente funcional compilado y estructurado en paquetes
+                    (<code>ConexionBD.java</code>, <code>EstudianteDAO.java</code>,
+                    <code>PrincipalJDBC.java</code>).</span>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p2">
+                    <span>Captura de consola ejecutando la aplicación de Java y mostrando la inserción y lectura
+                    exitosa de registros directamente desde la base de datos MySQL.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🧠 Sustentación Conceptual (C)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="c1">
+                    <span>Explicar mediante un comentario en el código por qué es una buena práctica utilizar
+                    <code>PreparedStatement</code> en lugar de <code>Statement</code> al construir consultas con
+                    variables proporcionadas por el usuario.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🤝 Actitud (A)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="a1">
+                    <span>Orden en la gestión de recursos de conexión (cierre correcto de <code>Connection</code>,
+                    <code>PreparedStatement</code> y <code>ResultSet</code> mediante bloques try-with-resources) y
+                    entrega puntual.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <h2>VI. Pon a Prueba lo que Aprendiste</h2>
+        <p class="quiz-intro">Responde estas preguntas para comprobar qué tanto entendiste de esta sesión.
+        Puedes intentarlo las veces que quieras — no se guarda ninguna nota.</p>
+        <div id="quiz-container"></div>
+        <div class="quiz-footer">
+            <span id="quiz-score" class="quiz-score">Progreso: 0 / 5 respondidas</span>
+            <button type="button" id="quiz-retry" class="quiz-retry-btn">🔄 Reintentar</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>Guía de Aprendizaje N° 7 · Taller de Lenguajes de Programación · Creado Por Ing Jsumire - Baycodec</p>
+    </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    /* ---- Resaltado de sintaxis básico para bloques Java ---- */
+    const KEYWORDS = ["public","private","protected","class","extends","implements","new","void","static","final","import","return","if","else","null","this","super","package","interface","true","false","try","catch","while","int"];
+    const TYPES = ["Connection","DriverManager","SQLException","PreparedStatement","ResultSet","ConexionBD","EstudianteDAO","PrincipalJDBC","String","System"];
+
+    const TOKEN_RE = new RegExp(
+        [
+            "(//[^\\n]*)",
+            "(&quot;.*?&quot;)",
+            "(@\\w+)",
+            "\\b(" + KEYWORDS.join("|") + ")\\b",
+            "\\b(" + TYPES.join("|") + ")\\b"
+        ].join("|"),
+        "g"
+    );
+
+    function highlight(code) {
+        const escaped = code
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        return escaped.replace(TOKEN_RE, function (m, comment, str, ann, kw, typ) {
+            if (comment) return '<span class="cmt">' + comment + '</span>';
+            if (str) return '<span class="str">' + str + '</span>';
+            if (ann) return '<span class="met">' + ann + '</span>';
+            if (kw) return '<span class="kw">' + kw + '</span>';
+            if (typ) return '<span class="typ">' + typ + '</span>';
+            return m;
+        });
+    }
+
+    document.querySelectorAll(".code-block pre code").forEach(function (block) {
+        block.innerHTML = highlight(block.textContent);
+    });
+
+    /* ---- Numeración de líneas ---- */
+    document.querySelectorAll(".code-block pre").forEach(function (pre) {
+        const codeEl = pre.querySelector("code");
+        if (!codeEl) return;
+
+        const lineCount = codeEl.textContent.split("\n").length;
+
+        const gutter = document.createElement("div");
+        gutter.className = "line-numbers";
+        for (let i = 1; i <= lineCount; i++) {
+            const row = document.createElement("span");
+            row.className = "line-no-row";
+            row.textContent = String(i);
+            gutter.appendChild(row);
+        }
+
+        const body = document.createElement("div");
+        body.className = "code-body";
+        pre.parentNode.insertBefore(body, pre);
+        body.appendChild(gutter);
+        body.appendChild(pre);
+
+        const codeBlock = pre.closest(".code-block");
+        const langTag = codeBlock ? codeBlock.querySelector(".lang-tag") : null;
+        if (langTag) {
+            langTag.textContent = langTag.textContent + " · " + lineCount + " LÍNEAS";
+        }
+    });
+
+    /* ---- Botones "Copiar" ---- */
+    document.querySelectorAll(".copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const codeEl = document.getElementById(targetId);
+            const text = codeEl ? codeEl.textContent : "";
+
+            let settled = false;
+            const done = function () {
+                if (settled) return;
+                settled = true;
+                const original = btn.textContent;
+                btn.textContent = "¡Copiado!";
+                btn.classList.add("copied");
+                setTimeout(function () {
+                    btn.textContent = original;
+                    btn.classList.remove("copied");
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () {
+                    fallbackCopy(text, done);
+                });
+                setTimeout(function () {
+                    if (!settled) fallbackCopy(text, done);
+                }, 500);
+            } else {
+                fallbackCopy(text, done);
+            }
+        });
+    });
+
+    function fallbackCopy(text, cb) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* noop */ }
+        document.body.removeChild(ta);
+        cb();
+    }
+
+    /* ---- Explicación línea por línea ---- */
+    const EXPLANATIONS = {
+        code1: [
+            "Importa Connection, la interfaz que representa una conexión abierta con la base de datos.",
+            "Importa DriverManager, la clase que sabe fabricar una Connection a partir de una URL.",
+            "Importa SQLException, la excepción que hay que atrapar en cualquier operación con la base de datos.",
+            "Línea en blanco.",
+            "Declara la clase ConexionBD.",
+            "Comentario que anuncia los parámetros de conexión.",
+            "Constante URL: la dirección jdbc que indica el motor (mysql), el host (localhost), el puerto (3306) y la base de datos (gamestore_db) a la que conectarse.",
+            "Constante USUARIO: el nombre de usuario de MySQL con el que se inicia sesión.",
+            "Constante PASSWORD: la contraseña de ese usuario (vacía aquí; debes cambiarla según tu instalación local de MySQL).",
+            "Línea en blanco.",
+            "Comentario que anuncia el método para obtener la conexión.",
+            "Declara el método static obtenerConexion(), que devuelve un objeto Connection (o null si algo falla).",
+            "Declara la variable conexion, inicializada en null por si la conexión falla.",
+            "Abre un bloque try normal (sin try-with-resources aquí, porque esta conexión se devuelve para que OTRA clase la use y la cierre después).",
+            "Intenta crear la conexión real usando DriverManager, pasándole la URL, el usuario y la contraseña.",
+            "Si la conexión se logra, muestra en consola un mensaje de éxito.",
+            "Bloque catch que atrapa SQLException si la conexión falla (credenciales incorrectas, servidor apagado, etc.).",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Devuelve el objeto conexion: será un Connection válido si todo salió bien, o null si hubo un error.",
+            "Cierra el método obtenerConexion().",
+            "Cierra la clase ConexionBD."
+        ],
+        code2: [
+            "Importa Connection.",
+            "Importa PreparedStatement, para construir consultas SQL seguras con parámetros.",
+            "Importa ResultSet, para recorrer los resultados de una consulta SELECT.",
+            "Importa SQLException.",
+            "Línea en blanco.",
+            "Declara la clase EstudianteDAO (DAO = Data Access Object, un objeto dedicado a acceder a los datos de una tabla).",
+            "Línea en blanco.",
+            "Comentario que anuncia el método Create (insertar) del CRUD.",
+            "Declara el método insertarEstudiante, que recibe el nombre y los puntos del nuevo estudiante.",
+            "Define la consulta SQL con DOS signos de interrogación (?): son los espacios donde se insertarán nombre y puntos de forma segura.",
+            "Línea en blanco.",
+            "Abre un try-with-resources que declara DOS recursos: la Connection (obtenida de ConexionBD) y el PreparedStatement construido a partir de ella.",
+            "Continúa la declaración del PreparedStatement, creado con conn.prepareStatement(sql).",
+            "Línea en blanco.",
+            "Asigna el primer ? (posición 1) al valor de nombre, como texto.",
+            "Asigna el segundo ? (posición 2) al valor de puntos, como número entero.",
+            "Ejecuta la consulta de escritura (INSERT) contra la base de datos.",
+            "Muestra en consola un mensaje confirmando que el estudiante se registró.",
+            "Línea en blanco.",
+            "Bloque catch que atrapa SQLException si algo falla al insertar.",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Cierra el método insertarEstudiante (Java cierra el PreparedStatement y la Connection automáticamente, en orden inverso, gracias a try-with-resources).",
+            "Línea en blanco.",
+            "Comentario que anuncia el método Read (consultar) del CRUD.",
+            "Declara el método listarEstudiantes, sin parámetros.",
+            "Define la consulta SQL que selecciona las tres columnas de la tabla estudiantes.",
+            "Línea en blanco.",
+            "Abre un try-with-resources que declara TRES recursos encadenados: Connection, PreparedStatement y (a continuación) ResultSet.",
+            "Continúa la declaración del PreparedStatement.",
+            "Declara el ResultSet, ejecutando la consulta de lectura (SELECT) con pstmt.executeQuery().",
+            "Línea en blanco.",
+            "Muestra en consola un encabezado antes de listar los estudiantes.",
+            "Bucle while: rs.next() mueve el cursor a la siguiente fila del resultado y devuelve false cuando ya no hay más filas.",
+            "Lee la columna id_estudiante de la fila actual como número entero.",
+            "Lee la columna nombre de la fila actual como texto.",
+            "Lee la columna puntos de la fila actual como número entero.",
+            "Muestra en consola los tres datos leídos de esa fila.",
+            "Cierra el bucle while.",
+            "Línea en blanco.",
+            "Bloque catch que atrapa SQLException si algo falla al consultar.",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Cierra el método listarEstudiantes.",
+            "Cierra la clase EstudianteDAO."
+        ],
+        code3: [
+            "Declara la clase PrincipalJDBC, que probará la capa de persistencia completa.",
+            "Punto de entrada del programa: aquí comienza la ejecución cuando se corre esta clase.",
+            "Crea un objeto EstudianteDAO (a diferencia de ConexionBD, aquí SÍ hace falta un objeto porque sus métodos no son static).",
+            "Línea en blanco.",
+            "Comentario que anuncia la prueba de inserción conectada a MySQL.",
+            "Llama a dao.insertarEstudiante(...) para guardar un nuevo estudiante directamente en la tabla estudiantes de MySQL.",
+            "Línea en blanco.",
+            "Comentario que anuncia la prueba de lectura de registros.",
+            "Llama a dao.listarEstudiantes() para leer y mostrar en consola todos los estudiantes guardados en la base de datos, incluido el que se acaba de insertar.",
+            "Cierra el método main.",
+            "Cierra la clase PrincipalJDBC."
+        ]
+    };
+
+    function buildExplainPanel(targetId) {
+        const codeEl = document.getElementById(targetId);
+        const panel = document.getElementById("explain-" + targetId);
+        if (!codeEl || !panel || panel.dataset.built) return;
+
+        const lines = codeEl.textContent.split("\n");
+        const notes = EXPLANATIONS[targetId] || [];
+
+        const frag = document.createDocumentFragment();
+        lines.forEach(function (line, i) {
+            const row = document.createElement("div");
+            row.className = "explain-row";
+
+            const num = document.createElement("span");
+            num.className = "explain-line-no";
+            num.textContent = String(i + 1);
+
+            const codeSpan = document.createElement("code");
+            const trimmed = line.trim();
+            if (trimmed === "") {
+                codeSpan.className = "explain-code is-blank";
+                codeSpan.textContent = "(línea en blanco)";
+            } else {
+                codeSpan.className = "explain-code";
+                codeSpan.innerHTML = highlight(line);
+            }
+
+            const text = document.createElement("span");
+            text.className = "explain-text";
+            text.textContent = notes[i] || "Línea de código de apoyo dentro del bloque.";
+
+            row.appendChild(num);
+            row.appendChild(codeSpan);
+            row.appendChild(text);
+            frag.appendChild(row);
+        });
+
+        panel.appendChild(frag);
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".explain-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("explain-" + targetId);
+            if (!panel) return;
+
+            buildExplainPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? "🧠 Explicar línea por línea" : "✕ Ocultar explicación";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Clases usadas y su anidamiento (aquí: cadena Connection → PreparedStatement → ResultSet) ---- */
+    const CLASS_NOTES = {
+        code1: {
+            intro: "Aquí el anidamiento es de configuración centralizada: todas las demás clases (como EstudianteDAO) delegarán en ConexionBD para obtener su Connection, en vez de repetir la URL/usuario/password en cada archivo.",
+            classes: [
+                {
+                    name: "Connection",
+                    pkg: "java.sql",
+                    desc: "Interfaz que representa una conexión abierta con la base de datos: por ella viajan todas las órdenes SQL.",
+                    nest: "Se obtiene llamando a DriverManager.getConnection(...); el objeto Connection resultante es lo que otras clases (como EstudianteDAO) necesitarán para crear sus PreparedStatement."
+                },
+                {
+                    name: "DriverManager",
+                    pkg: "java.sql",
+                    desc: "Clase de utilidad que gestiona los drivers JDBC instalados y sabe elegir el correcto según la URL (jdbc:mysql://...).",
+                    nest: "Se usa una sola vez, dentro de obtenerConexion(), para fabricar el objeto Connection a partir de la URL, usuario y password."
+                },
+                {
+                    name: "SQLException",
+                    pkg: "java.sql",
+                    desc: "Excepción que Java lanza cuando algo falla al comunicarse con la base de datos (credenciales incorrectas, servidor apagado, base inexistente, etc.).",
+                    nest: "Se atrapa dentro del catch (SQLException e) { ... } que envuelve la llamada a DriverManager.getConnection(...)."
+                },
+                {
+                    name: "URL / USUARIO / PASSWORD",
+                    pkg: "constantes static final",
+                    desc: "Tres constantes de texto con los datos de acceso a gamestore_db (host, puerto, base de datos, usuario y contraseña).",
+                    nest: "Viven anidadas dentro de la clase como atributos static final: son compartidas por todas las llamadas a obtenerConexion(), sin necesidad de crear un objeto ConexionBD."
+                }
+            ],
+            diagram: "ConexionBD (clase de utilidad, todo static)\n"
+                + "  URL / USUARIO / PASSWORD   ← constantes compartidas\n"
+                + "         │\n"
+                + "         ▼\n"
+                + "  obtenerConexion()\n"
+                + "         │\n"
+                + "         └── DriverManager.getConnection(URL, USUARIO, PASSWORD)\n"
+                + "                    │\n"
+                + "                    ▼\n"
+                + "              Connection   ← se devuelve a quien llamó a obtenerConexion()\n"
+                + "\n"
+                + "try { ... } catch (SQLException e) { ... }   ← envuelve todo el intento de conexión"
+        },
+        code2: {
+            intro: "Aquí el anidamiento es una CADENA de tres objetos JDBC, cada uno construido a partir del anterior: Connection → PreparedStatement → ResultSet. Los tres se declaran juntos dentro del mismo try-with-resources.",
+            classes: [
+                {
+                    name: "PreparedStatement",
+                    pkg: "java.sql",
+                    desc: "Representa una consulta SQL ya \"precompilada\", con espacios reservados (?) para parámetros que se completan después de forma segura.",
+                    nest: "Se crea a partir de un Connection (conn.prepareStatement(sql)): queda anidado DENTRO del try-with-resources, justo después del Connection del que depende."
+                },
+                {
+                    name: "ResultSet",
+                    pkg: "java.sql",
+                    desc: "Representa la tabla de resultados que devuelve una consulta SELECT; se recorre fila por fila con rs.next().",
+                    nest: "Se crea a partir de un PreparedStatement (pstmt.executeQuery()): es la tercera capa de la cadena, anidada dentro del mismo try-with-resources, después de Connection y PreparedStatement."
+                },
+                {
+                    name: "pstmt.setString() / .setInt()",
+                    pkg: "métodos de PreparedStatement",
+                    desc: "Asignan un valor concreto a cada signo de interrogación (?) de la consulta, en el orden en que aparecen (1, 2, 3...).",
+                    nest: "Se llaman DESPUÉS de crear el PreparedStatement pero ANTES de ejecutarlo con executeUpdate() o executeQuery()."
+                },
+                {
+                    name: "ConexionBD",
+                    pkg: "clase propia (Paso 1)",
+                    desc: "La clase centralizada de conexión creada en el Paso 1.",
+                    nest: "EstudianteDAO no hereda de ConexionBD ni la contiene como atributo: solo llama a su método static ConexionBD.obtenerConexion() cada vez que necesita un Connection nuevo."
+                }
+            ],
+            diagram: "insertarEstudiante(...)                      listarEstudiantes()\n"
+                + "\n"
+                + "try (Connection conn = ...;                  try (Connection conn = ...;\n"
+                + "     PreparedStatement pstmt = ...) {              PreparedStatement pstmt = ...;\n"
+                + "                                                    ResultSet rs = ...) {\n"
+                + "    pstmt.setString(1, nombre);\n"
+                + "    pstmt.setInt(2, puntos);                    while (rs.next()) {\n"
+                + "    pstmt.executeUpdate();                          rs.getInt(\"id_estudiante\")...\n"
+                + "}                                                }\n"
+                + "                                              }\n"
+                + "\n"
+                + "Connection ⊃ PreparedStatement ⊃ ResultSet   (⊃ = \"contiene / depende de\")\n"
+                + "Java cierra los tres, en orden inverso, al salir del try-with-resources."
+        },
+        code3: {
+            intro: "Aquí el anidamiento es de composición simple: main() crea UN objeto EstudianteDAO y lo usa para llamar a sus dos métodos, uno después del otro.",
+            classes: [
+                {
+                    name: "EstudianteDAO",
+                    pkg: "clase propia (Paso 2)",
+                    desc: "La clase creada en el Paso 2, con los métodos insertarEstudiante() y listarEstudiantes().",
+                    nest: "A diferencia de ConexionBD (todo static), aquí SÍ se crea un objeto (new EstudianteDAO()) antes de poder llamar a sus métodos, porque no son static."
+                },
+                {
+                    name: "PrincipalJDBC",
+                    pkg: "clase propia",
+                    desc: "Clase de prueba que orquesta la ejecución de la capa de persistencia.",
+                    nest: "No hereda de EstudianteDAO; simplemente crea una instancia y la guarda en la variable dao dentro de main()."
+                }
+            ],
+            diagram: "PrincipalJDBC.main()\n"
+                + " │\n"
+                + " └── EstudianteDAO dao = new EstudianteDAO()\n"
+                + "        │\n"
+                + "        ├── dao.insertarEstudiante(\"Lucía Pérez\", 420)\n"
+                + "        │      └── (por dentro) ConexionBD.obtenerConexion() → Connection → PreparedStatement\n"
+                + "        │\n"
+                + "        └── dao.listarEstudiantes()\n"
+                + "               └── (por dentro) ConexionBD.obtenerConexion() → Connection → PreparedStatement → ResultSet"
+        }
+    };
+
+    function buildClassesPanel(targetId) {
+        const panel = document.getElementById("classes-" + targetId);
+        const data = CLASS_NOTES[targetId];
+        if (!panel || !data || panel.dataset.built) return;
+
+        const intro = document.createElement("p");
+        intro.className = "classes-intro";
+        intro.textContent = data.intro;
+        panel.appendChild(intro);
+
+        data.classes.forEach(function (cls) {
+            const card = document.createElement("div");
+            card.className = "class-card";
+
+            const nameLine = document.createElement("div");
+            const nameEl = document.createElement("span");
+            nameEl.className = "class-name";
+            nameEl.textContent = cls.name;
+            const pkgEl = document.createElement("span");
+            pkgEl.className = "class-pkg";
+            pkgEl.textContent = cls.pkg;
+            nameLine.appendChild(nameEl);
+            nameLine.appendChild(pkgEl);
+
+            const descEl = document.createElement("p");
+            descEl.textContent = cls.desc;
+
+            const nestEl = document.createElement("p");
+            nestEl.className = "nest-note";
+            nestEl.textContent = "Anidamiento: " + cls.nest;
+
+            card.appendChild(nameLine);
+            card.appendChild(descEl);
+            card.appendChild(nestEl);
+            panel.appendChild(card);
+        });
+
+        const diagramTitle = document.createElement("div");
+        diagramTitle.className = "nest-diagram-title";
+        diagramTitle.textContent = "Diagrama de anidamiento de este código:";
+        panel.appendChild(diagramTitle);
+
+        const diagram = document.createElement("div");
+        diagram.className = "nest-diagram";
+        diagram.textContent = data.diagram;
+        panel.appendChild(diagram);
+
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".classes-btn").forEach(function (btn) {
+        const originalLabel = btn.textContent;
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("classes-" + targetId);
+            if (!panel) return;
+
+            buildClassesPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? originalLabel : "✕ Ocultar clases";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Terminal simulada: reproduce la salida esperada de PrincipalJDBC ---- */
+    const CONSOLE_LINES = [
+        { text: "$ java PrincipalJDBC", cls: "console-cmd" },
+        { text: "¡Conexión exitosa a la base de datos MySQL!", cls: "" },
+        { text: "Estudiante registrado exitosamente en la BD.", cls: "" },
+        { text: "¡Conexión exitosa a la base de datos MySQL!", cls: "" },
+        { text: "--- LISTA DE ESTUDIANTES (DESDE MYSQL) ---", cls: "console-sep" },
+        { text: "ID: 1 | Nombre: Carlos Mendoza | Puntos: 600", cls: "" },
+        { text: "ID: 2 | Nombre: Ana Torres | Puntos: 350", cls: "" },
+        { text: "ID: 3 | Nombre: Lucía Pérez | Puntos: 420", cls: "" }
+    ];
+
+    const runBtn = document.getElementById("console-run");
+    const consoleBody = document.getElementById("console-body");
+
+    if (runBtn && consoleBody) {
+        runBtn.addEventListener("click", function () {
+            runBtn.disabled = true;
+            runBtn.textContent = "⏳ Ejecutando...";
+            consoleBody.innerHTML = "";
+
+            let i = 0;
+            function nextLine() {
+                if (i >= CONSOLE_LINES.length) {
+                    const cursor = document.createElement("span");
+                    cursor.className = "console-cursor";
+                    cursor.textContent = "$ ▍";
+                    consoleBody.appendChild(cursor);
+                    runBtn.disabled = false;
+                    runBtn.textContent = "↻ Volver a ejecutar";
+                    return;
+                }
+                const line = CONSOLE_LINES[i];
+                const span = document.createElement("div");
+                if (line.cls) span.className = line.cls;
+                span.textContent = line.text;
+                consoleBody.appendChild(span);
+                i++;
+                setTimeout(nextLine, i === 1 ? 300 : 230);
+            }
+            nextLine();
+        });
+    }
+
+    /* ---- Checklist de criterios de entrega con persistencia local ---- */
+    const STORAGE_KEY = "guia7-checklist";
+    const checkboxes = Array.from(document.querySelectorAll(".checklist-item input[type=checkbox]"));
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    function loadState() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveState(state) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { /* almacenamiento no disponible: se ignora */ }
+    }
+
+    function updateProgress() {
+        const total = checkboxes.length;
+        const checked = checkboxes.filter(function (cb) { return cb.checked; }).length;
+        const pct = total ? Math.round((checked / total) * 100) : 0;
+        progressFill.style.width = pct + "%";
+        progressText.textContent = checked + " / " + total + " completado";
+    }
+
+    function applyLabelStyle(cb) {
+        const span = cb.parentElement.querySelector("span");
+        if (span) span.classList.toggle("done", cb.checked);
+    }
+
+    const state = loadState();
+    checkboxes.forEach(function (cb) {
+        const key = cb.getAttribute("data-key");
+        cb.checked = !!state[key];
+        applyLabelStyle(cb);
+
+        cb.addEventListener("change", function () {
+            const current = loadState();
+            current[key] = cb.checked;
+            saveState(current);
+            applyLabelStyle(cb);
+            updateProgress();
+        });
+    });
+    updateProgress();
+
+    document.getElementById("reset-checklist").addEventListener("click", function () {
+        saveState({});
+        checkboxes.forEach(function (cb) {
+            cb.checked = false;
+            applyLabelStyle(cb);
+        });
+        updateProgress();
+    });
+
+    /* ---- Resaltado del enlace activo en la navegación ---- */
+    const navLinks = Array.from(document.querySelectorAll("nav.toc a"));
+    const sections = navLinks.map(function (a) {
+        return document.querySelector(a.getAttribute("href"));
+    });
+
+    function onScroll() {
+        let currentIndex = 0;
+        const scrollPos = window.scrollY + 90;
+        sections.forEach(function (sec, i) {
+            if (sec && sec.offsetTop <= scrollPos) currentIndex = i;
+        });
+        navLinks.forEach(function (a, i) {
+            a.classList.toggle("active", i === currentIndex);
+        });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+})();
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    (function () {
+        var GLOSSARY = {
+    "DriverManager": "La clase de Java que gestiona la conexión hacia la base de datos, usando la URL, el usuario y la contraseña.",
+    "DriverManager.getConnection(...)": "El método que abre (crea) la conexión real hacia la base de datos, a partir de la URL, el usuario y la contraseña.",
+    "Connection": "El objeto que representa la conexión abierta y activa entre tu programa Java y la base de datos MySQL.",
+    "PreparedStatement": "Una consulta SQL \"preparada\" donde los valores se insertan de forma segura con signos de interrogación (?), evitando errores y ataques de inyección SQL.",
+    "Statement": "Una forma más simple (y menos segura) de ejecutar una consulta SQL desde Java, sin usar signos de interrogación (?) para los valores.",
+    "ResultSet": "El objeto que contiene el resultado (las filas) que devuelve una consulta SELECT, y que recorres para leer los datos.",
+    "?": "En una consulta preparada, cada signo de interrogación es un \"hueco\" que se rellena después con un valor real, de forma segura.",
+    "jdbc:mysql://...": "La URL de conexión: le indica a Java a qué servidor, puerto y base de datos MySQL debe conectarse.",
+    "localhost:3306": "La dirección de tu propia computadora (localhost) y el puerto 3306, el que usa MySQL por defecto para escuchar conexiones."
+};
+        var containers = document.querySelectorAll("#objetivo, #marco-teorico, #actividades, #criterios");
+        var activeTooltip = null;
+
+        function closeTooltip() {
+            if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; }
+        }
+
+        function showTooltip(el, text) {
+            closeTooltip();
+            var tip = document.createElement("span");
+            tip.className = "gloss-tooltip";
+            tip.textContent = text;
+            el.appendChild(tip);
+            var rect = tip.getBoundingClientRect();
+            if (rect.left < 8) {
+                tip.style.left = "calc(50% + " + (8 - rect.left) + "px)";
+            } else if (rect.right > window.innerWidth - 8) {
+                tip.style.left = "calc(50% - " + (rect.right - window.innerWidth + 8) + "px)";
+            }
+            activeTooltip = tip;
+        }
+
+        function attach(el, term) {
+            if (el.classList.contains("gloss-term")) return;
+            el.classList.add("gloss-term");
+            el.setAttribute("tabindex", "0");
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", "Ver definición de " + term);
+            el.addEventListener("mouseenter", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("mouseleave", closeTooltip);
+            el.addEventListener("focus", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("blur", closeTooltip);
+            el.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (activeTooltip && el.contains(activeTooltip)) {
+                    closeTooltip();
+                } else {
+                    showTooltip(el, GLOSSARY[term]);
+                }
+            });
+        }
+
+        containers.forEach(function (container) {
+            if (!container) return;
+            Array.from(container.querySelectorAll("code")).forEach(function (codeEl) {
+                if (codeEl.closest("pre")) return;
+                var key = codeEl.textContent.trim();
+                if (GLOSSARY.hasOwnProperty(key)) attach(codeEl, key);
+            });
+            Array.from(container.querySelectorAll("[data-term]")).forEach(function (el) {
+                var key = el.getAttribute("data-term");
+                if (GLOSSARY.hasOwnProperty(key)) attach(el, key);
+            });
+        });
+
+        document.addEventListener("click", closeTooltip);
+    })();
+
+    /* ---- Quiz autoevaluado ---- */
+    (function () {
+        var QUIZ = [
+    {
+        "q": "¿Qué clase gestiona la conexión hacia la base de datos?",
+        "options": [
+            "ResultSet",
+            "DriverManager",
+            "Statement",
+            "PreparedStatement"
+        ],
+        "correct": 1,
+        "explain": "DriverManager.getConnection(...) es quien abre la conexión hacia la base de datos."
+    },
+    {
+        "q": "¿Por qué es más seguro usar PreparedStatement que Statement?",
+        "options": [
+            "Es más rápido siempre",
+            "Evita inyección SQL insertando los valores de forma segura con ?",
+            "No necesita conexión",
+            "Convierte el resultado en texto"
+        ],
+        "correct": 1,
+        "explain": "PreparedStatement usa signos de interrogación (?) como \"huecos\" seguros para los valores, evitando ataques de inyección SQL."
+    },
+    {
+        "q": "¿Qué contiene un objeto ResultSet?",
+        "options": [
+            "La conexión abierta",
+            "Las filas devueltas por una consulta SELECT",
+            "El error ocurrido",
+            "La URL de conexión"
+        ],
+        "correct": 1,
+        "explain": "ResultSet guarda el resultado de una consulta SELECT, que recorres para leer los datos fila por fila."
+    },
+    {
+        "q": "¿Qué información NO forma parte de la URL jdbc:mysql://localhost:3306/basedatos?",
+        "options": [
+            "El host (servidor)",
+            "El puerto",
+            "El nombre de la base de datos",
+            "La contraseña del usuario"
+        ],
+        "correct": 3,
+        "explain": "La contraseña se pasa aparte, como otro parámetro de DriverManager.getConnection(), no dentro de la URL."
+    },
+    {
+        "q": "¿Qué excepción debe manejarse al trabajar con JDBC?",
+        "options": [
+            "IOException",
+            "SQLException",
+            "NullPointerException",
+            "ArithmeticException"
+        ],
+        "correct": 1,
+        "explain": "SQLException es el tipo de error que Java lanza cuando algo falla al comunicarse con la base de datos."
+    }
+];
+        var container = document.getElementById("quiz-container");
+        if (!container) return;
+        var answers = new Array(QUIZ.length).fill(null);
+
+        function renderScore() {
+            var scoreEl = document.getElementById("quiz-score");
+            if (!scoreEl) return;
+            var answered = answers.filter(function (a) { return a !== null; }).length;
+            var correct = answers.filter(function (a, i) { return a === QUIZ[i].correct; }).length;
+            scoreEl.textContent = answered === QUIZ.length
+                ? "Resultado: " + correct + " / " + QUIZ.length + " correctas" + (correct === QUIZ.length ? " 🎉 ¡Perfecto!" : "")
+                : "Progreso: " + answered + " / " + QUIZ.length + " respondidas";
+        }
+
+        function selectAnswer(qi, oi, card) {
+            answers[qi] = oi;
+            var opts = Array.from(card.querySelectorAll(".quiz-option"));
+            opts.forEach(function (btn) {
+                btn.classList.remove("correct", "incorrect");
+                btn.disabled = true;
+            });
+            var correct = QUIZ[qi].correct;
+            opts[correct].classList.add("correct");
+            if (oi !== correct) opts[oi].classList.add("incorrect");
+            var fb = card.querySelector(".quiz-feedback");
+            fb.hidden = false;
+            fb.className = "quiz-feedback " + (oi === correct ? "is-correct" : "is-incorrect");
+            fb.innerHTML = (oi === correct ? "✅ <strong>¡Correcto!</strong> " : "❌ <strong>No es correcto.</strong> ") + QUIZ[qi].explain;
+            renderScore();
+        }
+
+        function render() {
+            container.innerHTML = "";
+            QUIZ.forEach(function (item, qi) {
+                var card = document.createElement("div");
+                card.className = "quiz-card";
+
+                var qEl = document.createElement("p");
+                qEl.className = "quiz-question";
+                qEl.textContent = (qi + 1) + ". " + item.q;
+                card.appendChild(qEl);
+
+                var opts = document.createElement("div");
+                opts.className = "quiz-options";
+                item.options.forEach(function (optText, oi) {
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "quiz-option";
+                    btn.textContent = optText;
+                    btn.addEventListener("click", function () { selectAnswer(qi, oi, card); });
+                    opts.appendChild(btn);
+                });
+                card.appendChild(opts);
+
+                var fb = document.createElement("div");
+                fb.className = "quiz-feedback";
+                fb.hidden = true;
+                card.appendChild(fb);
+
+                container.appendChild(card);
+            });
+            renderScore();
+        }
+
+        var retryBtn = document.getElementById("quiz-retry");
+        if (retryBtn) {
+            retryBtn.addEventListener("click", function () {
+                answers = new Array(QUIZ.length).fill(null);
+                render();
+            });
+        }
+
+        render();
+    })();
+
+    /* ---- Predice antes de revelar ---- */
+    (function () {
+        document.querySelectorAll(".predict-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var target = document.getElementById(btn.getAttribute("data-target"));
+                if (!target) return;
+                var isHidden = target.hidden;
+                target.hidden = !isHidden;
+                btn.textContent = isHidden ? "\ud83d\ude48 Ocultar la respuesta" : "\ud83d\udc40 Ver la respuesta";
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>

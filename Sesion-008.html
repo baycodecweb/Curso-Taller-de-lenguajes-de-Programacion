@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Aprendizaje N° 8 — Proyecto Final Integrado</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --layer-vista: #3b82f6;
+        --layer-modelo: #16a34a;
+        --layer-dao: #7c3aed;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 45px 20px 35px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.9rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; margin-top: 4px; }
+
+    .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.15s ease;
+    }
+
+    nav.toc a:hover, nav.toc a.active { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 26px 28px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.35rem;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.1rem; margin: 18px 0 8px; }
+    section h4 { color: var(--primary); font-size: 0.95rem; margin: 14px 0 6px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+    }
+
+    .checklist-static { list-style: none; margin-left: 0; margin-bottom: 14px; }
+    .checklist-static li {
+        padding: 6px 4px;
+        font-size: 0.92rem;
+    }
+
+    .step-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block { position: relative; margin: 14px 0 20px; }
+
+    .code-block .lang-tag {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 8px 0 8px 0;
+        letter-spacing: 0.5px;
+        z-index: 1;
+    }
+
+    .code-block .code-body {
+        display: flex;
+        background: var(--code-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .code-block pre {
+        background: transparent;
+        color: var(--code-fg);
+        padding: 34px 18px 18px 14px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre;
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .code-block pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+        font-size: inherit;
+    }
+
+    .line-numbers {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.03);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        color: #55627a;
+        text-align: right;
+        padding: 34px 10px 18px 12px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .line-numbers .line-no-row { display: block; }
+
+    .code-toolbar { position: absolute; top: 6px; right: 8px; display: flex; gap: 8px; z-index: 1; }
+
+    .copy-btn, .explain-btn, .classes-btn {
+        background: rgba(255,255,255,0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover, .explain-btn:hover, .classes-btn:hover { background: rgba(255,255,255,0.25); }
+    .copy-btn.copied { background: var(--success); border-color: var(--success); color: white; }
+    .explain-btn.active, .classes-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Resaltado simple de sintaxis Java */
+    .kw   { color: #60a5fa; }
+    .str  { color: #86efac; }
+    .cmt  { color: #64748b; font-style: italic; }
+    .typ  { color: #fbbf24; }
+    .met  { color: #c4b5fd; }
+
+    .explain-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .explain-panel[hidden] { display: none; }
+
+    .explain-row {
+        display: grid;
+        grid-template-columns: 30px minmax(120px, 1fr) 1.5fr;
+        gap: 10px 14px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        align-items: start;
+        background: var(--bg-card);
+    }
+
+    .explain-row:last-child { border-bottom: none; }
+    .explain-row:nth-child(even) { background: #f8fafc; }
+
+    .explain-line-no {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: right;
+        padding-top: 5px;
+    }
+
+    .explain-code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.78rem;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 5px 8px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .explain-code.is-blank {
+        color: var(--text-muted);
+        font-style: italic;
+        background: transparent;
+        border: 1px dashed var(--border);
+    }
+
+    .explain-text { font-size: 0.85rem; color: var(--text-main); padding-top: 4px; }
+
+    .classes-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: var(--bg-card); }
+    .classes-panel[hidden] { display: none; }
+    .classes-intro { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
+
+    .class-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; background: #f8fafc; }
+
+    .class-card .class-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: var(--primary);
+        background: #eef2ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    .class-card .class-pkg { font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
+    .class-card p { font-size: 0.85rem; margin-bottom: 4px; }
+
+    .class-card .nest-note {
+        font-size: 0.8rem;
+        color: #713f12;
+        background: #fef9c3;
+        border-left: 3px solid var(--warning);
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 6px;
+    }
+
+    .nest-diagram-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin: 14px 0 8px; }
+
+    .nest-diagram {
+        background: var(--code-bg);
+        color: #38bdf8;
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.74rem;
+        line-height: 1.5;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    .mockup-note { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+    /* Árbol de estructura del proyecto (Paso 2) */
+    .tree-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .tree-caption {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 620px;
+        margin: 0 auto 14px;
+        text-align: left;
+    }
+
+    .tree-window {
+        display: inline-block;
+        width: 480px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .tree-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .tree-titlebar-controls { display: flex; gap: 5px; }
+
+    .tree-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+
+    .tree-body { background: #ffffff; }
+
+    .tree-package {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-main);
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .tree-package:first-child { border-top: none; }
+    .tree-package.layer-vista { border-left: 4px solid var(--layer-vista); }
+    .tree-package.layer-modelo { border-left: 4px solid var(--layer-modelo); }
+    .tree-package.layer-dao { border-left: 4px solid var(--layer-dao); }
+
+    .layer-badge {
+        margin-left: auto;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .layer-badge.layer-vista { background: var(--layer-vista); }
+    .layer-badge.layer-modelo { background: var(--layer-modelo); }
+    .layer-badge.layer-dao { background: var(--layer-dao); }
+
+    .tree-file {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px 6px 34px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 0.8rem;
+        color: var(--text-main);
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .tree-file .file-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 24px;
+        border-radius: 4px;
+        font-size: 0.58rem;
+        font-weight: bold;
+        color: white;
+        background: #ea580c;
+        font-family: 'Courier New', Courier, monospace;
+        flex-shrink: 0;
+    }
+
+    .tree-file .file-tag { font-size: 0.68rem; color: var(--text-muted); margin-left: auto; }
+
+    /* Vista previa: login integrado (mockup GUI + BD simulada) */
+    .mockup-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .mockup-caption-top {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+
+    .mockup-window {
+        display: inline-block;
+        width: 350px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .mockup-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .mockup-titlebar-controls { display: flex; gap: 5px; }
+
+    .mockup-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+
+    .mockup-content {
+        position: relative;
+        width: 350px;
+        max-width: 100%;
+        height: 200px;
+        background: #efefef;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .mockup-label {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        color: #1f2937;
+        font-size: 12px;
+    }
+
+    .mockup-input {
+        position: absolute;
+        box-sizing: border-box;
+        background: #ffffff;
+        border: 1px solid #8a8a8a;
+        border-radius: 2px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 12px;
+        padding: 0 6px;
+        outline: none;
+    }
+
+    .mockup-input:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
+    }
+
+    .mockup-button-live {
+        position: absolute;
+        box-sizing: border-box;
+        background: linear-gradient(180deg, #f7f7f7, #e2e2e2);
+        border: 1px solid #adadad;
+        border-radius: 3px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 12px;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        cursor: pointer;
+    }
+
+    .mockup-button-live:hover { background: linear-gradient(180deg, #ffffff, #e9e9e9); }
+    .mockup-button-live:active { background: #dcdcdc; box-shadow: inset 0 1px 3px rgba(0,0,0,0.25); }
+
+    .mockup-dialog-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+        animation: mockup-fade-in 0.12s ease;
+    }
+
+    @keyframes mockup-fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .mockup-dialog {
+        width: 250px;
+        max-width: 90%;
+        background: #efefef;
+        border: 1px solid #94a3b8;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -6px rgba(0,0,0,0.4);
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .mockup-dialog-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 5px 8px;
+    }
+
+    .mockup-dialog-body {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 14px 10px;
+    }
+
+    .mockup-dialog-icon { font-size: 1.4rem; line-height: 1; }
+
+    .mockup-dialog-message {
+        font-size: 12px;
+        color: #1f2937;
+        line-height: 1.4;
+    }
+
+    .mockup-dialog-actions {
+        display: flex;
+        justify-content: center;
+        padding: 4px 14px 14px;
+    }
+
+    .mockup-dialog-ok {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 4px 18px;
+        background: linear-gradient(180deg, #f7f7f7, #e2e2e2);
+        border: 1px solid #adadad;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .mockup-dialog-ok:hover { background: linear-gradient(180deg, #ffffff, #e9e9e9); }
+
+    .criteria-group { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+    .criteria-group h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+    .criteria-group ul { list-style: none; margin-left: 0; }
+
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+    .checklist-item:hover { background: #f1f5f9; }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px;
+        width: 17px;
+        height: 17px;
+        accent-color: var(--success);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-item span.done { text-decoration: line-through; color: var(--text-muted); }
+
+    .progress-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 25px; }
+
+    .progress-wrap .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .progress-bar-bg { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-light), var(--success));
+        border-radius: 20px;
+        transition: width 0.35s ease;
+    }
+
+    .reset-btn {
+        margin-top: 12px;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        cursor: pointer;
+    }
+
+    .reset-btn:hover { background: #f1f5f9; }
+
+    footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 20px 16px; }
+    }
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    .gloss-term {
+        position: relative;
+        cursor: help;
+        border-bottom: 2px dotted var(--accent);
+    }
+
+    .gloss-term::after {
+        content: "\24D8";
+        font-size: 0.7em;
+        vertical-align: super;
+        margin-left: 2px;
+        color: var(--accent);
+        opacity: 0.85;
+    }
+
+    .gloss-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text-main);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 400;
+        line-height: 1.45;
+        width: max-content;
+        max-width: 260px;
+        white-space: normal;
+        z-index: 60;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        text-align: left;
+    }
+
+    .gloss-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: var(--text-main);
+    }
+
+    @media (max-width: 600px) {
+        .gloss-tooltip { max-width: 200px; font-size: 0.78rem; }
+    }
+
+    /* ---- Quiz autoevaluado ---- */
+    .quiz-intro { color: var(--text-muted); margin-bottom: 20px; }
+
+    .quiz-card {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+    .quiz-question { font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .quiz-option {
+        text-align: left;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text-main);
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .quiz-option:hover:not(:disabled) { background: #eef2ff; border-color: var(--primary-light); }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
+    .quiz-option.incorrect { background: #fee2e2; border-color: #ef4444; }
+
+    .quiz-feedback {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .quiz-feedback.is-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--text-main); }
+    .quiz-feedback.is-incorrect { background: #fef2f2; border: 1px solid #fecaca; color: var(--text-main); }
+
+    .quiz-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .quiz-score { font-weight: 600; color: var(--text-main); }
+
+    .quiz-retry-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .quiz-retry-btn:hover { background: #f1f5f9; }
+
+    /* ---- Errores comunes ---- */
+    .errors-wrap {
+        margin-top: 20px;
+        padding: 18px 20px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title {
+        color: #92400e;
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .error-item {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .error-what { color: #991b1b; margin-bottom: 4px; line-height: 1.5; }
+    .error-fix { color: #166534; line-height: 1.5; }
+
+    /* ---- Predice antes de revelar ---- */
+    .predict-box {
+        margin: 20px 0;
+        padding: 16px 18px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 10px;
+    }
+
+    .predict-question { margin-bottom: 12px; color: var(--text-main); line-height: 1.5; }
+
+    .predict-toggle {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-light);
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .predict-toggle:hover { background: #eff6ff; }
+
+    .predict-answer {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>GUÍA DE APRENDIZAJE N° 8 (PROYECTO FINAL)</h1>
+    <p><strong>Unidad Didáctica:</strong> Taller de Lenguajes de Programación</p>
+    <p><strong>Tema:</strong> Integración y Consolidación del Proyecto Final (GUI, POO y Base de Datos)</p>
+    <div class="badges">
+        <span class="badge">🎮 Proyecto Base: GameStore Escolar</span>
+        <span class="badge">🎯 Sistema de Escritorio Integral</span>
+        <span class="badge">🏛️ Swing + POO + JDBC</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#objetivo">I. Objetivo</a></li>
+        <li><a href="#requisitos">II. Requisitos</a></li>
+        <li><a href="#marco-teorico">III. Marco Teórico</a></li>
+        <li><a href="#actividades">IV. Actividades</a></li>
+        <li><a href="#criterios">V. Criterios de Entrega</a></li>
+        <li><a href="#quiz">VI. Quiz</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>Progreso de entrega</span>
+            <span id="progress-text">0 / 5 completado</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
+    </div>
+
+    <section id="objetivo">
+        <h2>I. Objetivo de la Guía</h2>
+        <div class="info-card">
+            <p>Consolidar e integrar todos los conocimientos de la unidad didáctica desarrollando un sistema de
+            software funcional que unifique interfaces gráficas avanzadas (Java Swing), lógica de negocio orientada
+            a objetos (Herencia y Polimorfismo), y persistencia de datos conectada a MySQL mediante JDBC.</p>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>II. Requisitos — Todo lo del Curso, Funcionando Junto</h2>
+        <div class="info-card">
+            <p>Esta guía no agrega herramientas nuevas: es el <strong>cierre</strong> del curso, así que necesitas
+            todo lo instalado en las guías anteriores, funcionando en conjunto al mismo tiempo.</p>
+        </div>
+        <ul class="checklist-static">
+            <li>✅ <strong>JDK 17+</strong> y tu IDE de preferencia (Apache NetBeans recomendado) — Sesión 1.</li>
+            <li>✅ <strong>Servidor MySQL/MariaDB activo</strong>, con la base <code>gamestore_db</code> y sus tres
+            tablas ya creadas — Sesión 6.</li>
+            <li>✅ <strong>MySQL Connector/J</strong> agregado a las librerías del proyecto — Sesión 7.</li>
+        </ul>
+        <p style="font-size:0.85rem; color:var(--text-muted)">Todo lo anterior sigue siendo gratuito y de código
+        abierto: si completaste las guías 1 a 7, ya tienes todo lo necesario instalado.</p>
+    </section>
+
+    <section id="marco-teorico">
+        <h2>III. Marco Teórico Breve</h2>
+
+        <h3>🏛️ Arquitectura Multicapa en Aplicaciones de Escritorio</h3>
+        <p>Para construir software robusto y escalable, las aplicaciones se dividen en capas lógicas:</p>
+        <ul>
+            <li><strong>Capa de Presentación (UI):</strong> Interfaces creadas con Java Swing (<code>JFrame</code>,
+            <code>JPanel</code>, layouts) que interactúan con el usuario.</li>
+            <li><strong>Capa de Lógica de Negocio (POO):</strong> Clases abstractas, herencia y polimorfismo
+            (<code>ItemRecompensa</code>, subclases) que procesan las reglas del sistema.</li>
+            <li><strong>Capa de Persistencia (DAO / JDBC):</strong> Clases encargadas de conectar la aplicación con
+            el servidor MySQL mediante consultas preparadas (<code>PreparedStatement</code>).</li>
+        </ul>
+        <div class="info-card">
+            <p>Piensa en las tres capas como un restaurante: la <strong>Presentación</strong> es el salón donde el
+            cliente hace su pedido (la GUI); la <strong>Lógica de Negocio</strong> es la cocina que sabe las recetas
+            y reglas (tus clases POO); y la <strong>Persistencia</strong> es la despensa donde se guardan y sacan
+            los ingredientes (JDBC + MySQL). Cada una hace su trabajo sin necesitar saber los detalles internos de
+            las otras dos.</p>
+        </div>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Errores Comunes al Empezar</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Hacer que la clase de la vista (GUI) llame directamente a JDBC en vez de usar la clase DAO.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> La vista solo debe llamar a métodos del DAO (por ejemplo estudianteDAO.buscarPorUsuario(...)); el DAO es el único que "sabe" de SQL y JDBC.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Traer todos los datos de la tabla y comparar la contraseña en Java, en vez de filtrar en la propia consulta.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> La validación se hace en la consulta SQL con WHERE usuario = ? AND contraseña = ?, usando PreparedStatement; es más eficiente y más seguro.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> No revisar si el ResultSet trajo alguna fila antes de leer sus columnas (por ejemplo cuando el usuario no existe).</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Siempre revisa con if (rs.next()) si la consulta realmente devolvió una fila antes de intentar leer sus datos, para evitar errores inesperados.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="actividades">
+        <h2>IV. Actividades Prácticas Paso a Paso (Integración del Sistema)</h2>
+
+        <span class="step-tag">PASO 1</span>
+        <h3 style="margin-top:0">Unificación de la Capa de Datos y la Lógica</h3>
+        <p>Asegúrate de que tus clases de negocio interactúen directamente con la base de datos. Por ejemplo, al
+        canjear una recompensa en la interfaz, el sistema debe registrar la transacción usando la capa DAO
+        conectada a JDBC.</p>
+
+        <span class="step-tag">PASO 2</span>
+        <h3 style="margin-top:0">Estructura del Proyecto Integrado</h3>
+        <p>Organiza tu proyecto en tu Entorno de Desarrollo (NetBeans o IntelliJ) respetando la siguiente estructura
+        de paquetes:</p>
+        <ul>
+            <li><code>com.gamestore.modelo</code>: Clases base abstractas, subclases (<code>ItemAvatar</code>,
+            <code>ItemPaseAcademico</code>) y entidades (<code>Estudiante</code>).</li>
+            <li><code>com.gamestore.dao</code>: Clases de conexión (<code>ConexionBD</code>) y de acceso a datos
+            (<code>EstudianteDAO</code>, <code>TransaccionDAO</code>).</li>
+            <li><code>com.gamestore.vista</code>: Ventanas gráficas (<code>GameStoreLogin</code>,
+            <code>CatalogoTiendaAvanzado</code>).</li>
+        </ul>
+
+        <div class="tree-wrap">
+            <p class="tree-caption">🗂️ <strong>Vista previa de referencia:</strong> así se vería esta estructura de
+            paquetes en tu IDE, con cada carpeta coloreada según la capa de la arquitectura a la que pertenece
+            (compara con el Marco Teórico de arriba).</p>
+            <div class="tree-window">
+                <div class="tree-titlebar">
+                    <span>📂 com.gamestore</span>
+                    <span class="tree-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="tree-body">
+                    <div class="tree-package layer-vista">
+                        📁 com.gamestore.vista
+                        <span class="layer-badge layer-vista">PRESENTACIÓN (UI)</span>
+                    </div>
+                    <div class="tree-file"><span class="file-icon">.java</span>GameStoreLogin.java</div>
+                    <div class="tree-file"><span class="file-icon">.java</span>CatalogoTiendaAvanzado.java</div>
+                    <div class="tree-file"><span class="file-icon">.java</span>GameStoreLoginIntegrado.java <span class="file-tag">Paso 3</span></div>
+
+                    <div class="tree-package layer-modelo">
+                        📁 com.gamestore.modelo
+                        <span class="layer-badge layer-modelo">LÓGICA DE NEGOCIO (POO)</span>
+                    </div>
+                    <div class="tree-file"><span class="file-icon">.java</span>ItemRecompensa.java <span class="file-tag">abstract</span></div>
+                    <div class="tree-file"><span class="file-icon">.java</span>ItemAvatar.java</div>
+                    <div class="tree-file"><span class="file-icon">.java</span>ItemPaseAcademico.java</div>
+                    <div class="tree-file"><span class="file-icon">.java</span>Estudiante.java</div>
+
+                    <div class="tree-package layer-dao">
+                        📁 com.gamestore.dao
+                        <span class="layer-badge layer-dao">PERSISTENCIA (DAO/JDBC)</span>
+                    </div>
+                    <div class="tree-file"><span class="file-icon">.java</span>ConexionBD.java</div>
+                    <div class="tree-file"><span class="file-icon">.java</span>EstudianteDAO.java</div>
+                    <div class="tree-file"><span class="file-icon">.java</span>TransaccionDAO.java</div>
+                </div>
+            </div>
+            <p class="mockup-note">* Cada capa solo debería depender de la que tiene debajo (vista → modelo → dao),
+            nunca al revés: esa disciplina es justamente lo que hace que el proyecto sea "escalable", como dice el
+            Marco Teórico.</p>
+        </div>
+
+        <span class="step-tag">PASO 3</span>
+        <h3 style="margin-top:0">Código de Ejemplo del Flujo Integrado (Ventana de Acceso conectada a la BD)</h3>
+        <p>Aquí tienes una muestra de cómo unificar el evento de clic de la Sesión 1 con la validación directa
+        desde la base de datos (Sesión 7):</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code1">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code1">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code1">Copiar</button>
+            </div>
+            <pre id="code1"><code>import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class GameStoreLoginIntegrado extends JFrame {
+    private JLabel lblUsuario;
+    private JTextField txtUsuario;
+    private JButton btnIngresar;
+
+    public GameStoreLoginIntegrado() {
+        setTitle("GameStore Escolar - Acceso al Sistema");
+        setSize(350, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(null);
+
+        lblUsuario = new JLabel("Usuario:");
+        lblUsuario.setBounds(40, 50, 80, 25);
+        add(lblUsuario);
+
+        txtUsuario = new JTextField();
+        txtUsuario.setBounds(110, 50, 180, 25);
+        add(txtUsuario);
+
+        btnIngresar = new JButton("Ingresar");
+        btnIngresar.setBounds(110, 100, 100, 30);
+        add(btnIngresar);
+
+        // Evento de clic integrado con JDBC
+        btnIngresar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nombreUsuario = txtUsuario.getText().trim();
+
+                if (!nombreUsuario.isEmpty()) {
+                    if (validarUsuarioEnBD(nombreUsuario)) {
+                        JOptionPane.showMessageDialog(null, "¡Bienvenido, " + nombreUsuario + "!", "Acceso Concedido", JOptionPane.INFORMATION_MESSAGE);
+                        // Abrir la ventana del Catálogo (Sesión 2)
+                        dispose(); // Cierra el login
+                        // new CatalogoTiendaAvanzado().setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Usuario no encontrado en la base de datos.", "Error de Acceso", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nombre de usuario.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+    }
+
+    // Método para validar credenciales consultando MySQL
+    private boolean validarUsuarioEnBD(String nombre) {
+        boolean existe = false;
+        String sql = "SELECT * FROM estudiantes WHERE nombre = ?";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nombre);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    existe = true; // El usuario existe en la BD
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al validar usuario: " + e.getMessage());
+        }
+        return existe;
+    }
+
+    public static void main(String[] args) {
+        new GameStoreLoginIntegrado().setVisible(true);
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code1" hidden></div>
+            <div class="explain-panel" id="explain-code1" hidden></div>
+        </div>
+
+        <div class="predict-box">
+            <p class="predict-question">🤔 <strong>Antes de seguir:</strong> si el usuario escribe mal su
+            contraseña, ¿qué crees que devuelve <code>rs.next()</code> dentro de
+            <code>validarUsuarioEnBD(...)</code>?</p>
+            <button type="button" class="predict-toggle" data-target="predict-s8-1">👀 Ver la respuesta</button>
+            <div class="predict-answer" id="predict-s8-1" hidden>
+                <p>false — la consulta con WHERE usuario = ? AND contraseña = ? no encuentra ninguna fila que
+                coincida, así que el ResultSet queda vacío y rs.next() devuelve false, indicando que la validación
+                falló.</p>
+            </div>
+        </div>
+
+        <div class="mockup-wrap">
+            <p class="mockup-caption-top">🖼️ <strong>Vista previa de referencia (interactiva):</strong> esta
+            simulación reproduce el flujo completo del código: el clic dispara <code>validarUsuarioEnBD(...)</code>,
+            que "consulta" una base de datos simulada en JavaScript en vez de MySQL real.</p>
+            <div class="mockup-window">
+                <div class="mockup-titlebar">
+                    <span>GameStore Escolar - Acceso al Sistema</span>
+                    <span class="mockup-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="mockup-content" id="mockup8-content">
+                    <div class="mockup-label" style="left:40px; top:50px; width:80px; height:25px;">Usuario:</div>
+                    <input type="text" class="mockup-input" id="mockup8-input" style="left:110px; top:50px; width:180px; height:25px;">
+                    <button type="button" class="mockup-button-live" id="mockup8-btn" style="left:110px; top:100px; width:100px; height:30px;">Ingresar</button>
+                </div>
+            </div>
+            <p class="mockup-note">* Prueba escribiendo <strong>Carlos Mendoza</strong>, <strong>Ana Torres</strong>
+            o <strong>Lucía Pérez</strong> (existen en la "BD" simulada, los mismos estudiantes de las Sesiones 6 y
+            7), o cualquier otro nombre para ver el mensaje de error. No es la aplicación Java real ni se conecta a
+            ninguna base de datos.</p>
+        </div>
+    </section>
+
+    <section id="criterios">
+        <h2>V. Criterios de Entrega y Evaluación Final</h2>
+        <p>Para aprobar satisfactoriamente el proyecto final y la unidad didáctica con nota ≥ 13, el equipo de
+        estudiantes debe entregar y sustentar lo siguiente:</p>
+
+        <div class="criteria-group">
+            <h3>💻 Software Funcional (Evidencia Procedimental)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="sw1">
+                    <span>Código fuente completo, estructurado y sin errores de compilación, que integre las
+                    interfaces gráficas (Swing), la jerarquía de clases con polimorfismo y la persistencia
+                    conectada a MySQL mediante JDBC.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>📄 Documentación Técnica (Informe)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="doc1">
+                    <span>Diagrama de clases UML actualizado.</span>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="doc2">
+                    <span>Script SQL de la base de datos implementada (<code>gamestore_db</code>).</span>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="doc3">
+                    <span>Breve manual de usuario del sistema.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🎤 Sustentación Presencial</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="sus1">
+                    <span>Demostración en vivo del funcionamiento del sistema ante el docente, explicando la
+                    implementación técnica de las capas de software.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <h2>VI. Pon a Prueba lo que Aprendiste</h2>
+        <p class="quiz-intro">Responde estas preguntas para comprobar qué tanto entendiste de esta sesión.
+        Puedes intentarlo las veces que quieras — no se guarda ninguna nota.</p>
+        <div id="quiz-container"></div>
+        <div class="quiz-footer">
+            <span id="quiz-score" class="quiz-score">Progreso: 0 / 5 respondidas</span>
+            <button type="button" id="quiz-retry" class="quiz-retry-btn">🔄 Reintentar</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>Guía de Aprendizaje N° 8 (Proyecto Final) · Taller de Lenguajes de Programación · Creado Por Ing Jsumire - Baycodec</p>
+    </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    /* ---- Resaltado de sintaxis básico para bloques Java ---- */
+    const KEYWORDS = ["public","private","protected","class","extends","implements","new","void","static","final","import","return","if","else","null","this","super","package","interface","true","false","try","catch","while","int","boolean"];
+    const TYPES = ["JFrame","JLabel","JTextField","JButton","JOptionPane","ActionListener","ActionEvent","Connection","PreparedStatement","ResultSet","SQLException","ConexionBD","GameStoreLoginIntegrado","String","System"];
+
+    const TOKEN_RE = new RegExp(
+        [
+            "(//[^\\n]*)",
+            "(&quot;.*?&quot;)",
+            "(@\\w+)",
+            "\\b(" + KEYWORDS.join("|") + ")\\b",
+            "\\b(" + TYPES.join("|") + ")\\b"
+        ].join("|"),
+        "g"
+    );
+
+    function highlight(code) {
+        const escaped = code
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        return escaped.replace(TOKEN_RE, function (m, comment, str, ann, kw, typ) {
+            if (comment) return '<span class="cmt">' + comment + '</span>';
+            if (str) return '<span class="str">' + str + '</span>';
+            if (ann) return '<span class="met">' + ann + '</span>';
+            if (kw) return '<span class="kw">' + kw + '</span>';
+            if (typ) return '<span class="typ">' + typ + '</span>';
+            return m;
+        });
+    }
+
+    document.querySelectorAll(".code-block pre code").forEach(function (block) {
+        block.innerHTML = highlight(block.textContent);
+    });
+
+    /* ---- Numeración de líneas ---- */
+    document.querySelectorAll(".code-block pre").forEach(function (pre) {
+        const codeEl = pre.querySelector("code");
+        if (!codeEl) return;
+
+        const lineCount = codeEl.textContent.split("\n").length;
+
+        const gutter = document.createElement("div");
+        gutter.className = "line-numbers";
+        for (let i = 1; i <= lineCount; i++) {
+            const row = document.createElement("span");
+            row.className = "line-no-row";
+            row.textContent = String(i);
+            gutter.appendChild(row);
+        }
+
+        const body = document.createElement("div");
+        body.className = "code-body";
+        pre.parentNode.insertBefore(body, pre);
+        body.appendChild(gutter);
+        body.appendChild(pre);
+
+        const codeBlock = pre.closest(".code-block");
+        const langTag = codeBlock ? codeBlock.querySelector(".lang-tag") : null;
+        if (langTag) {
+            langTag.textContent = langTag.textContent + " · " + lineCount + " LÍNEAS";
+        }
+    });
+
+    /* ---- Botones "Copiar" ---- */
+    document.querySelectorAll(".copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const codeEl = document.getElementById(targetId);
+            const text = codeEl ? codeEl.textContent : "";
+
+            let settled = false;
+            const done = function () {
+                if (settled) return;
+                settled = true;
+                const original = btn.textContent;
+                btn.textContent = "¡Copiado!";
+                btn.classList.add("copied");
+                setTimeout(function () {
+                    btn.textContent = original;
+                    btn.classList.remove("copied");
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () {
+                    fallbackCopy(text, done);
+                });
+                setTimeout(function () {
+                    if (!settled) fallbackCopy(text, done);
+                }, 500);
+            } else {
+                fallbackCopy(text, done);
+            }
+        });
+    });
+
+    function fallbackCopy(text, cb) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* noop */ }
+        document.body.removeChild(ta);
+        cb();
+    }
+
+    /* ---- Explicación línea por línea ---- */
+    const EXPLANATIONS = {
+        code1: [
+            "Importa todas las clases de Swing necesarias para la interfaz gráfica.",
+            "Importa ActionEvent, la clase que representa el evento de hacer clic.",
+            "Importa ActionListener, la interfaz para reaccionar a ese clic.",
+            "Importa Connection, de la capa JDBC (Sesión 7).",
+            "Importa PreparedStatement, para construir la consulta segura de validación.",
+            "Importa ResultSet, para leer el resultado de la consulta.",
+            "Importa SQLException, la excepción de errores de base de datos.",
+            "Línea en blanco.",
+            "Declara la clase GameStoreLoginIntegrado, que hereda de JFrame: es la ventana de acceso al sistema completo.",
+            "Declara la etiqueta \"Usuario:\".",
+            "Declara el campo de texto donde el usuario escribirá su nombre.",
+            "Declara el botón para iniciar sesión.",
+            "Línea en blanco.",
+            "Constructor de la clase: configura la ventana y programa el evento de clic.",
+            "Establece el título de la ventana.",
+            "Define el tamaño de la ventana: 350x200 píxeles.",
+            "Indica que la aplicación debe finalizar por completo al cerrar la ventana.",
+            "Centra la ventana en la pantalla.",
+            "Desactiva el layout automático para ubicar los componentes por coordenadas, como en la Sesión 1.",
+            "Línea en blanco.",
+            "Crea la etiqueta \"Usuario:\".",
+            "Posiciona la etiqueta en (40, 50) con 80x25 píxeles.",
+            "Agrega la etiqueta a la ventana.",
+            "Línea en blanco.",
+            "Crea el campo de texto vacío.",
+            "Posiciona el campo de texto junto a la etiqueta.",
+            "Agrega el campo de texto a la ventana.",
+            "Línea en blanco.",
+            "Crea el botón \"Ingresar\".",
+            "Posiciona el botón debajo del campo de texto.",
+            "Agrega el botón a la ventana.",
+            "Línea en blanco.",
+            "Comentario que anuncia que este evento de clic ahora está integrado con JDBC (a diferencia de la versión simple de la Sesión 1).",
+            "Registra un ActionListener en el botón: se ejecutará cada vez que el usuario haga clic.",
+            "Anotación que indica que el siguiente método sobrescribe al de la interfaz ActionListener.",
+            "Método que se ejecuta al hacer clic; recibe el evento e.",
+            "Obtiene el texto escrito en txtUsuario y le quita espacios sobrantes con trim().",
+            "Línea en blanco.",
+            "Primera validación: comprueba que el campo no esté vacío.",
+            "Segunda validación (anidada dentro de la primera): llama a validarUsuarioEnBD(...) para preguntarle a MySQL si ese nombre existe.",
+            "Si el usuario existe, muestra un diálogo de bienvenida con su nombre.",
+            "Comentario que indica dónde iría la apertura de la siguiente ventana (el catálogo de la Sesión 2).",
+            "Cierra esta ventana de login, ya que el acceso fue concedido.",
+            "Línea comentada (inactiva): muestra cómo se abriría la ventana del catálogo si esa clase estuviera en este proyecto.",
+            "Cierra el bloque if de acceso concedido y abre el else para cuando el usuario no existe.",
+            "Muestra un diálogo de error indicando que el usuario no fue encontrado.",
+            "Cierra el bloque if/else de la validación en base de datos.",
+            "Cierra el bloque del campo con texto y abre el else para cuando el campo estaba vacío.",
+            "Muestra un diálogo de advertencia pidiendo que se ingrese un nombre de usuario.",
+            "Cierra el bloque if/else principal (campo vacío vs. con texto).",
+            "Cierra el método actionPerformed.",
+            "Cierra la clase anónima ActionListener y la llamada a addActionListener.",
+            "Cierra el constructor GameStoreLoginIntegrado().",
+            "Línea en blanco.",
+            "Comentario que anuncia el método de validación contra MySQL.",
+            "Declara el método privado validarUsuarioEnBD, que devuelve true o false según si el nombre existe en la tabla estudiantes.",
+            "Declara la variable existe, inicializada en false (se asume que no existe hasta comprobar lo contrario).",
+            "Define la consulta SQL con UN signo de interrogación (?): buscará por el nombre exacto.",
+            "Línea en blanco.",
+            "Abre un try-with-resources externo que declara Connection, obtenida de ConexionBD (Sesión 7).",
+            "Continúa la declaración del try-with-resources agregando el PreparedStatement, y abre la llave del bloque.",
+            "Línea en blanco.",
+            "Asigna el nombre recibido al único ? de la consulta.",
+            "Abre un SEGUNDO try-with-resources, anidado dentro del primero, que ejecuta la consulta y declara el ResultSet.",
+            "Comprueba si rs.next() encuentra al menos una fila: si la hay, ese nombre SÍ existe en la tabla.",
+            "Marca existe como true, porque se encontró una fila con ese nombre.",
+            "Cierra el bloque if.",
+            "Cierra el try-with-resources interno (el del ResultSet).",
+            "Cierra el try-with-resources externo (Connection y PreparedStatement) y abre el bloque catch que atrapa SQLException.",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Devuelve el valor final de existe: true si el usuario fue encontrado, false en caso contrario (o si hubo un error).",
+            "Cierra el método validarUsuarioEnBD.",
+            "Línea en blanco.",
+            "Punto de entrada del programa: aquí comienza la ejecución cuando se corre esta clase.",
+            "Crea una instancia de la ventana de login y la hace visible en pantalla.",
+            "Cierra el método main.",
+            "Cierra la clase GameStoreLoginIntegrado."
+        ]
+    };
+
+    function buildExplainPanel(targetId) {
+        const codeEl = document.getElementById(targetId);
+        const panel = document.getElementById("explain-" + targetId);
+        if (!codeEl || !panel || panel.dataset.built) return;
+
+        const lines = codeEl.textContent.split("\n");
+        const notes = EXPLANATIONS[targetId] || [];
+
+        const frag = document.createDocumentFragment();
+        lines.forEach(function (line, i) {
+            const row = document.createElement("div");
+            row.className = "explain-row";
+
+            const num = document.createElement("span");
+            num.className = "explain-line-no";
+            num.textContent = String(i + 1);
+
+            const codeSpan = document.createElement("code");
+            const trimmed = line.trim();
+            if (trimmed === "") {
+                codeSpan.className = "explain-code is-blank";
+                codeSpan.textContent = "(línea en blanco)";
+            } else {
+                codeSpan.className = "explain-code";
+                codeSpan.innerHTML = highlight(line);
+            }
+
+            const text = document.createElement("span");
+            text.className = "explain-text";
+            text.textContent = notes[i] || "Línea de código de apoyo dentro del bloque.";
+
+            row.appendChild(num);
+            row.appendChild(codeSpan);
+            row.appendChild(text);
+            frag.appendChild(row);
+        });
+
+        panel.appendChild(frag);
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".explain-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("explain-" + targetId);
+            if (!panel) return;
+
+            buildExplainPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? "🧠 Explicar línea por línea" : "✕ Ocultar explicación";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Clases usadas y su anidamiento: el capítulo final, recapitula todo el curso ---- */
+    const CLASS_NOTES = {
+        code1: {
+            intro: "Este código es la integración de TODO el curso: aquí conviven el anidamiento de eventos GUI (Sesión 1), el anidamiento de streams JDBC (Sesión 7), y un try-with-resources ANIDADO dentro de otro try-with-resources, algo que no habías visto hasta ahora.",
+            classes: [
+                {
+                    name: "JFrame / JLabel / JTextField / JButton",
+                    pkg: "javax.swing",
+                    desc: "Los mismos componentes gráficos de la Sesión 1: la ventana y sus 3 controles.",
+                    nest: "Se anidan en la ventana igual que siempre: se crean y se agregan con add(...)."
+                },
+                {
+                    name: "ActionListener / ActionEvent",
+                    pkg: "java.awt.event",
+                    desc: "La misma pareja de la Sesión 1 para reaccionar al clic del botón.",
+                    nest: "La clase anónima ActionListener sigue anidada dentro de addActionListener(...), pero ahora en su interior también vive lógica de base de datos (llama a validarUsuarioEnBD)."
+                },
+                {
+                    name: "Connection / PreparedStatement / ResultSet / SQLException",
+                    pkg: "java.sql",
+                    desc: "La misma cadena de la Sesión 7 para consultar MySQL de forma segura.",
+                    nest: "Vive DENTRO de validarUsuarioEnBD(), un método privado que el ActionListener llama: la cadena JDBC completa queda anidada dos niveles más profundo que en la Sesión 7 (evento de clic → método de validación → Connection → PreparedStatement → ResultSet)."
+                },
+                {
+                    name: "try (ResultSet...) dentro de try (Connection...)",
+                    pkg: "try-with-resources anidado",
+                    desc: "Un SEGUNDO try-with-resources, completo, escrito dentro del primero.",
+                    nest: "El try externo abre Connection y PreparedStatement; el try interno abre solo el ResultSet (porque depende de que el pstmt ya tenga su parámetro asignado). Java cierra primero el ResultSet y, al salir del try externo, cierra Connection y PreparedStatement."
+                },
+                {
+                    name: "ConexionBD",
+                    pkg: "clase propia (Sesión 7)",
+                    desc: "La clase centralizada de conexión.",
+                    nest: "Se reutiliza sin cambios desde la Sesión 7: ConexionBD.obtenerConexion() se llama exactamente igual, ahora desde dentro de una ventana gráfica en vez de un main() de consola."
+                }
+            ],
+            diagram: "GameStoreLoginIntegrado (extends JFrame)\n"
+                + "  constructor\n"
+                + "    ├── lblUsuario, txtUsuario, btnIngresar        (Sesión 1: GUI)\n"
+                + "    └── btnIngresar.addActionListener(\n"
+                + "          new ActionListener() {                   ← clase anónima (Sesión 1)\n"
+                + "            actionPerformed(ActionEvent e) {\n"
+                + "              if (!nombreUsuario.isEmpty()) {\n"
+                + "                if (validarUsuarioEnBD(nombreUsuario)) {  ← llama al método de abajo\n"
+                + "                  JOptionPane...(\"Bienvenido\")\n"
+                + "                } else {\n"
+                + "                  JOptionPane...(\"no encontrado\")\n"
+                + "                }\n"
+                + "              }\n"
+                + "            }\n"
+                + "          }\n"
+                + "        )\n"
+                + "\n"
+                + "  validarUsuarioEnBD(nombre)                        (Sesión 7: JDBC)\n"
+                + "    try (Connection conn = ConexionBD.obtenerConexion();\n"
+                + "         PreparedStatement pstmt = conn.prepareStatement(sql)) {\n"
+                + "        pstmt.setString(1, nombre);\n"
+                + "        try (ResultSet rs = pstmt.executeQuery()) {   ← try ANIDADO dentro del try\n"
+                + "            if (rs.next()) existe = true;\n"
+                + "        }\n"
+                + "    } catch (SQLException e) { ... }\n"
+                + "\n"
+                + "Cadena completa: clic del botón → actionPerformed → validarUsuarioEnBD →\n"
+                + "Connection → PreparedStatement → ResultSet. Cinco niveles de anidamiento."
+        }
+    };
+
+    function buildClassesPanel(targetId) {
+        const panel = document.getElementById("classes-" + targetId);
+        const data = CLASS_NOTES[targetId];
+        if (!panel || !data || panel.dataset.built) return;
+
+        const intro = document.createElement("p");
+        intro.className = "classes-intro";
+        intro.textContent = data.intro;
+        panel.appendChild(intro);
+
+        data.classes.forEach(function (cls) {
+            const card = document.createElement("div");
+            card.className = "class-card";
+
+            const nameLine = document.createElement("div");
+            const nameEl = document.createElement("span");
+            nameEl.className = "class-name";
+            nameEl.textContent = cls.name;
+            const pkgEl = document.createElement("span");
+            pkgEl.className = "class-pkg";
+            pkgEl.textContent = cls.pkg;
+            nameLine.appendChild(nameEl);
+            nameLine.appendChild(pkgEl);
+
+            const descEl = document.createElement("p");
+            descEl.textContent = cls.desc;
+
+            const nestEl = document.createElement("p");
+            nestEl.className = "nest-note";
+            nestEl.textContent = "Anidamiento: " + cls.nest;
+
+            card.appendChild(nameLine);
+            card.appendChild(descEl);
+            card.appendChild(nestEl);
+            panel.appendChild(card);
+        });
+
+        const diagramTitle = document.createElement("div");
+        diagramTitle.className = "nest-diagram-title";
+        diagramTitle.textContent = "Diagrama de anidamiento de este código:";
+        panel.appendChild(diagramTitle);
+
+        const diagram = document.createElement("div");
+        diagram.className = "nest-diagram";
+        diagram.textContent = data.diagram;
+        panel.appendChild(diagram);
+
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".classes-btn").forEach(function (btn) {
+        const originalLabel = btn.textContent;
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("classes-" + targetId);
+            if (!panel) return;
+
+            buildClassesPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? originalLabel : "✕ Ocultar clases";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Vista previa interactiva del Paso 3: simula validarUsuarioEnBD contra
+       una "base de datos" en memoria con los estudiantes de las Sesiones 6 y 7 ---- */
+    (function () {
+        const ESTUDIANTES_BD = ["Carlos Mendoza", "Ana Torres", "Lucía Pérez"];
+        const content = document.getElementById("mockup8-content");
+        const input = document.getElementById("mockup8-input");
+        const btn = document.getElementById("mockup8-btn");
+        if (!content || !input || !btn) return;
+
+        function showDialog(title, icon, message) {
+            const existing = content.querySelector(".mockup-dialog-overlay");
+            if (existing) existing.remove();
+
+            const overlay = document.createElement("div");
+            overlay.className = "mockup-dialog-overlay";
+
+            const dialog = document.createElement("div");
+            dialog.className = "mockup-dialog";
+
+            const bar = document.createElement("div");
+            bar.className = "mockup-dialog-titlebar";
+            bar.textContent = title;
+
+            const body = document.createElement("div");
+            body.className = "mockup-dialog-body";
+            const iconEl = document.createElement("span");
+            iconEl.className = "mockup-dialog-icon";
+            iconEl.textContent = icon;
+            const msgEl = document.createElement("span");
+            msgEl.className = "mockup-dialog-message";
+            msgEl.textContent = message;
+            body.appendChild(iconEl);
+            body.appendChild(msgEl);
+
+            const actions = document.createElement("div");
+            actions.className = "mockup-dialog-actions";
+            const ok = document.createElement("button");
+            ok.type = "button";
+            ok.className = "mockup-dialog-ok";
+            ok.textContent = "Aceptar";
+            ok.addEventListener("click", function () { overlay.remove(); });
+            actions.appendChild(ok);
+
+            dialog.appendChild(bar);
+            dialog.appendChild(body);
+            dialog.appendChild(actions);
+            overlay.appendChild(dialog);
+
+            overlay.addEventListener("click", function (ev) {
+                if (ev.target === overlay) overlay.remove();
+            });
+
+            content.appendChild(overlay);
+            ok.focus();
+        }
+
+        // Equivale a validarUsuarioEnBD(nombre): busca en la "BD" simulada.
+        function validarUsuarioEnBD(nombre) {
+            return ESTUDIANTES_BD.some(function (n) {
+                return n.toLowerCase() === nombre.toLowerCase();
+            });
+        }
+
+        // Equivale al actionPerformed del botón Ingresar.
+        btn.addEventListener("click", function () {
+            const nombreUsuario = input.value.trim();
+
+            if (nombreUsuario !== "") {
+                if (validarUsuarioEnBD(nombreUsuario)) {
+                    showDialog("Acceso Concedido", "ℹ️", "¡Bienvenido, " + nombreUsuario + "!");
+                } else {
+                    showDialog("Error de Acceso", "🛑", "Usuario no encontrado en la base de datos.");
+                }
+            } else {
+                showDialog("Advertencia", "⚠️", "Ingrese un nombre de usuario.");
+            }
+        });
+
+        input.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter") btn.click();
+        });
+    })();
+
+    /* ---- Checklist de criterios de entrega con persistencia local ---- */
+    const STORAGE_KEY = "guia8-checklist";
+    const checkboxes = Array.from(document.querySelectorAll(".checklist-item input[type=checkbox]"));
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    function loadState() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveState(state) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { /* almacenamiento no disponible: se ignora */ }
+    }
+
+    function updateProgress() {
+        const total = checkboxes.length;
+        const checked = checkboxes.filter(function (cb) { return cb.checked; }).length;
+        const pct = total ? Math.round((checked / total) * 100) : 0;
+        progressFill.style.width = pct + "%";
+        progressText.textContent = checked + " / " + total + " completado";
+    }
+
+    function applyLabelStyle(cb) {
+        const span = cb.parentElement.querySelector("span");
+        if (span) span.classList.toggle("done", cb.checked);
+    }
+
+    const state = loadState();
+    checkboxes.forEach(function (cb) {
+        const key = cb.getAttribute("data-key");
+        cb.checked = !!state[key];
+        applyLabelStyle(cb);
+
+        cb.addEventListener("change", function () {
+            const current = loadState();
+            current[key] = cb.checked;
+            saveState(current);
+            applyLabelStyle(cb);
+            updateProgress();
+        });
+    });
+    updateProgress();
+
+    document.getElementById("reset-checklist").addEventListener("click", function () {
+        saveState({});
+        checkboxes.forEach(function (cb) {
+            cb.checked = false;
+            applyLabelStyle(cb);
+        });
+        updateProgress();
+    });
+
+    /* ---- Resaltado del enlace activo en la navegación ---- */
+    const navLinks = Array.from(document.querySelectorAll("nav.toc a"));
+    const sections = navLinks.map(function (a) {
+        return document.querySelector(a.getAttribute("href"));
+    });
+
+    function onScroll() {
+        let currentIndex = 0;
+        const scrollPos = window.scrollY + 90;
+        sections.forEach(function (sec, i) {
+            if (sec && sec.offsetTop <= scrollPos) currentIndex = i;
+        });
+        navLinks.forEach(function (a, i) {
+            a.classList.toggle("active", i === currentIndex);
+        });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+})();
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    (function () {
+        var GLOSSARY = {
+    "DAO": "Data Access Object: una clase dedicada exclusivamente a comunicarse con la base de datos, separando esa lógica del resto del programa.",
+    "com.gamestore.dao": "Paquete (carpeta) donde viven las clases DAO, encargadas de hablar con la base de datos.",
+    "com.gamestore.modelo": "Paquete donde viven las clases modelo, que representan los datos del programa.",
+    "com.gamestore.vista": "Paquete donde viven las clases de la interfaz gráfica (vista) que el usuario ve y con la que interactúa.",
+    "validarUsuarioEnBD(...)": "Método que revisa en la base de datos si el usuario y la contraseña ingresados son correctos, antes de dejar entrar a la aplicación.",
+    "PreparedStatement": "Una consulta SQL \"preparada\" donde los valores se insertan de forma segura con signos de interrogación (?), evitando ataques de inyección SQL.",
+    "JFrame": "La ventana principal de una aplicación Java Swing, donde se colocan los demás componentes.",
+    "JPanel": "Un contenedor invisible que agrupa varios componentes juntos, como una bandeja."
+};
+        var containers = document.querySelectorAll("#objetivo, #marco-teorico, #actividades, #criterios");
+        var activeTooltip = null;
+
+        function closeTooltip() {
+            if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; }
+        }
+
+        function showTooltip(el, text) {
+            closeTooltip();
+            var tip = document.createElement("span");
+            tip.className = "gloss-tooltip";
+            tip.textContent = text;
+            el.appendChild(tip);
+            var rect = tip.getBoundingClientRect();
+            if (rect.left < 8) {
+                tip.style.left = "calc(50% + " + (8 - rect.left) + "px)";
+            } else if (rect.right > window.innerWidth - 8) {
+                tip.style.left = "calc(50% - " + (rect.right - window.innerWidth + 8) + "px)";
+            }
+            activeTooltip = tip;
+        }
+
+        function attach(el, term) {
+            if (el.classList.contains("gloss-term")) return;
+            el.classList.add("gloss-term");
+            el.setAttribute("tabindex", "0");
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", "Ver definición de " + term);
+            el.addEventListener("mouseenter", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("mouseleave", closeTooltip);
+            el.addEventListener("focus", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("blur", closeTooltip);
+            el.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (activeTooltip && el.contains(activeTooltip)) {
+                    closeTooltip();
+                } else {
+                    showTooltip(el, GLOSSARY[term]);
+                }
+            });
+        }
+
+        containers.forEach(function (container) {
+            if (!container) return;
+            Array.from(container.querySelectorAll("code")).forEach(function (codeEl) {
+                if (codeEl.closest("pre")) return;
+                var key = codeEl.textContent.trim();
+                if (GLOSSARY.hasOwnProperty(key)) attach(codeEl, key);
+            });
+            Array.from(container.querySelectorAll("[data-term]")).forEach(function (el) {
+                var key = el.getAttribute("data-term");
+                if (GLOSSARY.hasOwnProperty(key)) attach(el, key);
+            });
+        });
+
+        document.addEventListener("click", closeTooltip);
+    })();
+
+    /* ---- Quiz autoevaluado ---- */
+    (function () {
+        var QUIZ = [
+    {
+        "q": "¿Qué significa DAO?",
+        "options": [
+            "Data Access Object: una clase dedicada a hablar con la base de datos",
+            "Un tipo de excepción",
+            "Un componente visual",
+            "Un layout"
+        ],
+        "correct": 0,
+        "explain": "DAO separa la lógica de acceso a datos (SQL, JDBC) del resto del programa."
+    },
+    {
+        "q": "En la arquitectura por capas de este proyecto, ¿qué contiene el paquete de vista?",
+        "options": [
+            "Las clases modelo",
+            "Las clases DAO",
+            "Las interfaces gráficas (GUI)",
+            "La configuración de MySQL"
+        ],
+        "correct": 2,
+        "explain": "vista contiene las clases con las que el usuario ve e interactúa, como las ventanas de login y catálogo."
+    },
+    {
+        "q": "En una arquitectura por capas, ¿por qué la vista NO debería hablar directamente con la base de datos?",
+        "options": [
+            "Porque es imposible técnicamente",
+            "Porque cada capa debe depender solo de la que tiene debajo, y así el proyecto es más ordenado y escalable",
+            "Porque MySQL lo bloquea",
+            "Porque no existe esa opción"
+        ],
+        "correct": 1,
+        "explain": "Separar en capas (vista → modelo → dao) evita mezclar responsabilidades y facilita mantener el código."
+    },
+    {
+        "q": "¿Qué combina este proyecto final respecto a las sesiones anteriores?",
+        "options": [
+            "Solo SQL",
+            "Solo interfaces gráficas",
+            "GUI (Swing), POO (herencia/polimorfismo) y persistencia con JDBC",
+            "Solo archivos de texto"
+        ],
+        "correct": 2,
+        "explain": "El proyecto integrado une lo aprendido en las Sesiones 1 a 7: interfaces, clases y conexión a base de datos."
+    },
+    {
+        "q": "¿Qué hace el método validarUsuarioEnBD(...)?",
+        "options": [
+            "Crea una nueva tabla",
+            "Revisa en la base de datos si el usuario y la contraseña son correctos",
+            "Cierra la ventana",
+            "Compila el programa"
+        ],
+        "correct": 1,
+        "explain": "Consulta la base de datos con una PreparedStatement para verificar las credenciales antes de dejar entrar al usuario."
+    }
+];
+        var container = document.getElementById("quiz-container");
+        if (!container) return;
+        var answers = new Array(QUIZ.length).fill(null);
+
+        function renderScore() {
+            var scoreEl = document.getElementById("quiz-score");
+            if (!scoreEl) return;
+            var answered = answers.filter(function (a) { return a !== null; }).length;
+            var correct = answers.filter(function (a, i) { return a === QUIZ[i].correct; }).length;
+            scoreEl.textContent = answered === QUIZ.length
+                ? "Resultado: " + correct + " / " + QUIZ.length + " correctas" + (correct === QUIZ.length ? " 🎉 ¡Perfecto!" : "")
+                : "Progreso: " + answered + " / " + QUIZ.length + " respondidas";
+        }
+
+        function selectAnswer(qi, oi, card) {
+            answers[qi] = oi;
+            var opts = Array.from(card.querySelectorAll(".quiz-option"));
+            opts.forEach(function (btn) {
+                btn.classList.remove("correct", "incorrect");
+                btn.disabled = true;
+            });
+            var correct = QUIZ[qi].correct;
+            opts[correct].classList.add("correct");
+            if (oi !== correct) opts[oi].classList.add("incorrect");
+            var fb = card.querySelector(".quiz-feedback");
+            fb.hidden = false;
+            fb.className = "quiz-feedback " + (oi === correct ? "is-correct" : "is-incorrect");
+            fb.innerHTML = (oi === correct ? "✅ <strong>¡Correcto!</strong> " : "❌ <strong>No es correcto.</strong> ") + QUIZ[qi].explain;
+            renderScore();
+        }
+
+        function render() {
+            container.innerHTML = "";
+            QUIZ.forEach(function (item, qi) {
+                var card = document.createElement("div");
+                card.className = "quiz-card";
+
+                var qEl = document.createElement("p");
+                qEl.className = "quiz-question";
+                qEl.textContent = (qi + 1) + ". " + item.q;
+                card.appendChild(qEl);
+
+                var opts = document.createElement("div");
+                opts.className = "quiz-options";
+                item.options.forEach(function (optText, oi) {
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "quiz-option";
+                    btn.textContent = optText;
+                    btn.addEventListener("click", function () { selectAnswer(qi, oi, card); });
+                    opts.appendChild(btn);
+                });
+                card.appendChild(opts);
+
+                var fb = document.createElement("div");
+                fb.className = "quiz-feedback";
+                fb.hidden = true;
+                card.appendChild(fb);
+
+                container.appendChild(card);
+            });
+            renderScore();
+        }
+
+        var retryBtn = document.getElementById("quiz-retry");
+        if (retryBtn) {
+            retryBtn.addEventListener("click", function () {
+                answers = new Array(QUIZ.length).fill(null);
+                render();
+            });
+        }
+
+        render();
+    })();
+
+    /* ---- Predice antes de revelar ---- */
+    (function () {
+        document.querySelectorAll(".predict-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var target = document.getElementById(btn.getAttribute("data-target"));
+                if (!target) return;
+                var isHidden = target.hidden;
+                target.hidden = !isHidden;
+                btn.textContent = isHidden ? "\ud83d\ude48 Ocultar la respuesta" : "\ud83d\udc40 Ver la respuesta";
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>

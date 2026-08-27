@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Aprendizaje N° 5 — Archivos, Binarios y Excepciones (Java)</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 45px 20px 35px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.9rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; margin-top: 4px; }
+
+    .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.15s ease;
+    }
+
+    nav.toc a:hover, nav.toc a.active { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 26px 28px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.35rem;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.1rem; margin: 18px 0 8px; }
+    section h4 { color: var(--primary); font-size: 0.95rem; margin: 14px 0 6px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+    }
+
+    .step-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block { position: relative; margin: 14px 0 20px; }
+
+    .code-block .lang-tag {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 8px 0 8px 0;
+        letter-spacing: 0.5px;
+        z-index: 1;
+    }
+
+    .code-block .code-body {
+        display: flex;
+        background: var(--code-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .code-block pre {
+        background: transparent;
+        color: var(--code-fg);
+        padding: 34px 18px 18px 14px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre;
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .code-block pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+        font-size: inherit;
+    }
+
+    .line-numbers {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.03);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        color: #55627a;
+        text-align: right;
+        padding: 34px 10px 18px 12px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .line-numbers .line-no-row { display: block; }
+
+    .code-toolbar { position: absolute; top: 6px; right: 8px; display: flex; gap: 8px; z-index: 1; }
+
+    .copy-btn, .explain-btn, .classes-btn {
+        background: rgba(255,255,255,0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover, .explain-btn:hover, .classes-btn:hover { background: rgba(255,255,255,0.25); }
+    .copy-btn.copied { background: var(--success); border-color: var(--success); color: white; }
+    .explain-btn.active, .classes-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Resaltado simple de sintaxis Java */
+    .kw   { color: #60a5fa; }
+    .str  { color: #86efac; }
+    .cmt  { color: #64748b; font-style: italic; }
+    .typ  { color: #fbbf24; }
+    .met  { color: #c4b5fd; }
+
+    .explain-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .explain-panel[hidden] { display: none; }
+
+    .explain-row {
+        display: grid;
+        grid-template-columns: 30px minmax(120px, 1fr) 1.5fr;
+        gap: 10px 14px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        align-items: start;
+        background: var(--bg-card);
+    }
+
+    .explain-row:last-child { border-bottom: none; }
+    .explain-row:nth-child(even) { background: #f8fafc; }
+
+    .explain-line-no {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: right;
+        padding-top: 5px;
+    }
+
+    .explain-code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.78rem;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 5px 8px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .explain-code.is-blank {
+        color: var(--text-muted);
+        font-style: italic;
+        background: transparent;
+        border: 1px dashed var(--border);
+    }
+
+    .explain-text { font-size: 0.85rem; color: var(--text-main); padding-top: 4px; }
+
+    .classes-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: var(--bg-card); }
+    .classes-panel[hidden] { display: none; }
+    .classes-intro { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
+
+    .class-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; background: #f8fafc; }
+
+    .class-card .class-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: var(--primary);
+        background: #eef2ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    .class-card .class-pkg { font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
+    .class-card p { font-size: 0.85rem; margin-bottom: 4px; }
+
+    .class-card .nest-note {
+        font-size: 0.8rem;
+        color: #713f12;
+        background: #fef9c3;
+        border-left: 3px solid var(--warning);
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 6px;
+    }
+
+    .nest-diagram-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin: 14px 0 8px; }
+
+    .nest-diagram {
+        background: var(--code-bg);
+        color: #38bdf8;
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    /* Vista previa de consola (terminal simulada) */
+    .console-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .console-caption {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+
+    .console-run-btn {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .console-run-btn:hover { background: #eff6ff; }
+    .console-run-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .console-window {
+        display: inline-block;
+        width: 560px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .console-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .console-titlebar-controls { display: flex; gap: 5px; }
+
+    .console-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+
+    .console-body {
+        background: #0b0f19;
+        color: #d1d5db;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.8rem;
+        line-height: 1.7;
+        padding: 14px 16px;
+        min-height: 150px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .console-cmd { color: #4ade80; }
+    .console-sep { color: #4b5563; }
+    .console-hint { color: #6b7280; font-style: italic; }
+    .console-cursor { color: #4ade80; }
+
+    .mockup-note { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+    /* Vista previa: explorador de archivos */
+    .files-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .files-caption {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+
+    .files-window {
+        display: inline-block;
+        width: 420px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .files-body { background: #ffffff; padding: 6px 0; }
+
+    .file-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 14px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 0.82rem;
+        color: var(--text-main);
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .file-row:last-child { border-bottom: none; }
+    .file-row-new { background: #f0fdf4; }
+
+    .file-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 26px;
+        border-radius: 4px;
+        font-size: 0.6rem;
+        font-weight: bold;
+        color: white;
+        font-family: 'Courier New', Courier, monospace;
+        flex-shrink: 0;
+    }
+
+    .file-icon-java { background: #ea580c; }
+    .file-icon-txt { background: #64748b; }
+    .file-icon-dat { background: #7c3aed; }
+
+    .file-name { flex: 1; }
+
+    .file-badge-new {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #14532d;
+        background: #bbf7d0;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .req-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .req-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #f8fafc; }
+    .req-card-recommended { border-color: var(--success); background: #f0fdf4; }
+
+    .req-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .req-name { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+
+    .req-badge-open {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #14532d;
+        background: #dcfce7;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .req-tag { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .req-card p { font-size: 0.85rem; }
+
+    .req-link { display: inline-block; margin-top: 6px; font-size: 0.8rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .req-link:hover { text-decoration: underline; }
+
+    .criteria-group { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+    .criteria-group h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+    .criteria-group ul { list-style: none; margin-left: 0; }
+
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+    .checklist-item:hover { background: #f1f5f9; }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px;
+        width: 17px;
+        height: 17px;
+        accent-color: var(--success);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-item span.done { text-decoration: line-through; color: var(--text-muted); }
+
+    .progress-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 25px; }
+
+    .progress-wrap .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .progress-bar-bg { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-light), var(--success));
+        border-radius: 20px;
+        transition: width 0.35s ease;
+    }
+
+    .reset-btn {
+        margin-top: 12px;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        cursor: pointer;
+    }
+
+    .reset-btn:hover { background: #f1f5f9; }
+
+    footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 20px 16px; }
+    }
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    .gloss-term {
+        position: relative;
+        cursor: help;
+        border-bottom: 2px dotted var(--accent);
+    }
+
+    .gloss-term::after {
+        content: "\24D8";
+        font-size: 0.7em;
+        vertical-align: super;
+        margin-left: 2px;
+        color: var(--accent);
+        opacity: 0.85;
+    }
+
+    .gloss-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text-main);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 400;
+        line-height: 1.45;
+        width: max-content;
+        max-width: 260px;
+        white-space: normal;
+        z-index: 60;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        text-align: left;
+    }
+
+    .gloss-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: var(--text-main);
+    }
+
+    @media (max-width: 600px) {
+        .gloss-tooltip { max-width: 200px; font-size: 0.78rem; }
+    }
+
+    /* ---- Quiz autoevaluado ---- */
+    .quiz-intro { color: var(--text-muted); margin-bottom: 20px; }
+
+    .quiz-card {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+    .quiz-question { font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .quiz-option {
+        text-align: left;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text-main);
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .quiz-option:hover:not(:disabled) { background: #eef2ff; border-color: var(--primary-light); }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
+    .quiz-option.incorrect { background: #fee2e2; border-color: #ef4444; }
+
+    .quiz-feedback {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .quiz-feedback.is-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--text-main); }
+    .quiz-feedback.is-incorrect { background: #fef2f2; border: 1px solid #fecaca; color: var(--text-main); }
+
+    .quiz-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .quiz-score { font-weight: 600; color: var(--text-main); }
+
+    .quiz-retry-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .quiz-retry-btn:hover { background: #f1f5f9; }
+
+    /* ---- Errores comunes ---- */
+    .errors-wrap {
+        margin-top: 20px;
+        padding: 18px 20px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title {
+        color: #92400e;
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .error-item {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .error-what { color: #991b1b; margin-bottom: 4px; line-height: 1.5; }
+    .error-fix { color: #166534; line-height: 1.5; }
+
+    /* ---- Predice antes de revelar ---- */
+    .predict-box {
+        margin: 20px 0;
+        padding: 16px 18px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 10px;
+    }
+
+    .predict-question { margin-bottom: 12px; color: var(--text-main); line-height: 1.5; }
+
+    .predict-toggle {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-light);
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .predict-toggle:hover { background: #eff6ff; }
+
+    .predict-answer {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>GUÍA DE APRENDIZAJE N° 5</h1>
+    <p><strong>Unidad Didáctica:</strong> Taller de Lenguajes de Programación</p>
+    <p><strong>Tema:</strong> Manejo de Archivos de Texto (Text-File), Binarios y Excepciones en Java</p>
+    <div class="badges">
+        <span class="badge">🎮 Proyecto Base: GameStore Escolar</span>
+        <span class="badge">🎯 Módulo: Auditoría, Historial y Respaldos</span>
+        <span class="badge">📁 Java I/O</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#objetivo">I. Objetivo</a></li>
+        <li><a href="#requisitos">II. Requisitos</a></li>
+        <li><a href="#marco-teorico">III. Marco Teórico</a></li>
+        <li><a href="#actividades">IV. Actividades</a></li>
+        <li><a href="#criterios">V. Criterios de Entrega</a></li>
+        <li><a href="#quiz">VI. Quiz</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>Progreso de entrega</span>
+            <span id="progress-text">0 / 4 completado</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
+    </div>
+
+    <section id="objetivo">
+        <h2>I. Objetivo de la Guía</h2>
+        <div class="info-card">
+            <p>Implementar algoritmos que utilicen almacenamiento permanente mediante flujos de entrada y salida en
+            archivos de texto plano y archivos binarios, controlando adecuadamente las excepciones de lectura y
+            escritura (<code>IOException</code>).</p>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>II. Requisitos — Software e IDE de Desarrollo</h2>
+        <div class="info-card">
+            <p>Necesitas lo mismo que en las guías anteriores: todo <strong>gratuito y de código abierto
+            (open source)</strong>. Esta sesión además crea archivos nuevos en tu computadora (un
+            <code>.txt</code> y un <code>.dat</code>), así que asegúrate de ejecutar tus programas desde una
+            carpeta de proyecto donde tengas permisos de escritura.</p>
+        </div>
+
+        <h3>1. Obligatorio: el JDK (motor de Java)</h3>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">OpenJDK</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Obligatorio · versión 17 o superior recomendada</p>
+                <p>Es el <strong>kit de desarrollo de Java</strong>: incluye el compilador (<code>javac</code>) y la
+                máquina virtual (JVM) necesarios para compilar y ejecutar el código de esta guía.</p>
+                <p>OpenJDK es la implementación de código abierto de Java (licencia GPL v2); una distribución
+                popular y fácil de instalar es <strong>Eclipse Temurin</strong>.</p>
+                <a class="req-link" href="https://adoptium.net" target="_blank" rel="noopener">adoptium.net (Eclipse Temurin / OpenJDK) ↗</a>
+            </div>
+        </div>
+
+        <h3>2. Elige un IDE (entorno de desarrollo)</h3>
+        <p style="margin-bottom:10px">Necesitas <strong>uno solo</strong> de estos, todos gratuitos y de código abierto:</p>
+        <div class="req-grid">
+            <div class="req-card req-card-recommended">
+                <div class="req-card-head">
+                    <span class="req-name">Apache NetBeans</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">★ Recomendado para esta guía</p>
+                <p>Proyecto de la Apache Software Foundation (licencia Apache 2.0). Su panel de proyectos permite
+                ver de inmediato los archivos <code>.txt</code>/<code>.dat</code> que tu programa genere dentro de
+                la carpeta del proyecto.</p>
+                <a class="req-link" href="https://netbeans.apache.org" target="_blank" rel="noopener">netbeans.apache.org ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">Eclipse IDE</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Alternativa</p>
+                <p>Uno de los IDEs de Java más usados en la industria. Gratuito y de código abierto
+                (Eclipse Public License).</p>
+                <a class="req-link" href="https://www.eclipse.org/downloads/" target="_blank" rel="noopener">eclipse.org/downloads ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">IntelliJ IDEA <em>Community</em></span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Alternativa · solo la edición Community</p>
+                <p><strong>Importante:</strong> solo la edición <strong>Community</strong> es gratuita y de código
+                abierto (Apache 2.0); la edición <em>Ultimate</em> es de pago y no se necesita para este curso.</p>
+                <a class="req-link" href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">jetbrains.com/idea/download ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">Visual Studio Code</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Opción ligera</p>
+                <p>Editor liviano (proyecto base "Code - OSS", licencia MIT) con la extensión gratuita
+                <strong>Extension Pack for Java</strong> para compilar, ejecutar y depurar.</p>
+                <a class="req-link" href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com ↗</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="marco-teorico">
+        <h2>III. Marco Teórico Breve</h2>
+
+        <h3>📁 1. Archivos de Texto (Text-File) vs. Archivos Binarios</h3>
+        <ul>
+            <li><strong>Archivos de Texto:</strong> Almacenan información en caracteres legibles por humanos (como
+            <code>.txt</code>). Se utiliza <code>FileWriter</code>, <code>PrintWriter</code> o
+            <code>BufferedReader</code>.</li>
+            <li><strong>Archivos Binarios:</strong> Almacenan los datos directamente en formato de bytes (como
+            objetos serializados). Son más eficientes para respaldos o estructuras complejas y se utiliza
+            <code>FileOutputStream</code>, <code>ObjectOutputStream</code>, etc.</li>
+        </ul>
+
+        <h3>🧯 2. Manejo de Excepciones (<code>try-catch</code>)</h3>
+        <p>Las operaciones con archivos son propensas a errores externos (disco lleno, archivo inexistente, permisos
+        denegados). Por ello, es obligatorio envolver el código en bloques <code>try-catch</code> para capturar
+        excepciones como <code>IOException</code>.</p>
+        <div class="info-card">
+            <p>Piensa en los flujos (<em>streams</em>) como tubos de agua encadenados: <code>FileWriter</code> es el
+            tubo que llega directo al archivo, y <code>PrintWriter</code> es un embudo con forma más cómoda que
+            conectas ENCIMA de ese tubo para verter el texto más fácilmente. Si el tubo se rompe a mitad de camino
+            (el disco se llena, no hay permisos...), Java lanza una <code>IOException</code>, y el bloque
+            <code>catch</code> es la bandeja que atrapa el derrame para que tu programa no se caiga por completo.</p>
+        </div>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Errores Comunes al Empezar</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Usar código que puede lanzar IOException sin un try-catch ni un throws en la firma del método.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Todo código de archivos es "riesgoso" para Java; siempre debe ir dentro de un try-catch, o el método debe declarar throws IOException.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Abrir un archivo para escribir sin cerrarlo (fuera de un try-with-resources).</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Usa siempre try-with-resources (try (FileWriter fw = ...)); Java cierra el archivo automáticamente al terminar, incluso si algo falla.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Intentar leer un archivo que todavía no existe, porque nunca se ejecutó el código que lo crea.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Ejecuta primero el Paso que escribe/crea el archivo, antes de ejecutar el que lo lee.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="actividades">
+        <h2>IV. Actividades Prácticas Paso a Paso</h2>
+
+        <span class="step-tag">PASO 1</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Módulo de Registro en Texto Plano)</h3>
+        <p>Crea una clase llamada <code>HistorialLog.java</code> que permita registrar en un archivo de texto cada
+        vez que un estudiante realice un canje en la tienda del proyecto.</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code1">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code1">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code1">Copiar</button>
+            </div>
+            <pre id="code1"><code>import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class HistorialLog {
+
+    // Método para guardar un registro en archivo de texto (Trabajo 1)
+    public static void registrarCanje(String estudiante, String itemCanjeado) {
+        // Uso de FileWriter en modo append (true) para no sobrescribir el archivo
+        try (PrintWriter pw = new PrintWriter(new FileWriter("historial_canjes.txt", true))) {
+            pw.println("Estudiante: " + estudiante + " | Ítem: " + itemCanjeado);
+            System.out.println("Registro de canje guardado exitosamente en el archivo de texto.");
+        } catch (IOException e) {
+            System.out.println("Error de E/S al escribir en el archivo de texto: " + e.getMessage());
+        }
+    }
+
+    // Método para leer el historial de texto
+    public static void leerHistorial() {
+        try (BufferedReader br = new BufferedReader(new FileReader("historial_canjes.txt"))) {
+            String linea;
+            System.out.println("--- HISTORIAL DE CANJES (TEXT-FILE) ---");
+            while ((linea = br.readLine()) != null) {
+                System.out.println(linea);
+            }
+        } catch (IOException e) {
+            System.out.println("No se encontró el archivo o hubo un error al leerlo: " + e.getMessage());
+        }
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code1" hidden></div>
+            <div class="explain-panel" id="explain-code1" hidden></div>
+        </div>
+
+        <div class="predict-box">
+            <p class="predict-question">🤔 <strong>Antes de seguir:</strong> si ejecutas dos veces seguidas este
+            programa (sin cambiar nada), ¿qué crees que pasará con el contenido del archivo en la segunda
+            ejecución?</p>
+            <button type="button" class="predict-toggle" data-target="predict-s5-1">👀 Ver la respuesta</button>
+            <div class="predict-answer" id="predict-s5-1" hidden>
+                <p>Se borra lo anterior — por defecto FileWriter sobrescribe el archivo desde cero cada vez que se
+                abre. Para agregar líneas nuevas sin borrar las anteriores hay que abrirlo en modo "append" (un
+                segundo parámetro true en el constructor de FileWriter).</p>
+            </div>
+        </div>
+
+        <span class="step-tag">PASO 2</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 2 (Módulo de Respaldos Binarios)</h3>
+        <p>Crea una clase llamada <code>RespaldoBinario.java</code> que permita guardar un respaldo cifrado o
+        serializado de la configuración del sistema usando flujos binarios.</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code2">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code2">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code2">Copiar</button>
+            </div>
+            <pre id="code2"><code>import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+
+public class RespaldoBinario {
+
+    // Método para guardar un objeto de configuración en archivo binario (Trabajo 2)
+    public static void guardarRespaldoConfig(String configuracion) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("config_respaldo.dat"))) {
+            oos.writeObject(configuracion);
+            System.out.println("Respaldo binario generado correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al escribir el archivo binario: " + e.getMessage());
+        }
+    }
+
+    // Método para leer el respaldo binario
+    public static void leerRespaldoConfig() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("config_respaldo.dat"))) {
+            String configLeida = (String) ois.readObject();
+            System.out.println("Configuración recuperada desde el binario: " + configLeida);
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al leer el archivo binario: " + e.getMessage());
+        }
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code2" hidden></div>
+            <div class="explain-panel" id="explain-code2" hidden></div>
+        </div>
+
+        <h4>Clase de ejecución</h4>
+        <p>Puedes crear una clase <code>PrincipalArchivos.java</code> para ejecutar y probar ambos módulos:</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code3">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code3">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code3">Copiar</button>
+            </div>
+            <pre id="code3"><code>public class PrincipalArchivos {
+    public static void main(String[] args) {
+        // Probando Text-File (Trabajo 1)
+        HistorialLog.registrarCanje("Ana Torres", "Skin Legendario");
+        HistorialLog.leerHistorial();
+
+        // Probando Archivo Binario (Trabajo 2)
+        RespaldoBinario.guardarRespaldoConfig("ModoMantto=false;Servidor=Activo");
+        RespaldoBinario.leerRespaldoConfig();
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code3" hidden></div>
+            <div class="explain-panel" id="explain-code3" hidden></div>
+        </div>
+
+        <div class="console-wrap">
+            <p class="console-caption">🖥️ <strong>Vista previa de referencia:</strong> terminal simulada con la
+            salida esperada al ejecutar <code>PrincipalArchivos.java</code> por primera vez.</p>
+            <button type="button" class="console-run-btn" id="console-run">▶ Simular ejecución</button>
+            <div class="console-window">
+                <div class="console-titlebar">
+                    <span>Terminal — java PrincipalArchivos</span>
+                    <span class="console-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="console-body" id="console-body"><span class="console-hint">Presiona "▶ Simular ejecución" para ver la salida esperada en consola.</span></div>
+            </div>
+            <p class="mockup-note">* Como registrarCanje() escribe en modo append (true), si ejecutas el programa
+            varias veces, historial_canjes.txt acumulará una línea nueva cada vez (por eso leerHistorial() podría
+            mostrar más de una línea en ejecuciones posteriores). Esta simulación no compila ni ejecuta Java de
+            verdad.</p>
+        </div>
+
+        <div class="files-wrap">
+            <p class="files-caption">📁 <strong>Vista previa de referencia:</strong> así se vería la carpeta de tu
+            proyecto después de ejecutar <code>PrincipalArchivos.java</code> por primera vez — dos archivos nuevos
+            aparecen solos, creados automáticamente por tu código (sin que tú los hayas creado a mano).</p>
+            <div class="files-window">
+                <div class="console-titlebar">
+                    <span>📂 proyecto-gamestore/</span>
+                    <span class="console-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="files-body">
+                    <div class="file-row"><span class="file-icon file-icon-java">.java</span><span class="file-name">HistorialLog.java</span></div>
+                    <div class="file-row"><span class="file-icon file-icon-java">.java</span><span class="file-name">RespaldoBinario.java</span></div>
+                    <div class="file-row"><span class="file-icon file-icon-java">.java</span><span class="file-name">PrincipalArchivos.java</span></div>
+                    <div class="file-row file-row-new"><span class="file-icon file-icon-txt">.txt</span><span class="file-name">historial_canjes.txt</span><span class="file-badge-new">✨ nuevo</span></div>
+                    <div class="file-row file-row-new"><span class="file-icon file-icon-dat">.dat</span><span class="file-name">config_respaldo.dat</span><span class="file-badge-new">✨ nuevo</span></div>
+                </div>
+            </div>
+            <p class="mockup-note">* historial_canjes.txt lo crea FileWriter/PrintWriter (texto plano, lo puedes
+            abrir con cualquier editor); config_respaldo.dat lo crea FileOutputStream/ObjectOutputStream (binario,
+            no está pensado para abrirse como texto).</p>
+        </div>
+    </section>
+
+    <section id="criterios">
+        <h2>V. Criterios de Entrega y Evaluación</h2>
+        <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
+        siguientes productos:</p>
+
+        <div class="criteria-group">
+            <h3>📦 Evidencia Procedimental (P)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p1">
+                    <span>Código fuente completo compilado y funcionando (<code>HistorialLog.java</code>,
+                    <code>RespaldoBinario.java</code>, <code>PrincipalArchivos.java</code>).</span>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p2">
+                    <span>Demostración de la creación automática de los archivos
+                    <code>historial_canjes.txt</code> y <code>config_respaldo.dat</code> en el equipo.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🧠 Sustentación Conceptual (C)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="c1">
+                    <span>Explicar mediante un comentario en el código por qué es obligatorio usar bloques
+                    <code>try-catch</code> (o la cláusula <code>throws</code>) al manipular flujos de archivos en
+                    Java.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🤝 Actitud (A)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="a1">
+                    <span>Orden en la gestión de recursos de E/S (cierre correcto de flujos mediante
+                    <em>try-with-resources</em>) y entrega puntual.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <h2>VI. Pon a Prueba lo que Aprendiste</h2>
+        <p class="quiz-intro">Responde estas preguntas para comprobar qué tanto entendiste de esta sesión.
+        Puedes intentarlo las veces que quieras — no se guarda ninguna nota.</p>
+        <div id="quiz-container"></div>
+        <div class="quiz-footer">
+            <span id="quiz-score" class="quiz-score">Progreso: 0 / 5 respondidas</span>
+            <button type="button" id="quiz-retry" class="quiz-retry-btn">🔄 Reintentar</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>Guía de Aprendizaje N° 5 · Taller de Lenguajes de Programación · Creado Por Ing Jsumire - Baycodec</p>
+    </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    /* ---- Resaltado de sintaxis básico para bloques Java ---- */
+    const KEYWORDS = ["public","private","protected","class","extends","implements","new","void","static","final","import","return","if","else","null","this","super","package","interface","true","false","try","catch","while"];
+    const TYPES = ["FileWriter","PrintWriter","BufferedReader","FileReader","IOException","FileOutputStream","ObjectOutputStream","FileInputStream","ObjectInputStream","ClassNotFoundException","HistorialLog","RespaldoBinario","PrincipalArchivos","String","System"];
+
+    const TOKEN_RE = new RegExp(
+        [
+            "(//[^\\n]*)",
+            "(&quot;.*?&quot;)",
+            "(@\\w+)",
+            "\\b(" + KEYWORDS.join("|") + ")\\b",
+            "\\b(" + TYPES.join("|") + ")\\b"
+        ].join("|"),
+        "g"
+    );
+
+    function highlight(code) {
+        const escaped = code
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        return escaped.replace(TOKEN_RE, function (m, comment, str, ann, kw, typ) {
+            if (comment) return '<span class="cmt">' + comment + '</span>';
+            if (str) return '<span class="str">' + str + '</span>';
+            if (ann) return '<span class="met">' + ann + '</span>';
+            if (kw) return '<span class="kw">' + kw + '</span>';
+            if (typ) return '<span class="typ">' + typ + '</span>';
+            return m;
+        });
+    }
+
+    document.querySelectorAll(".code-block pre code").forEach(function (block) {
+        block.innerHTML = highlight(block.textContent);
+    });
+
+    /* ---- Numeración de líneas ---- */
+    document.querySelectorAll(".code-block pre").forEach(function (pre) {
+        const codeEl = pre.querySelector("code");
+        if (!codeEl) return;
+
+        const lineCount = codeEl.textContent.split("\n").length;
+
+        const gutter = document.createElement("div");
+        gutter.className = "line-numbers";
+        for (let i = 1; i <= lineCount; i++) {
+            const row = document.createElement("span");
+            row.className = "line-no-row";
+            row.textContent = String(i);
+            gutter.appendChild(row);
+        }
+
+        const body = document.createElement("div");
+        body.className = "code-body";
+        pre.parentNode.insertBefore(body, pre);
+        body.appendChild(gutter);
+        body.appendChild(pre);
+
+        const codeBlock = pre.closest(".code-block");
+        const langTag = codeBlock ? codeBlock.querySelector(".lang-tag") : null;
+        if (langTag) {
+            langTag.textContent = langTag.textContent + " · " + lineCount + " LÍNEAS";
+        }
+    });
+
+    /* ---- Botones "Copiar" ---- */
+    document.querySelectorAll(".copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const codeEl = document.getElementById(targetId);
+            const text = codeEl ? codeEl.textContent : "";
+
+            let settled = false;
+            const done = function () {
+                if (settled) return;
+                settled = true;
+                const original = btn.textContent;
+                btn.textContent = "¡Copiado!";
+                btn.classList.add("copied");
+                setTimeout(function () {
+                    btn.textContent = original;
+                    btn.classList.remove("copied");
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () {
+                    fallbackCopy(text, done);
+                });
+                setTimeout(function () {
+                    if (!settled) fallbackCopy(text, done);
+                }, 500);
+            } else {
+                fallbackCopy(text, done);
+            }
+        });
+    });
+
+    function fallbackCopy(text, cb) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* noop */ }
+        document.body.removeChild(ta);
+        cb();
+    }
+
+    /* ---- Explicación línea por línea ---- */
+    const EXPLANATIONS = {
+        code1: [
+            "Importa FileWriter, la clase básica para escribir caracteres en un archivo.",
+            "Importa PrintWriter, que envuelve a FileWriter para escribir texto con métodos como println().",
+            "Importa BufferedReader, que envuelve a FileReader para leer línea por línea.",
+            "Importa FileReader, la clase básica para leer caracteres desde un archivo.",
+            "Importa IOException, la excepción que hay que atrapar en cualquier operación de archivos.",
+            "Línea en blanco que separa los imports del resto del código.",
+            "Declara la clase HistorialLog.",
+            "Línea en blanco.",
+            "Comentario que anuncia el método para guardar un registro en archivo de texto.",
+            "Declara el método static registrarCanje, que recibe el nombre del estudiante y el ítem canjeado.",
+            "Comentario que explica el modo append (true): agrega al final del archivo en vez de borrarlo.",
+            "Abre, con try-with-resources, un PrintWriter que envuelve a un FileWriter apuntando a \"historial_canjes.txt\" en modo append.",
+            "Escribe una línea de texto en el archivo con la información del canje.",
+            "Muestra en consola un mensaje confirmando que el registro se guardó.",
+            "Bloque catch que atrapa IOException si algo falla al escribir (por ejemplo, sin permisos de escritura).",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Cierra el método registrarCanje (Java cierra el PrintWriter y su FileWriter interno automáticamente, gracias a try-with-resources).",
+            "Línea en blanco.",
+            "Comentario que anuncia el método para leer el historial.",
+            "Declara el método static leerHistorial, sin parámetros.",
+            "Abre, con try-with-resources, un BufferedReader que envuelve a un FileReader apuntando al mismo archivo de texto.",
+            "Declara la variable linea, donde se irá guardando cada línea leída.",
+            "Muestra en consola un encabezado antes de mostrar el historial.",
+            "Bucle while: lee una línea con br.readLine() y la guarda en linea; continúa mientras no se llegue al final del archivo (readLine() devuelve null).",
+            "Muestra en consola la línea leída.",
+            "Cierra el bucle while.",
+            "Bloque catch que atrapa IOException si el archivo no existe o hay un error al leerlo.",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Cierra el método leerHistorial.",
+            "Cierra la clase HistorialLog."
+        ],
+        code2: [
+            "Importa FileOutputStream, la clase básica para escribir bytes en un archivo.",
+            "Importa ObjectOutputStream, que envuelve a FileOutputStream para poder escribir objetos completos (serializados).",
+            "Importa FileInputStream, la clase básica para leer bytes desde un archivo.",
+            "Importa ObjectInputStream, que envuelve a FileInputStream para poder reconstruir objetos completos.",
+            "Importa IOException, la excepción base de errores de entrada/salida.",
+            "Línea en blanco.",
+            "Declara la clase RespaldoBinario.",
+            "Línea en blanco.",
+            "Comentario que anuncia el método para guardar un objeto de configuración en archivo binario.",
+            "Declara el método static guardarRespaldoConfig, que recibe el texto de configuración a respaldar.",
+            "Abre, con try-with-resources, un ObjectOutputStream que envuelve a un FileOutputStream apuntando a \"config_respaldo.dat\".",
+            "Escribe (serializa) el objeto configuracion completo dentro del archivo binario.",
+            "Muestra en consola un mensaje confirmando que el respaldo se generó.",
+            "Bloque catch que atrapa IOException si algo falla al escribir el archivo binario.",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Cierra el método guardarRespaldoConfig.",
+            "Línea en blanco.",
+            "Comentario que anuncia el método para leer el respaldo binario.",
+            "Declara el método static leerRespaldoConfig, sin parámetros.",
+            "Abre, con try-with-resources, un ObjectInputStream que envuelve a un FileInputStream apuntando al mismo archivo binario.",
+            "Lee (deserializa) el objeto guardado y lo convierte (cast) de vuelta a String.",
+            "Muestra en consola la configuración recuperada.",
+            "Bloque catch que atrapa DOS tipos de excepción a la vez: IOException (error de lectura) o ClassNotFoundException (la clase del objeto guardado ya no existe).",
+            "Muestra en consola un mensaje de error con el detalle de la excepción.",
+            "Cierra el bloque catch.",
+            "Cierra el método leerRespaldoConfig.",
+            "Cierra la clase RespaldoBinario."
+        ],
+        code3: [
+            "Declara la clase PrincipalArchivos, que probará ambos módulos (texto y binario).",
+            "Punto de entrada del programa: aquí comienza la ejecución cuando se corre esta clase.",
+            "Comentario que anuncia la prueba del módulo de texto plano (Trabajo 1).",
+            "Llama a HistorialLog.registrarCanje(...) para escribir una nueva línea en historial_canjes.txt.",
+            "Llama a HistorialLog.leerHistorial() para leer y mostrar en consola todo el contenido del archivo de texto.",
+            "Línea en blanco.",
+            "Comentario que anuncia la prueba del módulo binario (Trabajo 2).",
+            "Llama a RespaldoBinario.guardarRespaldoConfig(...) para crear/actualizar el archivo binario config_respaldo.dat.",
+            "Llama a RespaldoBinario.leerRespaldoConfig() para leer y mostrar en consola el contenido recuperado del archivo binario.",
+            "Cierra el método main.",
+            "Cierra la clase PrincipalArchivos."
+        ]
+    };
+
+    function buildExplainPanel(targetId) {
+        const codeEl = document.getElementById(targetId);
+        const panel = document.getElementById("explain-" + targetId);
+        if (!codeEl || !panel || panel.dataset.built) return;
+
+        const lines = codeEl.textContent.split("\n");
+        const notes = EXPLANATIONS[targetId] || [];
+
+        const frag = document.createDocumentFragment();
+        lines.forEach(function (line, i) {
+            const row = document.createElement("div");
+            row.className = "explain-row";
+
+            const num = document.createElement("span");
+            num.className = "explain-line-no";
+            num.textContent = String(i + 1);
+
+            const codeSpan = document.createElement("code");
+            const trimmed = line.trim();
+            if (trimmed === "") {
+                codeSpan.className = "explain-code is-blank";
+                codeSpan.textContent = "(línea en blanco)";
+            } else {
+                codeSpan.className = "explain-code";
+                codeSpan.innerHTML = highlight(line);
+            }
+
+            const text = document.createElement("span");
+            text.className = "explain-text";
+            text.textContent = notes[i] || "Línea de código de apoyo dentro del bloque.";
+
+            row.appendChild(num);
+            row.appendChild(codeSpan);
+            row.appendChild(text);
+            frag.appendChild(row);
+        });
+
+        panel.appendChild(frag);
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".explain-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("explain-" + targetId);
+            if (!panel) return;
+
+            buildExplainPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? "🧠 Explicar línea por línea" : "✕ Ocultar explicación";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Clases usadas y su anidamiento (aquí: streams que se envuelven unos a otros) ---- */
+    const CLASS_NOTES = {
+        code1: {
+            intro: "Aquí el anidamiento es literal y muy visual: cada clase de flujo (stream) ENVUELVE a otra, formando una \"cebolla\" de capas — cada capa le agrega una capacidad nueva a la capa de adentro.",
+            classes: [
+                {
+                    name: "FileWriter",
+                    pkg: "java.io",
+                    desc: "Flujo básico que escribe caracteres directamente en un archivo de texto.",
+                    nest: "Es la capa más interna: se crea primero, apuntando al archivo \"historial_canjes.txt\", y luego se envuelve con un PrintWriter."
+                },
+                {
+                    name: "PrintWriter",
+                    pkg: "java.io",
+                    desc: "Flujo que agrega métodos cómodos como println(...) para escribir texto con formato.",
+                    nest: "Se anida ALREDEDOR de un FileWriter (new PrintWriter(new FileWriter(...))): usa el FileWriter por dentro para hacer el trabajo real de escritura, pero le da a tu código una interfaz más simple."
+                },
+                {
+                    name: "FileReader",
+                    pkg: "java.io",
+                    desc: "Flujo básico que lee caracteres directamente desde un archivo de texto.",
+                    nest: "Igual que FileWriter, es la capa más interna del lado de lectura; se envuelve con un BufferedReader."
+                },
+                {
+                    name: "BufferedReader",
+                    pkg: "java.io",
+                    desc: "Flujo que agrega un búfer (memoria intermedia) y el método readLine() para leer línea por línea.",
+                    nest: "Se anida ALREDEDOR de un FileReader (new BufferedReader(new FileReader(...))), igual que PrintWriter envuelve a FileWriter."
+                },
+                {
+                    name: "try-with-resources",
+                    pkg: "sintaxis de Java",
+                    desc: "Una forma especial de try que declara el recurso (el flujo) DENTRO de sus paréntesis, y Java garantiza cerrarlo automáticamente al salir del bloque.",
+                    nest: "El PrintWriter (o BufferedReader) queda anidado dentro de los paréntesis del try; el código que lo usa queda anidado dentro de las llaves { } del try; y el manejo del error queda anidado en el catch (IOException e) { } que sigue."
+                }
+            ],
+            diagram: "ESCRITURA (registrarCanje)              LECTURA (leerHistorial)\n"
+                + "\n"
+                + "PrintWriter          ← capa externa       BufferedReader       ← capa externa\n"
+                + "  └── FileWriter        ← capa interna       └── FileReader        ← capa interna\n"
+                + "        └── \"historial_canjes.txt\"  (el archivo real en disco)\n"
+                + "\n"
+                + "try (PrintWriter pw = new PrintWriter(new FileWriter(...))) {\n"
+                + "    pw.println(...);          ← Java cierra pw (y su FileWriter interno)\n"
+                + "}                                automáticamente al salir del bloque\n"
+                + "catch (IOException e) { ... }   ← atrapa cualquier error de E/S"
+        },
+        code2: {
+            intro: "Mismo patrón de anidamiento que el Paso 1, pero con flujos BINARIOS: cada clase envuelve a otra, y aquí además se agrega ClassNotFoundException al manejo de errores.",
+            classes: [
+                {
+                    name: "FileOutputStream",
+                    pkg: "java.io",
+                    desc: "Flujo básico que escribe bytes crudos directamente en un archivo.",
+                    nest: "Es la capa más interna de la escritura binaria; se envuelve con un ObjectOutputStream."
+                },
+                {
+                    name: "ObjectOutputStream",
+                    pkg: "java.io",
+                    desc: "Flujo que sabe convertir (serializar) un objeto Java completo en una secuencia de bytes.",
+                    nest: "Se anida ALREDEDOR de un FileOutputStream (new ObjectOutputStream(new FileOutputStream(...))): usa el FileOutputStream por dentro para escribir los bytes ya serializados."
+                },
+                {
+                    name: "FileInputStream",
+                    pkg: "java.io",
+                    desc: "Flujo básico que lee bytes crudos directamente desde un archivo.",
+                    nest: "Es la capa más interna de la lectura binaria; se envuelve con un ObjectInputStream."
+                },
+                {
+                    name: "ObjectInputStream",
+                    pkg: "java.io",
+                    desc: "Flujo que sabe reconstruir (deserializar) un objeto Java a partir de una secuencia de bytes.",
+                    nest: "Se anida ALREDEDOR de un FileInputStream (new ObjectInputStream(new FileInputStream(...))), igual que ObjectOutputStream envuelve a FileOutputStream."
+                },
+                {
+                    name: "IOException | ClassNotFoundException",
+                    pkg: "java.io · java.lang",
+                    desc: "Dos tipos de excepción distintos, atrapados juntos en un mismo catch usando el operador |.",
+                    nest: "Ambas quedan anidadas dentro del mismo bloque catch (IOException | ClassNotFoundException e) { ... }, ya que readObject() puede lanzar cualquiera de las dos."
+                }
+            ],
+            diagram: "ESCRITURA (guardarRespaldoConfig)        LECTURA (leerRespaldoConfig)\n"
+                + "\n"
+                + "ObjectOutputStream   ← capa externa       ObjectInputStream    ← capa externa\n"
+                + "  └── FileOutputStream ← capa interna        └── FileInputStream   ← capa interna\n"
+                + "        └── \"config_respaldo.dat\"  (el archivo binario real en disco)\n"
+                + "\n"
+                + "try (ObjectOutputStream oos = new ObjectOutputStream(\n"
+                + "      new FileOutputStream(\"config_respaldo.dat\"))) {\n"
+                + "    oos.writeObject(configuracion);   ← serializa el String a bytes\n"
+                + "} catch (IOException e) { ... }"
+        },
+        code3: {
+            intro: "Aquí el anidamiento es de COMPOSICIÓN simple: main() llama, en orden, a los métodos static de las otras dos clases; no se crea ningún objeto de HistorialLog ni RespaldoBinario porque todos sus métodos son static.",
+            classes: [
+                {
+                    name: "HistorialLog",
+                    pkg: "clase propia",
+                    desc: "La clase del Paso 1, con los métodos registrarCanje() y leerHistorial().",
+                    nest: "Se invoca directamente como HistorialLog.registrarCanje(...) porque sus métodos son static: no hace falta un objeto, se llama sobre la clase misma."
+                },
+                {
+                    name: "RespaldoBinario",
+                    pkg: "clase propia",
+                    desc: "La clase del Paso 2, con los métodos guardarRespaldoConfig() y leerRespaldoConfig().",
+                    nest: "Igual que HistorialLog: se invoca como RespaldoBinario.guardarRespaldoConfig(...) sin crear ningún objeto."
+                },
+                {
+                    name: "PrincipalArchivos",
+                    pkg: "clase propia",
+                    desc: "Clase de prueba que orquesta la ejecución de ambos módulos, uno después del otro.",
+                    nest: "No hereda de ninguna de las otras dos clases; simplemente las usa desde dentro de su método main()."
+                }
+            ],
+            diagram: "PrincipalArchivos.main()\n"
+                + " │\n"
+                + " ├── HistorialLog.registrarCanje(\"Ana Torres\", \"Skin Legendario\")\n"
+                + " ├── HistorialLog.leerHistorial()\n"
+                + " │\n"
+                + " ├── RespaldoBinario.guardarRespaldoConfig(\"ModoMantto=false;Servidor=Activo\")\n"
+                + " └── RespaldoBinario.leerRespaldoConfig()\n"
+                + "\n"
+                + "Ninguna de las 4 llamadas crea un objeto: todos los métodos son static,\n"
+                + "por eso se llaman directamente sobre el NOMBRE de la clase."
+        }
+    };
+
+    function buildClassesPanel(targetId) {
+        const panel = document.getElementById("classes-" + targetId);
+        const data = CLASS_NOTES[targetId];
+        if (!panel || !data || panel.dataset.built) return;
+
+        const intro = document.createElement("p");
+        intro.className = "classes-intro";
+        intro.textContent = data.intro;
+        panel.appendChild(intro);
+
+        data.classes.forEach(function (cls) {
+            const card = document.createElement("div");
+            card.className = "class-card";
+
+            const nameLine = document.createElement("div");
+            const nameEl = document.createElement("span");
+            nameEl.className = "class-name";
+            nameEl.textContent = cls.name;
+            const pkgEl = document.createElement("span");
+            pkgEl.className = "class-pkg";
+            pkgEl.textContent = cls.pkg;
+            nameLine.appendChild(nameEl);
+            nameLine.appendChild(pkgEl);
+
+            const descEl = document.createElement("p");
+            descEl.textContent = cls.desc;
+
+            const nestEl = document.createElement("p");
+            nestEl.className = "nest-note";
+            nestEl.textContent = "Anidamiento: " + cls.nest;
+
+            card.appendChild(nameLine);
+            card.appendChild(descEl);
+            card.appendChild(nestEl);
+            panel.appendChild(card);
+        });
+
+        const diagramTitle = document.createElement("div");
+        diagramTitle.className = "nest-diagram-title";
+        diagramTitle.textContent = "Diagrama de anidamiento de este código:";
+        panel.appendChild(diagramTitle);
+
+        const diagram = document.createElement("div");
+        diagram.className = "nest-diagram";
+        diagram.textContent = data.diagram;
+        panel.appendChild(diagram);
+
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".classes-btn").forEach(function (btn) {
+        const originalLabel = btn.textContent;
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("classes-" + targetId);
+            if (!panel) return;
+
+            buildClassesPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? originalLabel : "✕ Ocultar clases";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Terminal simulada: reproduce la salida esperada de PrincipalArchivos ---- */
+    const CONSOLE_LINES = [
+        { text: "$ java PrincipalArchivos", cls: "console-cmd" },
+        { text: "Registro de canje guardado exitosamente en el archivo de texto.", cls: "" },
+        { text: "--- HISTORIAL DE CANJES (TEXT-FILE) ---", cls: "console-sep" },
+        { text: "Estudiante: Ana Torres | Ítem: Skin Legendario", cls: "" },
+        { text: "Respaldo binario generado correctamente.", cls: "" },
+        { text: "Configuración recuperada desde el binario: ModoMantto=false;Servidor=Activo", cls: "" }
+    ];
+
+    const runBtn = document.getElementById("console-run");
+    const consoleBody = document.getElementById("console-body");
+
+    if (runBtn && consoleBody) {
+        runBtn.addEventListener("click", function () {
+            runBtn.disabled = true;
+            runBtn.textContent = "⏳ Ejecutando...";
+            consoleBody.innerHTML = "";
+
+            let i = 0;
+            function nextLine() {
+                if (i >= CONSOLE_LINES.length) {
+                    const cursor = document.createElement("span");
+                    cursor.className = "console-cursor";
+                    cursor.textContent = "$ ▍";
+                    consoleBody.appendChild(cursor);
+                    runBtn.disabled = false;
+                    runBtn.textContent = "↻ Volver a ejecutar";
+                    return;
+                }
+                const line = CONSOLE_LINES[i];
+                const span = document.createElement("div");
+                if (line.cls) span.className = line.cls;
+                span.textContent = line.text;
+                consoleBody.appendChild(span);
+                i++;
+                setTimeout(nextLine, i === 1 ? 300 : 240);
+            }
+            nextLine();
+        });
+    }
+
+    /* ---- Checklist de criterios de entrega con persistencia local ---- */
+    const STORAGE_KEY = "guia5-checklist";
+    const checkboxes = Array.from(document.querySelectorAll(".checklist-item input[type=checkbox]"));
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    function loadState() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveState(state) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { /* almacenamiento no disponible: se ignora */ }
+    }
+
+    function updateProgress() {
+        const total = checkboxes.length;
+        const checked = checkboxes.filter(function (cb) { return cb.checked; }).length;
+        const pct = total ? Math.round((checked / total) * 100) : 0;
+        progressFill.style.width = pct + "%";
+        progressText.textContent = checked + " / " + total + " completado";
+    }
+
+    function applyLabelStyle(cb) {
+        const span = cb.parentElement.querySelector("span");
+        if (span) span.classList.toggle("done", cb.checked);
+    }
+
+    const state = loadState();
+    checkboxes.forEach(function (cb) {
+        const key = cb.getAttribute("data-key");
+        cb.checked = !!state[key];
+        applyLabelStyle(cb);
+
+        cb.addEventListener("change", function () {
+            const current = loadState();
+            current[key] = cb.checked;
+            saveState(current);
+            applyLabelStyle(cb);
+            updateProgress();
+        });
+    });
+    updateProgress();
+
+    document.getElementById("reset-checklist").addEventListener("click", function () {
+        saveState({});
+        checkboxes.forEach(function (cb) {
+            cb.checked = false;
+            applyLabelStyle(cb);
+        });
+        updateProgress();
+    });
+
+    /* ---- Resaltado del enlace activo en la navegación ---- */
+    const navLinks = Array.from(document.querySelectorAll("nav.toc a"));
+    const sections = navLinks.map(function (a) {
+        return document.querySelector(a.getAttribute("href"));
+    });
+
+    function onScroll() {
+        let currentIndex = 0;
+        const scrollPos = window.scrollY + 90;
+        sections.forEach(function (sec, i) {
+            if (sec && sec.offsetTop <= scrollPos) currentIndex = i;
+        });
+        navLinks.forEach(function (a, i) {
+            a.classList.toggle("active", i === currentIndex);
+        });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+})();
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    (function () {
+        var GLOSSARY = {
+    "try-catch": "Una estructura que \"intenta\" ejecutar un código riesgoso (try) y, si algo falla, \"atrapa\" el error (catch) en vez de que el programa se detenga bruscamente.",
+    "throws": "Palabra que indica que un método puede producir un error (excepción) y que quien lo use deberá manejarlo.",
+    "IOException": "Un tipo de error (excepción) que ocurre cuando algo falla al leer o escribir un archivo, por ejemplo si no existe o no hay permisos.",
+    "FileWriter": "Una clase que permite escribir texto dentro de un archivo.",
+    "PrintWriter": "Una clase que permite escribir texto en un archivo línea por línea, de forma sencilla y legible.",
+    "BufferedReader": "Una clase que permite leer un archivo de texto línea por línea, de forma eficiente.",
+    "FileOutputStream": "Una clase que permite guardar datos directamente en un archivo binario (no legible como texto normal).",
+    "ObjectOutputStream": "Una clase que permite guardar objetos completos de Java directamente en un archivo binario (serializarlos), no solo texto."
+};
+        var containers = document.querySelectorAll("#objetivo, #marco-teorico, #actividades, #criterios");
+        var activeTooltip = null;
+
+        function closeTooltip() {
+            if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; }
+        }
+
+        function showTooltip(el, text) {
+            closeTooltip();
+            var tip = document.createElement("span");
+            tip.className = "gloss-tooltip";
+            tip.textContent = text;
+            el.appendChild(tip);
+            var rect = tip.getBoundingClientRect();
+            if (rect.left < 8) {
+                tip.style.left = "calc(50% + " + (8 - rect.left) + "px)";
+            } else if (rect.right > window.innerWidth - 8) {
+                tip.style.left = "calc(50% - " + (rect.right - window.innerWidth + 8) + "px)";
+            }
+            activeTooltip = tip;
+        }
+
+        function attach(el, term) {
+            if (el.classList.contains("gloss-term")) return;
+            el.classList.add("gloss-term");
+            el.setAttribute("tabindex", "0");
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", "Ver definición de " + term);
+            el.addEventListener("mouseenter", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("mouseleave", closeTooltip);
+            el.addEventListener("focus", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("blur", closeTooltip);
+            el.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (activeTooltip && el.contains(activeTooltip)) {
+                    closeTooltip();
+                } else {
+                    showTooltip(el, GLOSSARY[term]);
+                }
+            });
+        }
+
+        containers.forEach(function (container) {
+            if (!container) return;
+            Array.from(container.querySelectorAll("code")).forEach(function (codeEl) {
+                if (codeEl.closest("pre")) return;
+                var key = codeEl.textContent.trim();
+                if (GLOSSARY.hasOwnProperty(key)) attach(codeEl, key);
+            });
+            Array.from(container.querySelectorAll("[data-term]")).forEach(function (el) {
+                var key = el.getAttribute("data-term");
+                if (GLOSSARY.hasOwnProperty(key)) attach(el, key);
+            });
+        });
+
+        document.addEventListener("click", closeTooltip);
+    })();
+
+    /* ---- Quiz autoevaluado ---- */
+    (function () {
+        var QUIZ = [
+    {
+        "q": "¿Para qué sirve un bloque try-catch?",
+        "options": [
+            "Para crear archivos",
+            "Para intentar un código riesgoso y atrapar el error si algo falla",
+            "Para conectar a una base de datos",
+            "Para heredar de otra clase"
+        ],
+        "correct": 1,
+        "explain": "try \"intenta\" ejecutar el código; si algo sale mal, catch atrapa la excepción y el programa no se detiene bruscamente."
+    },
+    {
+        "q": "¿Qué clase se usa para escribir texto línea por línea en un archivo?",
+        "options": [
+            "BufferedReader",
+            "FileOutputStream",
+            "PrintWriter",
+            "ObjectInputStream"
+        ],
+        "correct": 2,
+        "explain": "PrintWriter (junto con FileWriter) permite escribir texto en un archivo de forma sencilla."
+    },
+    {
+        "q": "¿Qué clase se usa para leer un archivo de texto línea por línea?",
+        "options": [
+            "BufferedReader",
+            "FileWriter",
+            "ObjectOutputStream",
+            "PreparedStatement"
+        ],
+        "correct": 0,
+        "explain": "BufferedReader lee el archivo de forma eficiente, línea por línea."
+    },
+    {
+        "q": "¿Qué diferencia hay entre guardar con FileWriter y con ObjectOutputStream?",
+        "options": [
+            "Ninguna, son iguales",
+            "FileWriter guarda texto plano; ObjectOutputStream guarda objetos completos en binario",
+            "ObjectOutputStream solo funciona con bases de datos",
+            "FileWriter es siempre más rápido"
+        ],
+        "correct": 1,
+        "explain": "FileWriter escribe texto legible; ObjectOutputStream serializa (convierte a binario) un objeto Java completo."
+    },
+    {
+        "q": "¿Qué tipo de excepción se lanza cuando falla la lectura o escritura de un archivo?",
+        "options": [
+            "SQLException",
+            "IOException",
+            "NullPointerException",
+            "ArithmeticException"
+        ],
+        "correct": 1,
+        "explain": "IOException agrupa los errores relacionados con entrada/salida, como archivos que no existen."
+    }
+];
+        var container = document.getElementById("quiz-container");
+        if (!container) return;
+        var answers = new Array(QUIZ.length).fill(null);
+
+        function renderScore() {
+            var scoreEl = document.getElementById("quiz-score");
+            if (!scoreEl) return;
+            var answered = answers.filter(function (a) { return a !== null; }).length;
+            var correct = answers.filter(function (a, i) { return a === QUIZ[i].correct; }).length;
+            scoreEl.textContent = answered === QUIZ.length
+                ? "Resultado: " + correct + " / " + QUIZ.length + " correctas" + (correct === QUIZ.length ? " 🎉 ¡Perfecto!" : "")
+                : "Progreso: " + answered + " / " + QUIZ.length + " respondidas";
+        }
+
+        function selectAnswer(qi, oi, card) {
+            answers[qi] = oi;
+            var opts = Array.from(card.querySelectorAll(".quiz-option"));
+            opts.forEach(function (btn) {
+                btn.classList.remove("correct", "incorrect");
+                btn.disabled = true;
+            });
+            var correct = QUIZ[qi].correct;
+            opts[correct].classList.add("correct");
+            if (oi !== correct) opts[oi].classList.add("incorrect");
+            var fb = card.querySelector(".quiz-feedback");
+            fb.hidden = false;
+            fb.className = "quiz-feedback " + (oi === correct ? "is-correct" : "is-incorrect");
+            fb.innerHTML = (oi === correct ? "✅ <strong>¡Correcto!</strong> " : "❌ <strong>No es correcto.</strong> ") + QUIZ[qi].explain;
+            renderScore();
+        }
+
+        function render() {
+            container.innerHTML = "";
+            QUIZ.forEach(function (item, qi) {
+                var card = document.createElement("div");
+                card.className = "quiz-card";
+
+                var qEl = document.createElement("p");
+                qEl.className = "quiz-question";
+                qEl.textContent = (qi + 1) + ". " + item.q;
+                card.appendChild(qEl);
+
+                var opts = document.createElement("div");
+                opts.className = "quiz-options";
+                item.options.forEach(function (optText, oi) {
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "quiz-option";
+                    btn.textContent = optText;
+                    btn.addEventListener("click", function () { selectAnswer(qi, oi, card); });
+                    opts.appendChild(btn);
+                });
+                card.appendChild(opts);
+
+                var fb = document.createElement("div");
+                fb.className = "quiz-feedback";
+                fb.hidden = true;
+                card.appendChild(fb);
+
+                container.appendChild(card);
+            });
+            renderScore();
+        }
+
+        var retryBtn = document.getElementById("quiz-retry");
+        if (retryBtn) {
+            retryBtn.addEventListener("click", function () {
+                answers = new Array(QUIZ.length).fill(null);
+                render();
+            });
+        }
+
+        render();
+    })();
+
+    /* ---- Predice antes de revelar ---- */
+    (function () {
+        document.querySelectorAll(".predict-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var target = document.getElementById(btn.getAttribute("data-target"));
+                if (!target) return;
+                var isHidden = target.hidden;
+                target.hidden = !isHidden;
+                btn.textContent = isHidden ? "\ud83d\ude48 Ocultar la respuesta" : "\ud83d\udc40 Ver la respuesta";
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>

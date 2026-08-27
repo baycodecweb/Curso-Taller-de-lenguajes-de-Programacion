@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Aprendizaje N° 3 — Polimorfismo y Clases Abstractas (Java)</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 45px 20px 35px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.9rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; margin-top: 4px; }
+
+    .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.15s ease;
+    }
+
+    nav.toc a:hover, nav.toc a.active { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 26px 28px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.35rem;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.1rem; margin: 18px 0 8px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+    }
+
+    .step-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block { position: relative; margin: 14px 0 20px; }
+
+    .code-block .lang-tag {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 8px 0 8px 0;
+        letter-spacing: 0.5px;
+        z-index: 1;
+    }
+
+    .code-block .code-body {
+        display: flex;
+        background: var(--code-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .code-block pre {
+        background: transparent;
+        color: var(--code-fg);
+        padding: 34px 18px 18px 14px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre;
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .code-block pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+        font-size: inherit;
+    }
+
+    .line-numbers {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.03);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        color: #55627a;
+        text-align: right;
+        padding: 34px 10px 18px 12px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .line-numbers .line-no-row { display: block; }
+
+    .code-toolbar { position: absolute; top: 6px; right: 8px; display: flex; gap: 8px; z-index: 1; }
+
+    .copy-btn, .explain-btn, .classes-btn {
+        background: rgba(255,255,255,0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover, .explain-btn:hover, .classes-btn:hover { background: rgba(255,255,255,0.25); }
+    .copy-btn.copied { background: var(--success); border-color: var(--success); color: white; }
+    .explain-btn.active, .classes-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Resaltado simple de sintaxis Java */
+    .kw   { color: #60a5fa; }
+    .str  { color: #86efac; }
+    .cmt  { color: #64748b; font-style: italic; }
+    .typ  { color: #fbbf24; }
+    .met  { color: #c4b5fd; }
+
+    .explain-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .explain-panel[hidden] { display: none; }
+
+    .explain-row {
+        display: grid;
+        grid-template-columns: 30px minmax(120px, 1fr) 1.5fr;
+        gap: 10px 14px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        align-items: start;
+        background: var(--bg-card);
+    }
+
+    .explain-row:last-child { border-bottom: none; }
+    .explain-row:nth-child(even) { background: #f8fafc; }
+
+    .explain-line-no {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: right;
+        padding-top: 5px;
+    }
+
+    .explain-code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.78rem;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 5px 8px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .explain-code.is-blank {
+        color: var(--text-muted);
+        font-style: italic;
+        background: transparent;
+        border: 1px dashed var(--border);
+    }
+
+    .explain-text { font-size: 0.85rem; color: var(--text-main); padding-top: 4px; }
+
+    .classes-panel { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: var(--bg-card); }
+    .classes-panel[hidden] { display: none; }
+    .classes-intro { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
+
+    .class-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; background: #f8fafc; }
+
+    .class-card .class-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: var(--primary);
+        background: #eef2ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    .class-card .class-pkg { font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
+    .class-card p { font-size: 0.85rem; margin-bottom: 4px; }
+
+    .class-card .nest-note {
+        font-size: 0.8rem;
+        color: #713f12;
+        background: #fef9c3;
+        border-left: 3px solid var(--warning);
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 6px;
+    }
+
+    .nest-diagram-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin: 14px 0 8px; }
+
+    .nest-diagram {
+        background: var(--code-bg);
+        color: #38bdf8;
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    /* Vista previa de consola (terminal simulada) */
+    .console-wrap { margin: 6px 0 26px; text-align: center; }
+
+    .console-caption {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+
+    .console-run-btn {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .console-run-btn:hover { background: #eff6ff; }
+    .console-run-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .console-window {
+        display: inline-block;
+        width: 560px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .console-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+
+    .console-titlebar-controls { display: flex; gap: 5px; }
+
+    .console-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+
+    .console-body {
+        background: #0b0f19;
+        color: #d1d5db;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.8rem;
+        line-height: 1.7;
+        padding: 14px 16px;
+        min-height: 190px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .console-cmd { color: #4ade80; }
+    .console-sep { color: #4b5563; }
+    .console-hint { color: #6b7280; font-style: italic; }
+    .console-cursor { color: #4ade80; }
+
+    .mockup-note { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+    .req-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .req-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #f8fafc; }
+    .req-card-recommended { border-color: var(--success); background: #f0fdf4; }
+
+    .req-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .req-name { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+
+    .req-badge-open {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #14532d;
+        background: #dcfce7;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .req-tag { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .req-card p { font-size: 0.85rem; }
+
+    .req-link { display: inline-block; margin-top: 6px; font-size: 0.8rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .req-link:hover { text-decoration: underline; }
+
+    .criteria-group { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+    .criteria-group h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+    .criteria-group ul { list-style: none; margin-left: 0; }
+
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+    .checklist-item:hover { background: #f1f5f9; }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px;
+        width: 17px;
+        height: 17px;
+        accent-color: var(--success);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-item span.done { text-decoration: line-through; color: var(--text-muted); }
+
+    .progress-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 25px; }
+
+    .progress-wrap .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .progress-bar-bg { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-light), var(--success));
+        border-radius: 20px;
+        transition: width 0.35s ease;
+    }
+
+    .reset-btn {
+        margin-top: 12px;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        cursor: pointer;
+    }
+
+    .reset-btn:hover { background: #f1f5f9; }
+
+    footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 20px 16px; }
+    }
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    .gloss-term {
+        position: relative;
+        cursor: help;
+        border-bottom: 2px dotted var(--accent);
+    }
+
+    .gloss-term::after {
+        content: "\24D8";
+        font-size: 0.7em;
+        vertical-align: super;
+        margin-left: 2px;
+        color: var(--accent);
+        opacity: 0.85;
+    }
+
+    .gloss-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text-main);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 400;
+        line-height: 1.45;
+        width: max-content;
+        max-width: 260px;
+        white-space: normal;
+        z-index: 60;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        text-align: left;
+    }
+
+    .gloss-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: var(--text-main);
+    }
+
+    @media (max-width: 600px) {
+        .gloss-tooltip { max-width: 200px; font-size: 0.78rem; }
+    }
+
+    /* ---- Quiz autoevaluado ---- */
+    .quiz-intro { color: var(--text-muted); margin-bottom: 20px; }
+
+    .quiz-card {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+    .quiz-question { font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .quiz-option {
+        text-align: left;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text-main);
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .quiz-option:hover:not(:disabled) { background: #eef2ff; border-color: var(--primary-light); }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
+    .quiz-option.incorrect { background: #fee2e2; border-color: #ef4444; }
+
+    .quiz-feedback {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .quiz-feedback.is-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--text-main); }
+    .quiz-feedback.is-incorrect { background: #fef2f2; border: 1px solid #fecaca; color: var(--text-main); }
+
+    .quiz-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .quiz-score { font-weight: 600; color: var(--text-main); }
+
+    .quiz-retry-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .quiz-retry-btn:hover { background: #f1f5f9; }
+
+    /* ---- Errores comunes ---- */
+    .errors-wrap {
+        margin-top: 20px;
+        padding: 18px 20px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title {
+        color: #92400e;
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .error-item {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .error-what { color: #991b1b; margin-bottom: 4px; line-height: 1.5; }
+    .error-fix { color: #166534; line-height: 1.5; }
+
+    /* ---- Predice antes de revelar ---- */
+    .predict-box {
+        margin: 20px 0;
+        padding: 16px 18px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 10px;
+    }
+
+    .predict-question { margin-bottom: 12px; color: var(--text-main); line-height: 1.5; }
+
+    .predict-toggle {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-light);
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .predict-toggle:hover { background: #eff6ff; }
+
+    .predict-answer {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>GUÍA DE APRENDIZAJE N° 3</h1>
+    <p><strong>Unidad Didáctica:</strong> Taller de Lenguajes de Programación</p>
+    <p><strong>Tema:</strong> Polimorfismo, Clases Abstractas e Interfaces en Java</p>
+    <div class="badges">
+        <span class="badge">🎮 Proyecto Base: GameStore Escolar</span>
+        <span class="badge">🎯 Módulo: Lógica de Negocio y Recompensas Dinámicas</span>
+        <span class="badge">🧬 Java POO</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#objetivo">I. Objetivo</a></li>
+        <li><a href="#requisitos">II. Requisitos</a></li>
+        <li><a href="#marco-teorico">III. Marco Teórico</a></li>
+        <li><a href="#actividades">IV. Actividades</a></li>
+        <li><a href="#criterios">V. Criterios de Entrega</a></li>
+        <li><a href="#quiz">VI. Quiz</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>Progreso de entrega</span>
+            <span id="progress-text">0 / 4 completado</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
+    </div>
+
+    <section id="objetivo">
+        <h2>I. Objetivo de la Guía</h2>
+        <div class="info-card">
+            <p>Programar la lógica de negocio orientada a objetos creando <span data-term="clase abstracta">clases
+            abstractas</span>, aplicando <span data-term="herencia">herencia</span> y ejecutando
+            <span data-term="polimorfismo">polimorfismo</span> dinámico para gestionar los diversos tipos de
+            recompensas del sistema.</p>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>II. Requisitos — Software e IDE de Desarrollo</h2>
+        <div class="info-card">
+            <p>Es la misma sesión de taller, así que necesitas lo mismo que en las guías anteriores: todo
+            <strong>gratuito y de código abierto (open source)</strong>, sin licencias que comprar. Esta guía es
+            100% lógica en Java (sin interfaz gráfica), así que ni siquiera necesitas el módulo Swing: basta con
+            compilar y ejecutar desde la consola de tu IDE.</p>
+        </div>
+
+        <h3>1. Obligatorio: el JDK (motor de Java)</h3>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">OpenJDK</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Obligatorio · versión 17 o superior recomendada</p>
+                <p>Es el <strong>kit de desarrollo de Java</strong>: incluye el compilador (<code>javac</code>) y la
+                máquina virtual (JVM) necesarios para compilar y ejecutar el código de esta guía.</p>
+                <p>OpenJDK es la implementación de código abierto de Java (licencia GPL v2); una distribución
+                popular y fácil de instalar es <strong>Eclipse Temurin</strong>.</p>
+                <a class="req-link" href="https://adoptium.net" target="_blank" rel="noopener">adoptium.net (Eclipse Temurin / OpenJDK) ↗</a>
+            </div>
+        </div>
+
+        <h3>2. Elige un IDE (entorno de desarrollo)</h3>
+        <p style="margin-bottom:10px">Necesitas <strong>uno solo</strong> de estos, todos gratuitos y de código abierto:</p>
+        <div class="req-grid">
+            <div class="req-card req-card-recommended">
+                <div class="req-card-head">
+                    <span class="req-name">Apache NetBeans</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">★ Recomendado para esta guía</p>
+                <p>Proyecto de la Apache Software Foundation (licencia Apache 2.0). Su consola de salida integrada
+                facilita ver los resultados de <code>System.out.println</code> sin salir del IDE.</p>
+                <a class="req-link" href="https://netbeans.apache.org" target="_blank" rel="noopener">netbeans.apache.org ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">Eclipse IDE</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Alternativa</p>
+                <p>Uno de los IDEs de Java más usados en la industria. Gratuito y de código abierto
+                (Eclipse Public License).</p>
+                <a class="req-link" href="https://www.eclipse.org/downloads/" target="_blank" rel="noopener">eclipse.org/downloads ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">IntelliJ IDEA <em>Community</em></span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Alternativa · solo la edición Community</p>
+                <p><strong>Importante:</strong> solo la edición <strong>Community</strong> es gratuita y de código
+                abierto (Apache 2.0); la edición <em>Ultimate</em> es de pago y no se necesita para este curso.</p>
+                <a class="req-link" href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">jetbrains.com/idea/download ↗</a>
+            </div>
+            <div class="req-card">
+                <div class="req-card-head">
+                    <span class="req-name">Visual Studio Code</span>
+                    <span class="req-badge-open">🟢 Open Source</span>
+                </div>
+                <p class="req-tag">Opción ligera</p>
+                <p>Editor liviano (proyecto base "Code - OSS", licencia MIT) con la extensión gratuita
+                <strong>Extension Pack for Java</strong> para compilar, ejecutar y depurar.</p>
+                <a class="req-link" href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com ↗</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="marco-teorico">
+        <h2>III. Marco Teórico Breve</h2>
+
+        <h3>📄 1. Clases Abstractas</h3>
+        <div class="info-card">
+            <p>Son clases que <strong>no se pueden instanciar directamente</strong> (no puedes escribir
+            <code>new ItemRecompensa(...)</code>); sirven como plantillas o clases base para otras clases hijas.
+            Pueden contener métodos normales y <strong>métodos abstractos</strong> (métodos sin cuerpo que
+            obligatoriamente deben ser implementados por las subclases).</p>
+            <p style="margin-top:8px">Piénsalo como un <strong>formulario en blanco</strong>: una clase abstracta
+            define QUÉ debe saber hacer cualquier cosa basada en ella (por ejemplo, "todo ítem debe saber
+            <code>aplicarEfecto()</code>"), pero no dice CÓMO — eso lo decide cada subclase. Por eso Java no te deja
+            crear un objeto directo de ella: sería como intentar usar el formulario en blanco en vez de una copia ya
+            llenada.</p>
+        </div>
+
+        <h3>🎭 2. Polimorfismo</h3>
+        <div class="info-card">
+            <p>Es la capacidad que tienen los objetos de diferentes clases para responder a un mismo mensaje o
+            método, ejecutando acciones distintas según su propia naturaleza (gracias a la sobrescritura de métodos
+            con <code>@Override</code>). Permite manejar múltiples tipos de objetos bajo una misma referencia común
+            (como un arreglo o lista de la clase padre).</p>
+            <p style="margin-top:8px">Es como el botón "reproducir" de un control remoto universal: la orden que
+            envías es siempre la misma, pero el televisor, el equipo de sonido o el reproductor de DVD (cada uno una
+            "subclase" distinta) responden a su propia manera al recibirla.</p>
+        </div>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Errores Comunes al Empezar</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Intentar escribir new ItemRecompensa(...) directamente sobre la clase abstracta.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Las clases abstractas NUNCA se instancian directamente; crea un objeto de una subclase concreta, como new ItemAvatar(...).</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Olvidar @Override (o escribir mal el nombre) al sobrescribir aplicarEfecto() en la subclase.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> @Override no es obligatorio, pero es tu red de seguridad: si el nombre no coincide EXACTO con el método del padre, el compilador te avisa en vez de dejarte crear un método nuevo por accidente.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <strong>Error típico:</strong> Olvidar el super(...) en el constructor de la subclase cuando la clase padre no tiene un constructor vacío.</p>
+                <p class="error-fix">✅ <strong>Cómo evitarlo:</strong> Si la clase abstracta tiene un constructor con parámetros, cada subclase debe llamarlo explícitamente con super(...) como primera línea de su propio constructor.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="actividades">
+        <h2>IV. Actividades Prácticas Paso a Paso</h2>
+
+        <span class="step-tag">PASO 1</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Creación de Clases Abstractas y Herencia)</h3>
+        <p>Crea una clase abstracta llamada <code>ItemRecompensa.java</code> que servirá como la base para
+        cualquier artículo de la tienda, y al menos dos subclases hijas (<code>ItemAvatar</code> e
+        <code>ItemPaseAcademico</code>).</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code1">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code1">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code1">Copiar</button>
+            </div>
+            <pre id="code1"><code>// Clase Madre Abstracta (Trabajo 1)
+public abstract class ItemRecompensa {
+    private String nombre;
+    private int costoPuntos;
+
+    public ItemRecompensa(String nombre, int costoPuntos) {
+        this.nombre = nombre;
+        this.costoPuntos = costoPuntos;
+    }
+
+    // Método abstracto que las subclases deben implementar obligatoriamente
+    public abstract void aplicarEfecto();
+
+    // Métodos Getters
+    public String getNombre() { return nombre; }
+    public int getCostoPuntos() { return costoPuntos; }
+}
+
+// Subclase 1: ItemAvatar (Trabajo 1)
+public class ItemAvatar extends ItemRecompensa {
+    private String tipoSkin;
+
+    public ItemAvatar(String nombre, int costoPuntos, String tipoSkin) {
+        super(nombre, costoPuntos);
+        this.tipoSkin = tipoSkin;
+    }
+
+    @Override
+    public void aplicarEfecto() {
+        System.out.println("Desbloqueando skin de avatar tipo: " + tipoSkin);
+    }
+}
+
+// Subclase 2: ItemPaseAcademico (Trabajo 1)
+public class ItemPaseAcademico extends ItemRecompensa {
+    private int duracionDias;
+
+    public ItemPaseAcademico(String nombre, int costoPuntos, int duracionDias) {
+        super(nombre, costoPuntos);
+        this.duracionDias = duracionDias;
+    }
+
+    @Override
+    public void aplicarEfecto() {
+        System.out.println("Otorgando pase académico especial por " + duracionDias + " días.");
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code1" hidden></div>
+            <div class="explain-panel" id="explain-code1" hidden></div>
+        </div>
+
+        <span class="step-tag">PASO 2</span>
+        <h3 style="margin-top:0">Desarrollo del Trabajo 2 (Implementación de Polimorfismo)</h3>
+        <p>Crea una clase de prueba <code>PrincipalPrueba.java</code> donde se demuestre el uso de un arreglo
+        polimórfico. Guardaremos diferentes tipos de recompensas en una misma lista y llamaremos a sus métodos de
+        forma genérica.</p>
+
+        <div class="code-block">
+            <span class="lang-tag">JAVA</span>
+            <div class="code-toolbar">
+                <button class="classes-btn" data-target="code2">📦 Clases y anidamiento</button>
+                <button class="explain-btn" data-target="code2">🧠 Explicar línea por línea</button>
+                <button class="copy-btn" data-target="code2">Copiar</button>
+            </div>
+            <pre id="code2"><code>public class PrincipalPrueba {
+    public static void main(String[] args) {
+        // Creación de un arreglo polimórfico de tipo ItemRecompensa (Trabajo 2)
+        ItemRecompensa[] inventarioTienda = new ItemRecompensa[2];
+
+        inventarioTienda[0] = new ItemAvatar("Skin Guerrero Cyber", 150, "Legendario");
+        inventarioTienda[1] = new ItemPaseAcademico("Pase de Prórroga", 300, 7);
+
+        System.out.println("--- EJECUTANDO EFECTOS CON POLIMORFISMO ---");
+
+        // Recorriendo el arreglo e invocando el método de forma polimórfica (Trabajo 2)
+        for (ItemRecompensa item : inventarioTienda) {
+            System.out.println("Ítem: " + item.getNombre() + " | Costo: " + item.getCostoPuntos() + " pts");
+            item.aplicarEfecto(); // Comportamiento dinámico según la subclase
+            System.out.println("--------------------------------------------------");
+        }
+    }
+}</code></pre>
+            <div class="classes-panel" id="classes-code2" hidden></div>
+            <div class="explain-panel" id="explain-code2" hidden></div>
+        </div>
+
+        <div class="predict-box">
+            <p class="predict-question">🤔 <strong>Antes de seguir:</strong> si guardas un ItemAvatar y un
+            ItemPaseAcademico en el mismo arreglo de tipo <code>ItemRecompensa[]</code> y llamas a
+            <code>aplicarEfecto()</code> en cada uno dentro de un for, ¿el mensaje impreso será igual o distinto
+            para cada uno?</p>
+            <button type="button" class="predict-toggle" data-target="predict-s3-1">👀 Ver la respuesta</button>
+            <div class="predict-answer" id="predict-s3-1" hidden>
+                <p>Distinto — aunque ambos objetos se recorren a través de la misma referencia ItemRecompensa, cada
+                uno ejecuta SU PROPIA versión de aplicarEfecto(). Eso es exactamente el polimorfismo en acción:
+                mismo método, comportamiento distinto según el objeto real.</p>
+            </div>
+        </div>
+
+        <div class="console-wrap">
+            <p class="console-caption">🖥️ <strong>Vista previa de referencia:</strong> como este trabajo no tiene
+            interfaz gráfica, aquí tienes una terminal simulada con la salida exacta que debería imprimir
+            <code>PrincipalPrueba.java</code> al ejecutarse — útil para comparar con la captura de consola que
+            debes entregar.</p>
+            <button type="button" class="console-run-btn" id="console-run">▶ Simular ejecución</button>
+            <div class="console-window">
+                <div class="console-titlebar">
+                    <span>Terminal — java PrincipalPrueba</span>
+                    <span class="console-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="console-body" id="console-body"><span class="console-hint">Presiona "▶ Simular ejecución" para ver la salida esperada en consola.</span></div>
+            </div>
+            <p class="mockup-note">* Esta terminal es una simulación en HTML/CSS/JS con el texto que produciría tu
+            programa real; no compila ni ejecuta Java de verdad.</p>
+        </div>
+    </section>
+
+    <section id="criterios">
+        <h2>V. Criterios de Entrega y Evaluación</h2>
+        <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
+        siguientes productos:</p>
+
+        <div class="criteria-group">
+            <h3>📦 Evidencia Procedimental (P)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p1">
+                    <span>Archivos de código fuente compilados y funcionando (<code>ItemRecompensa.java</code>,
+                    <code>ItemAvatar.java</code>, <code>ItemPaseAcademico.java</code>,
+                    <code>PrincipalPrueba.java</code>).</span>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="p2">
+                    <span>Captura de consola que demuestre la ejecución correcta del arreglo polimórfico mostrando
+                    distintos comportamientos de los ítems.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🧠 Sustentación Conceptual (C)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="c1">
+                    <span>Explicar mediante un comentario en el código o un archivo de texto por qué no se puede
+                    instanciar directamente una clase abstracta y qué ventaja aporta el uso de
+                    <code>@Override</code>.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="criteria-group">
+            <h3>🤝 Actitud (A)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="a1">
+                    <span>Orden en la estructura de paquetes, aplicación de buenas prácticas de programación
+                    orientada a objetos y entrega oportuna.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <h2>VI. Pon a Prueba lo que Aprendiste</h2>
+        <p class="quiz-intro">Responde estas preguntas para comprobar qué tanto entendiste de esta sesión.
+        Puedes intentarlo las veces que quieras — no se guarda ninguna nota.</p>
+        <div id="quiz-container"></div>
+        <div class="quiz-footer">
+            <span id="quiz-score" class="quiz-score">Progreso: 0 / 5 respondidas</span>
+            <button type="button" id="quiz-retry" class="quiz-retry-btn">🔄 Reintentar</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>Guía de Aprendizaje N° 3 · Taller de Lenguajes de Programación · Creado Por Ing Jsumire - Baycodec</p>
+    </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    /* ---- Resaltado de sintaxis básico para bloques Java ---- */
+    const KEYWORDS = ["public","private","protected","class","extends","implements","new","void","static","final","import","return","if","else","null","this","super","package","interface","true","false","abstract","int","for"];
+    const TYPES = ["ItemRecompensa","ItemAvatar","ItemPaseAcademico","PrincipalPrueba","String","System"];
+
+    const TOKEN_RE = new RegExp(
+        [
+            "(//[^\\n]*)",
+            "(&quot;.*?&quot;)",
+            "(@\\w+)",
+            "\\b(" + KEYWORDS.join("|") + ")\\b",
+            "\\b(" + TYPES.join("|") + ")\\b"
+        ].join("|"),
+        "g"
+    );
+
+    function highlight(code) {
+        const escaped = code
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        return escaped.replace(TOKEN_RE, function (m, comment, str, ann, kw, typ) {
+            if (comment) return '<span class="cmt">' + comment + '</span>';
+            if (str) return '<span class="str">' + str + '</span>';
+            if (ann) return '<span class="met">' + ann + '</span>';
+            if (kw) return '<span class="kw">' + kw + '</span>';
+            if (typ) return '<span class="typ">' + typ + '</span>';
+            return m;
+        });
+    }
+
+    document.querySelectorAll(".code-block pre code").forEach(function (block) {
+        block.innerHTML = highlight(block.textContent);
+    });
+
+    /* ---- Numeración de líneas ---- */
+    document.querySelectorAll(".code-block pre").forEach(function (pre) {
+        const codeEl = pre.querySelector("code");
+        if (!codeEl) return;
+
+        const lineCount = codeEl.textContent.split("\n").length;
+
+        const gutter = document.createElement("div");
+        gutter.className = "line-numbers";
+        for (let i = 1; i <= lineCount; i++) {
+            const row = document.createElement("span");
+            row.className = "line-no-row";
+            row.textContent = String(i);
+            gutter.appendChild(row);
+        }
+
+        const body = document.createElement("div");
+        body.className = "code-body";
+        pre.parentNode.insertBefore(body, pre);
+        body.appendChild(gutter);
+        body.appendChild(pre);
+
+        const codeBlock = pre.closest(".code-block");
+        const langTag = codeBlock ? codeBlock.querySelector(".lang-tag") : null;
+        if (langTag) {
+            langTag.textContent = langTag.textContent + " · " + lineCount + " LÍNEAS";
+        }
+    });
+
+    /* ---- Botones "Copiar" ---- */
+    document.querySelectorAll(".copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const codeEl = document.getElementById(targetId);
+            const text = codeEl ? codeEl.textContent : "";
+
+            let settled = false;
+            const done = function () {
+                if (settled) return;
+                settled = true;
+                const original = btn.textContent;
+                btn.textContent = "¡Copiado!";
+                btn.classList.add("copied");
+                setTimeout(function () {
+                    btn.textContent = original;
+                    btn.classList.remove("copied");
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () {
+                    fallbackCopy(text, done);
+                });
+                setTimeout(function () {
+                    if (!settled) fallbackCopy(text, done);
+                }, 500);
+            } else {
+                fallbackCopy(text, done);
+            }
+        });
+    });
+
+    function fallbackCopy(text, cb) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* noop */ }
+        document.body.removeChild(ta);
+        cb();
+    }
+
+    /* ---- Explicación línea por línea ---- */
+    const EXPLANATIONS = {
+        code1: [
+            "Comentario que indica que esta es la clase \"madre\" (base) abstracta de la que heredarán todos los tipos de recompensa.",
+            "Declara la clase ItemRecompensa como abstract: esto impide crear objetos directamente de ella (new ItemRecompensa(...) daría error); solo sirve como plantilla para sus subclases.",
+            "Declara el atributo privado que guardará el nombre del ítem.",
+            "Declara el atributo privado que guardará el costo en puntos del ítem.",
+            "Línea en blanco que separa los atributos del constructor.",
+            "Constructor de la clase abstracta: aunque no se pueda instanciar ItemRecompensa directamente, este constructor SÍ se ejecuta cuando una subclase lo invoca con super(...).",
+            "Asigna el parámetro nombre al atributo nombre de este objeto.",
+            "Asigna el parámetro costoPuntos al atributo costoPuntos de este objeto.",
+            "Cierra el constructor.",
+            "Línea en blanco.",
+            "Comentario que explica el propósito del método abstracto que sigue.",
+            "Declara un método abstracto (sin cuerpo, termina en punto y coma): obliga a que CUALQUIER subclase de ItemRecompensa implemente su propia versión de aplicarEfecto().",
+            "Línea en blanco.",
+            "Comentario que anuncia los métodos getters.",
+            "Método getter que devuelve el nombre del ítem (permite leerlo desde fuera de la clase, ya que el atributo es private).",
+            "Método getter que devuelve el costo en puntos del ítem.",
+            "Cierra la clase ItemRecompensa.",
+            "Línea en blanco que separa la clase base de la primera subclase.",
+            "Comentario que anuncia el inicio de la primera subclase: ItemAvatar.",
+            "Declara la clase ItemAvatar, que hereda (extends) de ItemRecompensa: por eso tiene nombre, costoPuntos y debe implementar aplicarEfecto().",
+            "Declara un atributo propio de ItemAvatar (no existe en la clase base): el tipo de skin.",
+            "Línea en blanco que separa los atributos del constructor.",
+            "Constructor de ItemAvatar, que recibe además el tipo de skin.",
+            "Llama al constructor de la clase padre (ItemRecompensa) para inicializar nombre y costoPuntos.",
+            "Asigna el parámetro tipoSkin al atributo propio de esta subclase.",
+            "Cierra el constructor de ItemAvatar.",
+            "Línea en blanco.",
+            "Anotación @Override: le indica a Java (y a quien lea el código) que este método sobrescribe la versión abstracta definida en ItemRecompensa.",
+            "Implementación concreta de aplicarEfecto() específica para ItemAvatar (obligatoria porque la clase base la declaró como abstracta).",
+            "Muestra en consola un mensaje propio de este tipo de ítem, usando el atributo tipoSkin.",
+            "Cierra el método aplicarEfecto() de ItemAvatar.",
+            "Cierra la clase ItemAvatar.",
+            "Línea en blanco que separa la primera subclase de la segunda.",
+            "Comentario que anuncia el inicio de la segunda subclase: ItemPaseAcademico.",
+            "Declara la clase ItemPaseAcademico, que también hereda de ItemRecompensa.",
+            "Declara un atributo propio de esta subclase: la duración en días del pase.",
+            "Línea en blanco que separa los atributos del constructor.",
+            "Constructor de ItemPaseAcademico, que recibe además la duración en días.",
+            "Llama al constructor de la clase padre para inicializar nombre y costoPuntos.",
+            "Asigna el parámetro duracionDias al atributo propio de esta subclase.",
+            "Cierra el constructor de ItemPaseAcademico.",
+            "Línea en blanco.",
+            "Anotación @Override: indica que este método sobrescribe la versión abstracta de la clase base.",
+            "Implementación concreta de aplicarEfecto() específica para ItemPaseAcademico: distinta a la de ItemAvatar, aunque el método se llama igual.",
+            "Muestra en consola un mensaje propio de este tipo de ítem, usando el atributo duracionDias.",
+            "Cierra el método aplicarEfecto() de ItemPaseAcademico.",
+            "Cierra la clase ItemPaseAcademico."
+        ],
+        code2: [
+            "Declara la clase PrincipalPrueba, donde se probará el polimorfismo (esta clase no hereda de ItemRecompensa, solo la usa).",
+            "Punto de entrada del programa: aquí comienza la ejecución cuando se corre esta clase.",
+            "Comentario que explica qué es un arreglo polimórfico y para qué se usa a continuación.",
+            "Declara un arreglo de tipo ItemRecompensa (la clase abstracta) con espacio para 2 elementos: aunque el tipo declarado es el padre, cada casilla podrá guardar cualquier subclase.",
+            "Línea en blanco.",
+            "Guarda un objeto ItemAvatar en la primera posición del arreglo, aunque el arreglo es de tipo ItemRecompensa: esto es posible porque ItemAvatar ES-UN ItemRecompensa (herencia).",
+            "Guarda un objeto ItemPaseAcademico en la segunda posición del arreglo: un tipo completamente distinto, pero también válido porque también extiende ItemRecompensa.",
+            "Línea en blanco.",
+            "Muestra en consola un encabezado antes de comenzar el recorrido.",
+            "Línea en blanco.",
+            "Comentario que explica que el siguiente bucle es donde ocurre el polimorfismo.",
+            "Recorre el arreglo con un for-each: en cada vuelta, item es tratado como un ItemRecompensa genérico, sin importar si en realidad es un ItemAvatar o un ItemPaseAcademico.",
+            "Muestra en consola el nombre y el costo del ítem actual, usando los métodos getters heredados de ItemRecompensa.",
+            "Llama a aplicarEfecto() sobre item: aquí ocurre el polimorfismo real — Java ejecuta automáticamente la versión de ItemAvatar o de ItemPaseAcademico según el tipo real del objeto, no según el tipo declarado del arreglo.",
+            "Muestra una línea separadora en consola entre un ítem y el siguiente.",
+            "Cierra el bucle for-each.",
+            "Cierra el método main.",
+            "Cierra la clase PrincipalPrueba."
+        ]
+    };
+
+    function buildExplainPanel(targetId) {
+        const codeEl = document.getElementById(targetId);
+        const panel = document.getElementById("explain-" + targetId);
+        if (!codeEl || !panel || panel.dataset.built) return;
+
+        const lines = codeEl.textContent.split("\n");
+        const notes = EXPLANATIONS[targetId] || [];
+
+        const frag = document.createDocumentFragment();
+        lines.forEach(function (line, i) {
+            const row = document.createElement("div");
+            row.className = "explain-row";
+
+            const num = document.createElement("span");
+            num.className = "explain-line-no";
+            num.textContent = String(i + 1);
+
+            const codeSpan = document.createElement("code");
+            const trimmed = line.trim();
+            if (trimmed === "") {
+                codeSpan.className = "explain-code is-blank";
+                codeSpan.textContent = "(línea en blanco)";
+            } else {
+                codeSpan.className = "explain-code";
+                codeSpan.innerHTML = highlight(line);
+            }
+
+            const text = document.createElement("span");
+            text.className = "explain-text";
+            text.textContent = notes[i] || "Línea de código de apoyo dentro del bloque.";
+
+            row.appendChild(num);
+            row.appendChild(codeSpan);
+            row.appendChild(text);
+            frag.appendChild(row);
+        });
+
+        panel.appendChild(frag);
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".explain-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("explain-" + targetId);
+            if (!panel) return;
+
+            buildExplainPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? "🧠 Explicar línea por línea" : "✕ Ocultar explicación";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Clases usadas y su anidamiento (aquí: herencia y composición) ---- */
+    const CLASS_NOTES = {
+        code1: {
+            intro: "Aquí el \"anidamiento\" no es de componentes visuales (como en las sesiones anteriores), sino de HERENCIA: ItemAvatar e ItemPaseAcademico no viven \"dentro\" de ItemRecompensa como un componente dentro de un panel, sino que EXTIENDEN su plantilla — heredan sus atributos y métodos, y están obligadas a completar lo que la clase abstracta dejó sin terminar (aplicarEfecto()).",
+            classes: [
+                {
+                    name: "ItemRecompensa",
+                    pkg: "clase propia · abstract",
+                    desc: "Clase abstracta que define la plantilla común de cualquier recompensa: qué datos tiene (nombre, costoPuntos) y qué debe saber hacer (aplicarEfecto()), sin decir cómo.",
+                    nest: "Es la clase RAÍZ de esta jerarquía: no puede instanciarse directamente. Todo lo demás en este archivo se construye \"sobre\" ella."
+                },
+                {
+                    name: "ItemAvatar",
+                    pkg: "clase propia",
+                    desc: "Representa un ítem del catálogo de tipo skin/avatar.",
+                    nest: "extends ItemRecompensa: hereda nombre, costoPuntos y el constructor (vía super(...)), y agrega su propio atributo tipoSkin. Queda anidada en la jerarquía de herencia como hija directa de ItemRecompensa."
+                },
+                {
+                    name: "ItemPaseAcademico",
+                    pkg: "clase propia",
+                    desc: "Representa un ítem del catálogo de tipo pase académico.",
+                    nest: "extends ItemRecompensa: igual que ItemAvatar, es otra hija directa de la misma clase abstracta, pero con su propio atributo distinto (duracionDias) y su propia versión de aplicarEfecto()."
+                },
+                {
+                    name: "@Override",
+                    pkg: "anotación · java.lang",
+                    desc: "No es una clase, sino una anotación que le confirma al compilador que el método siguiente reemplaza a uno de la clase padre.",
+                    nest: "Se coloca justo encima de aplicarEfecto() en cada subclase, anidada entre la clase hija y el método que sobrescribe, como una etiqueta de verificación."
+                }
+            ],
+            diagram: "ItemRecompensa (abstract)\n"
+                + "  ├── atributos: nombre, costoPuntos\n"
+                + "  ├── constructor ItemRecompensa(nombre, costoPuntos)\n"
+                + "  ├── abstract void aplicarEfecto();   ← sin cuerpo, obligatoria para las hijas\n"
+                + "  └── getNombre() / getCostoPuntos()\n"
+                + "        │\n"
+                + "        │ extends (herencia)\n"
+                + "        ├────────────────────────────────┐\n"
+                + "        ▼                                 ▼\n"
+                + "  ItemAvatar                        ItemPaseAcademico\n"
+                + "  + tipoSkin                        + duracionDias\n"
+                + "  @Override aplicarEfecto() {...}   @Override aplicarEfecto() {...}\n"
+                + "  (imprime mensaje de skin)         (imprime mensaje de pase)"
+        },
+        code2: {
+            intro: "Aquí el anidamiento es de COMPOSICIÓN Y POLIMORFISMO: varios objetos de subclases distintas se guardan \"dentro\" de un mismo arreglo declarado con el tipo de la clase padre.",
+            classes: [
+                {
+                    name: "PrincipalPrueba",
+                    pkg: "clase propia",
+                    desc: "Clase de prueba que no forma parte de la jerarquía de recompensas: solo la usa, para demostrar el polimorfismo.",
+                    nest: "No extiende ni es extendida por nada de este ejercicio; simplemente contiene el método main() donde se crean y usan objetos ItemRecompensa."
+                },
+                {
+                    name: "ItemRecompensa[]",
+                    pkg: "arreglo del tipo abstracto",
+                    desc: "Un arreglo declarado con el tipo de la clase ABSTRACTA, no de una subclase concreta.",
+                    nest: "Cada casilla del arreglo puede anidar un objeto de CUALQUIER subclase de ItemRecompensa (ItemAvatar, ItemPaseAcademico, o futuras que se creen), porque todas ellas SON-UN ItemRecompensa gracias a la herencia."
+                },
+                {
+                    name: "ItemAvatar / ItemPaseAcademico",
+                    pkg: "clases propias",
+                    desc: "Las mismas subclases creadas en el Paso 1.",
+                    nest: "Se instancian con new y se guardan (se anidan) dentro de las casillas del arreglo inventarioTienda[], aunque el arreglo esté declarado como ItemRecompensa[]."
+                },
+                {
+                    name: "System",
+                    pkg: "java.lang",
+                    desc: "Clase estándar de Java; System.out es el flujo de salida que permite imprimir texto en la consola.",
+                    nest: "No se anida en la jerarquía de recompensas: se usa de forma independiente, dentro del bucle, solo para mostrar resultados en pantalla."
+                }
+            ],
+            diagram: "PrincipalPrueba.main()\n"
+                + " │\n"
+                + " └── ItemRecompensa[] inventarioTienda = new ItemRecompensa[2]\n"
+                + "        ├── [0] → new ItemAvatar(\"Skin Guerrero Cyber\", 150, \"Legendario\")\n"
+                + "        └── [1] → new ItemPaseAcademico(\"Pase de Prórroga\", 300, 7)\n"
+                + "\n"
+                + "for (ItemRecompensa item : inventarioTienda) {\n"
+                + "    item.aplicarEfecto();   ← Java mira el tipo REAL del objeto (no el del\n"
+                + "                              arreglo) y ejecuta la versión de ItemAvatar o\n"
+                + "                              de ItemPaseAcademico según corresponda: esto ES\n"
+                + "                              el polimorfismo dinámico.\n"
+                + "}"
+        }
+    };
+
+    function buildClassesPanel(targetId) {
+        const panel = document.getElementById("classes-" + targetId);
+        const data = CLASS_NOTES[targetId];
+        if (!panel || !data || panel.dataset.built) return;
+
+        const intro = document.createElement("p");
+        intro.className = "classes-intro";
+        intro.textContent = data.intro;
+        panel.appendChild(intro);
+
+        data.classes.forEach(function (cls) {
+            const card = document.createElement("div");
+            card.className = "class-card";
+
+            const nameLine = document.createElement("div");
+            const nameEl = document.createElement("span");
+            nameEl.className = "class-name";
+            nameEl.textContent = cls.name;
+            const pkgEl = document.createElement("span");
+            pkgEl.className = "class-pkg";
+            pkgEl.textContent = cls.pkg;
+            nameLine.appendChild(nameEl);
+            nameLine.appendChild(pkgEl);
+
+            const descEl = document.createElement("p");
+            descEl.textContent = cls.desc;
+
+            const nestEl = document.createElement("p");
+            nestEl.className = "nest-note";
+            nestEl.textContent = "Anidamiento: " + cls.nest;
+
+            card.appendChild(nameLine);
+            card.appendChild(descEl);
+            card.appendChild(nestEl);
+            panel.appendChild(card);
+        });
+
+        const diagramTitle = document.createElement("div");
+        diagramTitle.className = "nest-diagram-title";
+        diagramTitle.textContent = "Diagrama de anidamiento de este código:";
+        panel.appendChild(diagramTitle);
+
+        const diagram = document.createElement("div");
+        diagram.className = "nest-diagram";
+        diagram.textContent = data.diagram;
+        panel.appendChild(diagram);
+
+        panel.dataset.built = "1";
+    }
+
+    document.querySelectorAll(".classes-btn").forEach(function (btn) {
+        const originalLabel = btn.textContent;
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const panel = document.getElementById("classes-" + targetId);
+            if (!panel) return;
+
+            buildClassesPanel(targetId);
+            const nowHidden = !panel.hidden;
+            panel.hidden = nowHidden;
+            btn.classList.toggle("active", !nowHidden);
+            btn.textContent = nowHidden ? originalLabel : "✕ Ocultar clases";
+
+            if (!nowHidden) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    /* ---- Terminal simulada: reproduce la salida esperada de PrincipalPrueba ---- */
+    const CONSOLE_LINES = [
+        { text: "$ java PrincipalPrueba", cls: "console-cmd" },
+        { text: "--- EJECUTANDO EFECTOS CON POLIMORFISMO ---", cls: "" },
+        { text: "Ítem: Skin Guerrero Cyber | Costo: 150 pts", cls: "" },
+        { text: "Desbloqueando skin de avatar tipo: Legendario", cls: "" },
+        { text: "--------------------------------------------------", cls: "console-sep" },
+        { text: "Ítem: Pase de Prórroga | Costo: 300 pts", cls: "" },
+        { text: "Otorgando pase académico especial por 7 días.", cls: "" },
+        { text: "--------------------------------------------------", cls: "console-sep" }
+    ];
+
+    const runBtn = document.getElementById("console-run");
+    const consoleBody = document.getElementById("console-body");
+
+    if (runBtn && consoleBody) {
+        runBtn.addEventListener("click", function () {
+            runBtn.disabled = true;
+            runBtn.textContent = "⏳ Ejecutando...";
+            consoleBody.innerHTML = "";
+
+            let i = 0;
+            function nextLine() {
+                if (i >= CONSOLE_LINES.length) {
+                    const cursor = document.createElement("span");
+                    cursor.className = "console-cursor";
+                    cursor.textContent = "$ ▍";
+                    consoleBody.appendChild(cursor);
+                    runBtn.disabled = false;
+                    runBtn.textContent = "↻ Volver a ejecutar";
+                    return;
+                }
+                const line = CONSOLE_LINES[i];
+                const span = document.createElement("div");
+                if (line.cls) span.className = line.cls;
+                span.textContent = line.text;
+                consoleBody.appendChild(span);
+                i++;
+                setTimeout(nextLine, i === 1 ? 300 : 220);
+            }
+            nextLine();
+        });
+    }
+
+    /* ---- Checklist de criterios de entrega con persistencia local ---- */
+    const STORAGE_KEY = "guia3-checklist";
+    const checkboxes = Array.from(document.querySelectorAll(".checklist-item input[type=checkbox]"));
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    function loadState() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveState(state) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { /* almacenamiento no disponible: se ignora */ }
+    }
+
+    function updateProgress() {
+        const total = checkboxes.length;
+        const checked = checkboxes.filter(function (cb) { return cb.checked; }).length;
+        const pct = total ? Math.round((checked / total) * 100) : 0;
+        progressFill.style.width = pct + "%";
+        progressText.textContent = checked + " / " + total + " completado";
+    }
+
+    function applyLabelStyle(cb) {
+        const span = cb.parentElement.querySelector("span");
+        if (span) span.classList.toggle("done", cb.checked);
+    }
+
+    const state = loadState();
+    checkboxes.forEach(function (cb) {
+        const key = cb.getAttribute("data-key");
+        cb.checked = !!state[key];
+        applyLabelStyle(cb);
+
+        cb.addEventListener("change", function () {
+            const current = loadState();
+            current[key] = cb.checked;
+            saveState(current);
+            applyLabelStyle(cb);
+            updateProgress();
+        });
+    });
+    updateProgress();
+
+    document.getElementById("reset-checklist").addEventListener("click", function () {
+        saveState({});
+        checkboxes.forEach(function (cb) {
+            cb.checked = false;
+            applyLabelStyle(cb);
+        });
+        updateProgress();
+    });
+
+    /* ---- Resaltado del enlace activo en la navegación ---- */
+    const navLinks = Array.from(document.querySelectorAll("nav.toc a"));
+    const sections = navLinks.map(function (a) {
+        return document.querySelector(a.getAttribute("href"));
+    });
+
+    function onScroll() {
+        let currentIndex = 0;
+        const scrollPos = window.scrollY + 90;
+        sections.forEach(function (sec, i) {
+            if (sec && sec.offsetTop <= scrollPos) currentIndex = i;
+        });
+        navLinks.forEach(function (a, i) {
+            a.classList.toggle("active", i === currentIndex);
+        });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+})();
+
+    /* ---- Glosario interactivo con tooltips ---- */
+    (function () {
+        var GLOSSARY = {
+    "@Override": "Una anotación que le confirma al compilador que el método siguiente reemplaza (sobrescribe) a uno que ya existía en la clase padre.",
+    "aplicarEfecto()": "El método abstracto que cada tipo de recompensa debe completar a su manera: es el punto exacto donde se ve el polimorfismo en acción.",
+    "System.out.println": "Instrucción que imprime un mensaje de texto en la consola (pantalla de resultados), muy útil para probar que tu código funciona.",
+    "clase abstracta": "Una clase que sirve como plantilla general, pero que nunca se puede usar directamente para crear objetos — solo sus clases hijas (concretas) pueden hacerlo.",
+    "herencia": "Cuando una clase (hija) reutiliza los atributos y métodos de otra clase (padre) usando la palabra extends, y además puede agregar los suyos propios.",
+    "polimorfismo": "Que un mismo método (como aplicarEfecto()) se comporte de manera distinta según la clase del objeto que lo llama, aunque se invoque siempre de la misma forma."
+};
+        var containers = document.querySelectorAll("#objetivo, #marco-teorico, #actividades, #criterios");
+        var activeTooltip = null;
+
+        function closeTooltip() {
+            if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; }
+        }
+
+        function showTooltip(el, text) {
+            closeTooltip();
+            var tip = document.createElement("span");
+            tip.className = "gloss-tooltip";
+            tip.textContent = text;
+            el.appendChild(tip);
+            var rect = tip.getBoundingClientRect();
+            if (rect.left < 8) {
+                tip.style.left = "calc(50% + " + (8 - rect.left) + "px)";
+            } else if (rect.right > window.innerWidth - 8) {
+                tip.style.left = "calc(50% - " + (rect.right - window.innerWidth + 8) + "px)";
+            }
+            activeTooltip = tip;
+        }
+
+        function attach(el, term) {
+            if (el.classList.contains("gloss-term")) return;
+            el.classList.add("gloss-term");
+            el.setAttribute("tabindex", "0");
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", "Ver definición de " + term);
+            el.addEventListener("mouseenter", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("mouseleave", closeTooltip);
+            el.addEventListener("focus", function () { showTooltip(el, GLOSSARY[term]); });
+            el.addEventListener("blur", closeTooltip);
+            el.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (activeTooltip && el.contains(activeTooltip)) {
+                    closeTooltip();
+                } else {
+                    showTooltip(el, GLOSSARY[term]);
+                }
+            });
+        }
+
+        containers.forEach(function (container) {
+            if (!container) return;
+            Array.from(container.querySelectorAll("code")).forEach(function (codeEl) {
+                if (codeEl.closest("pre")) return;
+                var key = codeEl.textContent.trim();
+                if (GLOSSARY.hasOwnProperty(key)) attach(codeEl, key);
+            });
+            Array.from(container.querySelectorAll("[data-term]")).forEach(function (el) {
+                var key = el.getAttribute("data-term");
+                if (GLOSSARY.hasOwnProperty(key)) attach(el, key);
+            });
+        });
+
+        document.addEventListener("click", closeTooltip);
+    })();
+
+    /* ---- Quiz autoevaluado ---- */
+    (function () {
+        var QUIZ = [
+    {
+        "q": "¿Qué es una clase abstracta?",
+        "options": [
+            "Una clase que nunca sirve de plantilla",
+            "Una clase que NO se puede instanciar directamente, solo heredar de ella",
+            "Una clase sin métodos",
+            "Un tipo de excepción"
+        ],
+        "correct": 1,
+        "explain": "Una clase abstracta sirve de plantilla general; solo sus clases hijas concretas pueden crear objetos."
+    },
+    {
+        "q": "¿Qué palabra clave usa una clase hija para heredar de una clase padre?",
+        "options": [
+            "implements",
+            "extends",
+            "new",
+            "this"
+        ],
+        "correct": 1,
+        "explain": "extends indica que una clase hereda atributos y métodos de otra clase (su padre)."
+    },
+    {
+        "q": "¿Qué hace la anotación @Override?",
+        "options": [
+            "Crea un nuevo método",
+            "Le dice al compilador que este método reemplaza uno de la clase padre",
+            "Borra un método",
+            "Convierte una clase en abstracta"
+        ],
+        "correct": 1,
+        "explain": "@Override confirma que el método sobrescribe (reemplaza) la versión de la clase padre."
+    },
+    {
+        "q": "¿Qué es el polimorfismo?",
+        "options": [
+            "Tener muchas clases en un mismo archivo",
+            "Que un mismo método se comporte distinto según el objeto que lo ejecuta",
+            "Un error común de programación",
+            "Una forma de guardar archivos"
+        ],
+        "correct": 1,
+        "explain": "Gracias al polimorfismo, aplicarEfecto() hace algo distinto según sea un tipo de recompensa u otro."
+    },
+    {
+        "q": "¿Por qué aplicarEfecto() es un método abstracto en la clase base de este proyecto?",
+        "options": [
+            "Porque no se usa nunca",
+            "Porque cada tipo de recompensa debe definir su propio comportamiento",
+            "Porque es un error",
+            "Porque solo funciona con bases de datos"
+        ],
+        "correct": 1,
+        "explain": "Al ser abstracto, obliga a cada subclase a implementar su propia versión del método."
+    }
+];
+        var container = document.getElementById("quiz-container");
+        if (!container) return;
+        var answers = new Array(QUIZ.length).fill(null);
+
+        function renderScore() {
+            var scoreEl = document.getElementById("quiz-score");
+            if (!scoreEl) return;
+            var answered = answers.filter(function (a) { return a !== null; }).length;
+            var correct = answers.filter(function (a, i) { return a === QUIZ[i].correct; }).length;
+            scoreEl.textContent = answered === QUIZ.length
+                ? "Resultado: " + correct + " / " + QUIZ.length + " correctas" + (correct === QUIZ.length ? " 🎉 ¡Perfecto!" : "")
+                : "Progreso: " + answered + " / " + QUIZ.length + " respondidas";
+        }
+
+        function selectAnswer(qi, oi, card) {
+            answers[qi] = oi;
+            var opts = Array.from(card.querySelectorAll(".quiz-option"));
+            opts.forEach(function (btn) {
+                btn.classList.remove("correct", "incorrect");
+                btn.disabled = true;
+            });
+            var correct = QUIZ[qi].correct;
+            opts[correct].classList.add("correct");
+            if (oi !== correct) opts[oi].classList.add("incorrect");
+            var fb = card.querySelector(".quiz-feedback");
+            fb.hidden = false;
+            fb.className = "quiz-feedback " + (oi === correct ? "is-correct" : "is-incorrect");
+            fb.innerHTML = (oi === correct ? "✅ <strong>¡Correcto!</strong> " : "❌ <strong>No es correcto.</strong> ") + QUIZ[qi].explain;
+            renderScore();
+        }
+
+        function render() {
+            container.innerHTML = "";
+            QUIZ.forEach(function (item, qi) {
+                var card = document.createElement("div");
+                card.className = "quiz-card";
+
+                var qEl = document.createElement("p");
+                qEl.className = "quiz-question";
+                qEl.textContent = (qi + 1) + ". " + item.q;
+                card.appendChild(qEl);
+
+                var opts = document.createElement("div");
+                opts.className = "quiz-options";
+                item.options.forEach(function (optText, oi) {
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "quiz-option";
+                    btn.textContent = optText;
+                    btn.addEventListener("click", function () { selectAnswer(qi, oi, card); });
+                    opts.appendChild(btn);
+                });
+                card.appendChild(opts);
+
+                var fb = document.createElement("div");
+                fb.className = "quiz-feedback";
+                fb.hidden = true;
+                card.appendChild(fb);
+
+                container.appendChild(card);
+            });
+            renderScore();
+        }
+
+        var retryBtn = document.getElementById("quiz-retry");
+        if (retryBtn) {
+            retryBtn.addEventListener("click", function () {
+                answers = new Array(QUIZ.length).fill(null);
+                render();
+            });
+        }
+
+        render();
+    })();
+
+    /* ---- Predice antes de revelar ---- */
+    (function () {
+        document.querySelectorAll(".predict-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var target = document.getElementById(btn.getAttribute("data-target"));
+                if (!target) return;
+                var isHidden = target.hidden;
+                target.hidden = !isHidden;
+                btn.textContent = isHidden ? "\ud83d\ude48 Ocultar la respuesta" : "\ud83d\udc40 Ver la respuesta";
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>
