@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia de la Programación Orientada a Objetos</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #0284c7;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-light);
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .intro-card {
+            background: var(--bg-card);
+            border-left: 5px solid var(--primary-light);
+            padding: 20px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 35px;
+        }
+
+        .timeline {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .timeline-item {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .timeline-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: white;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .timeline-item h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f5f9;
+        }
+
+        .tree-diagram {
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Historia de la Programación Orientada a Objetos</h1>
+        <p>Evolución, pioneros e hitos clave del paradigma POO</p>
+    </header>
+
+    <div class="intro-card">
+        <p>La historia de la <strong>Programación Orientada a Objetos (POO)</strong> representa una de las mayores evoluciones en la ingeniería de software, desarrollada para resolver la creciente complejidad de los programas informáticos y permitir el modelado del mundo real dentro de un entorno computacional.</p>
+    </div>
+
+    <div class="timeline">
+
+        <div class="timeline-item">
+            <span class="timeline-badge">Década de 1960</span>
+            <h2>1. El Origen: Las Simulaciones Físicas</h2>
+            <p>A principios de los años 60, la programación era predominantemente <strong>estructurada y secuencial</strong> (mediante lenguajes como FORTRAN o ALGOL). Los programas ejecutaban instrucciones paso a paso sobre bloques de datos globales.</p>
+            <p>En el <em>Centro de Cómputo Noruego (Norsk Regnesentral)</em>, los investigadores <strong>Ole-Johan Dahl</strong> y <strong>Kristen Nygaard</strong> trabajaban en la simulación de sistemas complejos del mundo real (como barcos en puertos o tráfico vial) e identificaron dos limitaciones:</p>
+            <ul>
+                <li>Las simulaciones cambian constantemente, volviendo el código secuencial inmanejable a gran escala.</li>
+                <li>Cada elemento físico posee sus propios atributos (velocidad, capacidad) y comportamientos (acelerar, atracar).</li>
+            </ul>
+            <p style="margin-top:10px;">Para solucionarlo, crearon en <strong>1967</strong> el lenguaje <strong>Simula 67</strong>, introduciendo por primera vez:</p>
+            <ul>
+                <li><strong>Clases y Subclases:</strong> Plantillas para modelar entidades.</li>
+                <li><strong>Objetos:</strong> Instancias concretas derivadas de las clases.</li>
+                <li><strong>Herencia:</strong> Compartición de atributos y comportamientos.</li>
+            </ul>
+        </div>
+
+        <div class="timeline-item">
+            <span class="timeline-badge">Década de 1970</span>
+            <h2>2. La Consolidación y el Término "POO" (Xerox PARC)</h2>
+            <p>En el centro de investigación <strong>Xerox PARC</strong>, el científico de la computación <strong>Alan Kay</strong> acuñó oficialmente el término <em>"Object-Oriented Programming"</em> (Programación Orientada a Objetos).</p>
+            <p>Kay postuló un modelo donde el software funcionara como células biológicas: unidades autónomas que interactúan enviándose mensajes mutuamente.</p>
+            <p style="margin-top:10px;">Junto a <strong>Adele Goldberg</strong> y <strong>Dan Ingalls</strong>, crearon <strong>Smalltalk</strong> (Smalltalk-72 / Smalltalk-80):</p>
+            <ul>
+                <li>Primer lenguaje puramente orientado a objetos.</li>
+                <li>Absolutamente <strong>todo es un objeto</strong> (incluidos números y funciones).</li>
+                <li>Sentó las bases para las primeras interfaces gráficas de usuario (GUI).</li>
+            </ul>
+        </div>
+
+        <div class="timeline-item">
+            <span class="timeline-badge">Década de 1980</span>
+            <h2>3. La Masificación Industrial: C++</h2>
+            <p>A pesar de las ventajas de Smalltalk, este requería hardware muy potente. La industria utilizaba masivamente el lenguaje <strong>C</strong> por su rendimiento, aunque era propenso a errores en proyectos grandes.</p>
+            <p>En <strong>1983</strong>, <strong>Bjarne Stroustrup</strong> en AT&T Bell Laboratories combinó la eficiencia de C con las abstracciones de Simula, creando <strong>"C con Clases"</strong>, renombrado posteriormente como <strong>C++</strong>.</p>
+            <p>C++ permitió a la industria migrar gradualmente su código hacia el paradigma POO sin sacrificar velocidad.</p>
+        </div>
+
+        <div class="timeline-item">
+            <span class="timeline-badge">Décadas de 1990 y 2000</span>
+            <h2>4. La Era de Internet y la POO Global</h2>
+            <p>Con la llegada de la World Wide Web y los sistemas distribuidos, surgieron lenguajes diseñados desde cero para ser multiplataforma y orientados a objetos:</p>
+            <ul>
+                <li><strong>Java (1995):</strong> Creado por James Gosling en Sun Microsystems, popularizó el Garbage Collector y una sintaxis POO limpia e inspirada en C++.</li>
+                <li><strong>Python, Ruby, C# y PHP:</strong> Adoptaron y formalizaron el paradigma POO como estándar para desarrollo web, ciencia de datos y software empresarial.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <h2 style="color: var(--primary); margin-bottom: 15px;">Cronología Resumida de Hitos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Año / Período</th>
+                <th>Lenguaje</th>
+                <th>Pioneros</th>
+                <th>Aporte Clave</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1967</td>
+                <td>Simula 67</td>
+                <td>Ole-Johan Dahl y Kristen Nygaard</td>
+                <td>Primera versión de clases, objetos y herencia.</td>
+            </tr>
+            <tr>
+                <td>Década 1970</td>
+                <td>Smalltalk</td>
+                <td>Alan Kay, Adele Goldberg, Dan Ingalls</td>
+                <td>Crea el término "POO"; paradigma puro basado en mensajes.</td>
+            </tr>
+            <tr>
+                <td>1983</td>
+                <td>C++</td>
+                <td>Bjarne Stroustrup</td>
+                <td>Adopción industrial al integrar POO en el lenguaje C.</td>
+            </tr>
+            <tr>
+                <td>1995 en adelante</td>
+                <td>Java, C#, Python, Ruby</td>
+                <td>Sun Microsystems, Microsoft, etc.</td>
+                <td>La POO se convierte en el estándar global de la industria.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 style="color: var(--primary); margin-bottom: 15px;">Árbol Genealógico</h2>
+    <div class="tree-diagram">
+  [ ALGOL 60 ]
+       │
+  [ Simula 67 ] ─── (Primeros conceptos: Clases y Objetos)
+       │
+       ├──────────────────────────────┐
+       ▼                              ▼
+ [ Smalltalk ]                  [ C++ (1983) ]
+(Alan Kay acuña el término     (Bjarne Stroustrup populariza
+ y la POO pura en Xerox PARC)    la POO en la industria)
+       │                              │
+       └──────────────┬───────────────┘
+                      ▼
+     [ Java (1995) / C# / Python / etc. ]
+     (La POO como estándar global de desarrollo)
+    </div>
+
+    <footer>
+        <p>Documento generado por ING. JSumire| Historia de la Programación Orientada a Objetos</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
