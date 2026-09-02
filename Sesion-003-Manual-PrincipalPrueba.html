@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Uso — Polimorfismo (Sesión 3)</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 40px 20px 30px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.8rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; }
+
+    .badges {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        justify-content: center; margin-top: 16px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+    }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky; top: 0; z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none; display: flex; flex-wrap: wrap;
+        max-width: 860px; margin: 0 auto; padding: 10px 20px; gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block; padding: 6px 12px; border-radius: 6px;
+        color: var(--primary); text-decoration: none;
+        font-size: 0.85rem; font-weight: 600;
+    }
+
+    nav.toc a:hover { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 24px 26px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.3rem;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.05rem; margin: 16px 0 8px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff; color: #3730a3;
+        padding: 1px 6px; border-radius: 4px; font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px; border-radius: 6px; margin-bottom: 14px;
+    }
+
+    .step-tag {
+        display: inline-block; background: var(--primary-light);
+        color: white; font-weight: bold; padding: 4px 12px;
+        border-radius: 20px; font-size: 0.8rem; margin-bottom: 10px;
+    }
+
+    pre.terminal {
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 16px 18px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin: 10px 0 18px;
+    }
+
+    pre.terminal .prompt { color: #38bdf8; }
+    pre.terminal .out { color: #94a3b8; }
+
+    .file-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .file-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        background: #f8fafc;
+    }
+
+    .file-card .file-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: var(--primary);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .file-card p { font-size: 0.82rem; margin: 0; }
+
+    .req-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-bottom: 6px;
+    }
+
+    .req-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        background: #f8fafc;
+    }
+
+    .req-card .req-name { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+    .req-card p { font-size: 0.85rem; margin-top: 4px; }
+
+    .errors-wrap {
+        margin-top: 16px;
+        padding: 16px 18px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title { color: #92400e; font-size: 0.95rem; margin-bottom: 12px; }
+
+    .error-item {
+        margin-bottom: 12px; padding-bottom: 12px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+    .error-what { color: #991b1b; font-size: 0.9rem; margin-bottom: 3px; }
+    .error-fix { color: #166534; font-size: 0.9rem; }
+
+    .checklist-item {
+        display: flex; align-items: flex-start; gap: 10px;
+        padding: 6px 4px; border-radius: 6px;
+    }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px; width: 17px; height: 17px;
+        accent-color: var(--success); flex-shrink: 0;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 36px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 18px 16px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>📘 Manual de Uso — Polimorfismo con Ítems de Recompensa</h1>
+    <p><strong>Sesión 3:</strong> Polimorfismos y Métodos</p>
+    <div class="badges">
+        <span class="badge">🎮 GameStore Escolar</span>
+        <span class="badge">☕ Java (consola)</span>
+        <span class="badge">🧩 POO: herencia + polimorfismo</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#que-es">Qué es</a></li>
+        <li><a href="#archivos">Archivos</a></li>
+        <li><a href="#requisitos">Requisitos</a></li>
+        <li><a href="#terminal">Ejecutar por terminal</a></li>
+        <li><a href="#ide">Ejecutar con un IDE</a></li>
+        <li><a href="#salida">Salida esperada</a></li>
+        <li><a href="#errores">Problemas comunes</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <section id="que-es">
+        <h2>1. ¿Qué es este programa?</h2>
+        <div class="info-card">
+            <p>Este ejercicio es <strong>de consola</strong> (sin ventanas): modela el inventario de
+            recompensas de <strong>GameStore Escolar</strong> usando una clase abstracta, dos subclases y un
+            arreglo polimórfico. Cubre los dos trabajos de la Sesión 3:</p>
+        </div>
+        <ul>
+            <li><strong>Trabajo 1 (Clases Abstractas y Herencia):</strong> la clase madre abstracta
+            <code>ItemRecompensa</code> define el método abstracto <code>aplicarEfecto()</code>, que cada
+            subclase (<code>ItemAvatar</code>, <code>ItemPaseAcademico</code>) debe implementar
+            obligatoriamente.</li>
+            <li><strong>Trabajo 2 (Polimorfismo):</strong> <code>PrincipalPrueba</code> guarda objetos de
+            distintas subclases en un mismo arreglo <code>ItemRecompensa[]</code> y llama a
+            <code>aplicarEfecto()</code> de forma genérica — cada objeto ejecuta su propia versión del
+            método.</li>
+        </ul>
+    </section>
+
+    <section id="archivos">
+        <h2>2. Archivos del proyecto</h2>
+        <p>En Java, cada clase pública va en su propio archivo — por eso el código de la guía se separó en
+        4 archivos <code>.java</code>. Aquí tienes para qué sirve cada uno:</p>
+        <div class="file-grid">
+            <div class="file-card">
+                <span class="file-name">ItemRecompensa.java</span>
+                <p><strong>La plantilla base (clase abstracta).</strong> Define QUÉ datos tiene todo ítem
+                (<code>nombre</code>, <code>costoPuntos</code>) y OBLIGA a cada subclase a escribir su propia
+                versión de <code>aplicarEfecto()</code>. No se puede crear un objeto directamente de esta
+                clase (<code>new ItemRecompensa(...)</code> da error de compilación) — solo existe para que
+                otras clases hereden de ella.</p>
+            </div>
+            <div class="file-card">
+                <span class="file-name">ItemAvatar.java</span>
+                <p><strong>Subclase hija 1.</strong> Hereda de <code>ItemRecompensa</code> (<code>extends</code>)
+                y define CÓMO se comporta un ítem tipo avatar: al llamar <code>aplicarEfecto()</code>,
+                imprime el mensaje de desbloqueo de la skin.</p>
+            </div>
+            <div class="file-card">
+                <span class="file-name">ItemPaseAcademico.java</span>
+                <p><strong>Subclase hija 2.</strong> También hereda de <code>ItemRecompensa</code>, pero con
+                su propio comportamiento: al llamar <code>aplicarEfecto()</code>, imprime el mensaje de
+                otorgamiento del pase.</p>
+            </div>
+            <div class="file-card">
+                <span class="file-name">PrincipalPrueba.java</span>
+                <p><strong>El punto de entrada — este es el que se ejecuta.</strong> Contiene el método
+                <code>main()</code>, crea el arreglo polimórfico y demuestra que cada objeto responde
+                distinto al mismo mensaje. Es el <em>único</em> archivo que debes correr (Run); los otros
+                tres son las clases que él usa.</p>
+            </div>
+        </div>
+
+        <h3>¿Y los archivos .class?</h3>
+        <div class="info-card">
+            <p>Cuando compilas con <code>javac</code> (o presionas Run en el IDE), por cada archivo
+            <code>.java</code> se genera automáticamente un archivo <code>.class</code> del mismo nombre
+            (por ejemplo, <code>ItemAvatar.java</code> → <code>ItemAvatar.class</code>). Ese
+            <code>.class</code> es el <strong>bytecode</strong>: la versión "traducida" del código que la
+            máquina virtual de Java (JVM) puede ejecutar directamente — es lo que realmente corre cuando
+            escribes <code>java PrincipalPrueba</code>.</p>
+            <p style="margin-top:8px">Puntos clave para el alumno:</p>
+            <ul>
+                <li>Nunca edites un <code>.class</code> a mano — no es legible ni editable como el
+                <code>.java</code>, es código binario intermedio.</li>
+                <li>Si borras todos los <code>.class</code>, no pierdes nada: se vuelven a generar
+                compilando de nuevo (<code>javac *.java</code>). Por eso muchos proyectos ni siquiera los
+                guardan en el control de versiones.</li>
+                <li>Si modificas un <code>.java</code> pero no vuelves a compilar, el <code>.class</code>
+                queda desactualizado y seguirás ejecutando la versión vieja del programa.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>3. Requisitos</h2>
+        <p>Solo necesitas el <strong>JDK</strong> instalado (versión 17 o superior). Gratuito en
+        <a href="https://adoptium.net" target="_blank" rel="noopener">adoptium.net</a> (Eclipse Temurin).</p>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-name">✅ Verificar instalación</div>
+                <p>En una terminal: <code>javac -version</code>. Si responde con un número de versión, ya
+                está listo.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="terminal">
+        <h2>4. Ejecutarlo por terminal</h2>
+        <span class="step-tag">PASO 1</span>
+        <p>Ubícate en la carpeta del código:</p>
+        <pre class="terminal"><span class="prompt">$</span> cd Sesion-03/codigo</pre>
+
+        <span class="step-tag">PASO 2</span>
+        <p>Compila todos los archivos <code>.java</code> a la vez:</p>
+        <pre class="terminal"><span class="prompt">$</span> javac *.java</pre>
+
+        <span class="step-tag">PASO 3</span>
+        <p>Ejecuta la clase que contiene <code>main</code>:</p>
+        <pre class="terminal"><span class="prompt">$</span> java PrincipalPrueba</pre>
+    </section>
+
+    <section id="ide">
+        <h2>5. Ejecutarlo con un IDE (recomendado para editar)</h2>
+        <p>Abre la carpeta <code>Sesion-03/codigo</code> como proyecto en cualquiera de estos IDEs
+        gratuitos, y ejecuta el archivo <code>PrincipalPrueba.java</code> (es el que tiene el método
+        <code>main</code>):</p>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-name">Apache NetBeans</div>
+                <p>Clic derecho sobre <code>PrincipalPrueba.java</code> → <em>Run File</em>.</p>
+            </div>
+            <div class="req-card">
+                <div class="req-name">IntelliJ IDEA Community</div>
+                <p>Abre la carpeta como proyecto, clic derecho sobre <code>main</code> → <em>Run</em>.</p>
+            </div>
+            <div class="req-card">
+                <div class="req-name">Eclipse IDE</div>
+                <p>Importa la carpeta, luego <em>Run As → Java Application</em> sobre
+                <code>PrincipalPrueba</code>.</p>
+            </div>
+            <div class="req-card">
+                <div class="req-name">VS Code</div>
+                <p>Instala <strong>Extension Pack for Java</strong>, abre <code>PrincipalPrueba.java</code>
+                y pulsa <em>Run</em> sobre <code>main</code>.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="salida">
+        <h2>6. Salida esperada en consola</h2>
+        <p>Al ejecutar, la terminal debe imprimir exactamente esto:</p>
+        <pre class="terminal">--- EJECUTANDO EFECTOS CON POLIMORFISMO ---
+Ítem: Skin Guerrero Cyber | Costo: 150 pts
+Desbloqueando skin de avatar tipo: Legendario
+--------------------------------------------------
+Ítem: Pase de Prórroga | Costo: 300 pts
+Otorgando pase académico especial por 7 días.
+--------------------------------------------------</pre>
+        <ul style="list-style:none; margin-left:0;">
+            <li class="checklist-item"><input type="checkbox"><span>El primer ítem imprime "Desbloqueando
+            skin de avatar tipo: Legendario" (viene de <code>ItemAvatar.aplicarEfecto()</code>).</span></li>
+            <li class="checklist-item"><input type="checkbox"><span>El segundo ítem imprime "Otorgando pase
+            académico especial por 7 días." (viene de
+            <code>ItemPaseAcademico.aplicarEfecto()</code>).</span></li>
+            <li class="checklist-item"><input type="checkbox"><span>Ambos mensajes son distintos aunque el
+            <code>for</code> recorre el arreglo con la misma referencia <code>ItemRecompensa</code> — eso es
+            el polimorfismo en acción.</span></li>
+        </ul>
+    </section>
+
+    <section id="errores">
+        <h2>7. Problemas comunes</h2>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Solución a errores frecuentes</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <code>class ItemAvatar is public, should be declared in a file
+                named ItemAvatar.java</code></p>
+                <p class="error-fix">✅ Cada clase pública necesita su propio archivo con el mismo nombre.
+                Por eso este proyecto usa 4 archivos separados en vez de uno solo.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ <code>cannot find symbol: class ItemAvatar</code> al compilar
+                <code>PrincipalPrueba.java</code> solo</p>
+                <p class="error-fix">✅ Compila todos los archivos juntos con <code>javac *.java</code>, no
+                uno solo — <code>PrincipalPrueba</code> depende de las otras 3 clases.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ Olvidar <code>super(nombre, costoPuntos)</code> en el constructor de
+                una subclase</p>
+                <p class="error-fix">✅ Como <code>ItemRecompensa</code> no tiene constructor vacío, cada
+                subclase debe llamar a <code>super(...)</code> como primera línea de su constructor.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Manual de Uso · Polimorfismo con Ítems de Recompensa · Sesión 3 — Taller de Lenguajes de Programación · Ing. Jsumire — Baycodec</p>
+    </footer>
+</div>
+
+</body>
+</html>
