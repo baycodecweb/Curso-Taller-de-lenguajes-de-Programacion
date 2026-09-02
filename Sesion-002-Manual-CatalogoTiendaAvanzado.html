@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Uso — CatalogoTiendaAvanzado.java</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    header.top {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 40px 20px 30px;
+        text-align: center;
+    }
+
+    header.top h1 { font-size: 1.8rem; margin-bottom: 8px; }
+    header.top p { opacity: 0.92; font-size: 1rem; }
+
+    .badges {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        justify-content: center; margin-top: 16px;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+    }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+    nav.toc {
+        position: sticky; top: 0; z-index: 10;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    nav.toc ul {
+        list-style: none; display: flex; flex-wrap: wrap;
+        max-width: 860px; margin: 0 auto; padding: 10px 20px; gap: 6px;
+    }
+
+    nav.toc a {
+        display: inline-block; padding: 6px 12px; border-radius: 6px;
+        color: var(--primary); text-decoration: none;
+        font-size: 0.85rem; font-weight: 600;
+    }
+
+    nav.toc a:hover { background: #dbeafe; }
+
+    section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 24px 26px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        scroll-margin-top: 65px;
+    }
+
+    section h2 {
+        color: var(--primary);
+        font-size: 1.3rem;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dbeafe;
+    }
+
+    section h3 { color: var(--primary); font-size: 1.05rem; margin: 16px 0 8px; }
+
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        background: #eef2ff; color: #3730a3;
+        padding: 1px 6px; border-radius: 4px; font-size: 0.92em;
+    }
+
+    .info-card {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 18px; border-radius: 6px; margin-bottom: 14px;
+    }
+
+    .step-tag {
+        display: inline-block; background: var(--primary-light);
+        color: white; font-weight: bold; padding: 4px 12px;
+        border-radius: 20px; font-size: 0.8rem; margin-bottom: 10px;
+    }
+
+    pre.terminal {
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 16px 18px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin: 10px 0 18px;
+    }
+
+    pre.terminal .prompt { color: #38bdf8; }
+    pre.terminal .out { color: #94a3b8; }
+
+    .req-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-bottom: 6px;
+    }
+
+    .req-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        background: #f8fafc;
+    }
+
+    .req-card .req-name { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+    .req-card p { font-size: 0.85rem; margin-top: 4px; }
+
+    .errors-wrap {
+        margin-top: 16px;
+        padding: 16px 18px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid var(--warning);
+        border-radius: 10px;
+    }
+
+    .errors-title { color: #92400e; font-size: 0.95rem; margin-bottom: 12px; }
+
+    .error-item {
+        margin-bottom: 12px; padding-bottom: 12px;
+        border-bottom: 1px dashed #fde68a;
+    }
+
+    .error-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+    .error-what { color: #991b1b; font-size: 0.9rem; margin-bottom: 3px; }
+    .error-fix { color: #166534; font-size: 0.9rem; }
+
+    .checklist-item {
+        display: flex; align-items: flex-start; gap: 10px;
+        padding: 6px 4px; border-radius: 6px;
+    }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 4px; width: 17px; height: 17px;
+        accent-color: var(--success); flex-shrink: 0;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 36px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+        nav.toc ul { justify-content: center; }
+        section { padding: 18px 16px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="top">
+    <h1>📘 Manual de Uso — CatalogoTiendaAvanzado.java</h1>
+    <p><strong>Sesión 2:</strong> Contenedores y Administradores de Diseño (Layouts)</p>
+    <div class="badges">
+        <span class="badge">🎮 GameStore Escolar</span>
+        <span class="badge">☕ Java + Swing</span>
+        <span class="badge">🖥️ Escritorio</span>
+    </div>
+</header>
+
+<nav class="toc">
+    <ul>
+        <li><a href="#que-es">Qué es</a></li>
+        <li><a href="#requisitos">Requisitos</a></li>
+        <li><a href="#terminal">Ejecutar por terminal</a></li>
+        <li><a href="#ide">Ejecutar con un IDE</a></li>
+        <li><a href="#uso">Cómo usarlo</a></li>
+        <li><a href="#errores">Problemas comunes</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <section id="que-es">
+        <h2>1. ¿Qué es este programa?</h2>
+        <div class="info-card">
+            <p><code>CatalogoTiendaAvanzado.java</code> es la ventana del catálogo de recompensas de
+            <strong>GameStore Escolar</strong>, entregable de los dos trabajos de la Sesión 2:</p>
+        </div>
+        <ul>
+            <li><strong>Trabajo 1 (Paneles y Layouts):</strong> estructura la ventana con
+            <code>BorderLayout</code> (norte / centro / sur), un <code>JPanel</code> con
+            <code>GridLayout</code> para los productos, y un <code>JScrollPane</code> que agrega barra de
+            desplazamiento cuando ya no caben todos los ítems.</li>
+            <li><strong>Trabajo 2 (Componentes de selección):</strong> agrega un panel de filtros en la
+            parte superior con <code>JComboBox</code> (categorías), <code>JCheckBox</code> (notificaciones)
+            y <code>JRadioButton</code> agrupados con <code>ButtonGroup</code> (tipo de entrega).</li>
+        </ul>
+    </section>
+
+    <section id="requisitos">
+        <h2>2. Requisitos</h2>
+        <p>Solo necesitas el <strong>JDK</strong> instalado (versión 17 o superior), igual que en la
+        Sesión 1. Gratuito en <a href="https://adoptium.net" target="_blank" rel="noopener">adoptium.net</a>
+        (Eclipse Temurin).</p>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-name">✅ Verificar instalación</div>
+                <p>En una terminal: <code>javac -version</code>. Si responde con un número de versión, ya
+                está listo.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="terminal">
+        <h2>3. Ejecutarlo por terminal (rápido)</h2>
+        <span class="step-tag">PASO 1</span>
+        <p>Ubícate en la carpeta del código:</p>
+        <pre class="terminal"><span class="prompt">$</span> cd Sesion-02/codigo</pre>
+
+        <span class="step-tag">PASO 2</span>
+        <p>Compílalo:</p>
+        <pre class="terminal"><span class="prompt">$</span> javac CatalogoTiendaAvanzado.java</pre>
+
+        <span class="step-tag">PASO 3</span>
+        <p>Ejecútalo:</p>
+        <pre class="terminal"><span class="prompt">$</span> java CatalogoTiendaAvanzado
+<span class="out">→ Se abre la ventana "GameStore Escolar - Catálogo Avanzado"</span></pre>
+    </section>
+
+    <section id="ide">
+        <h2>4. Ejecutarlo con un IDE (recomendado para editar)</h2>
+        <p>Abre la carpeta <code>Sesion-02/codigo</code> con cualquiera de estos IDEs gratuitos:</p>
+        <div class="req-grid">
+            <div class="req-card">
+                <div class="req-name">Apache NetBeans</div>
+                <p>Abre el archivo, clic derecho → <em>Run File</em> (o el botón ▶ verde).</p>
+            </div>
+            <div class="req-card">
+                <div class="req-name">IntelliJ IDEA Community</div>
+                <p>Abre la carpeta como proyecto, clic derecho sobre <code>main</code> → <em>Run</em>.</p>
+            </div>
+            <div class="req-card">
+                <div class="req-name">Eclipse IDE</div>
+                <p>Importa el archivo, luego <em>Run As → Java Application</em>.</p>
+            </div>
+            <div class="req-card">
+                <div class="req-name">VS Code</div>
+                <p>Instala <strong>Extension Pack for Java</strong>, abre el archivo y pulsa <em>Run</em>
+                sobre <code>main</code>.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="uso">
+        <h2>5. Cómo usarlo (guía de prueba)</h2>
+        <p>Con la ventana abierta, verifica lo siguiente:</p>
+        <ul style="list-style:none; margin-left:0;">
+            <li class="checklist-item"><input type="checkbox"><span>El panel superior muestra el filtro
+            "Filtrar:" con un <code>JComboBox</code> de categorías, una casilla "Recibir alerta por correo"
+            y dos radio buttons "Digital" / "Físico" (solo uno se puede marcar a la vez).</span></li>
+            <li class="checklist-item"><input type="checkbox"><span>El panel central muestra 6 botones de
+            recompensas en una cuadrícula de 3 filas × 2 columnas (<code>GridLayout</code>).</span></li>
+            <li class="checklist-item"><input type="checkbox"><span>Achica la ventana verticalmente: debe
+            aparecer una barra de desplazamiento gracias al <code>JScrollPane</code>.</span></li>
+            <li class="checklist-item"><input type="checkbox"><span>El panel inferior muestra el botón
+            "Canjear Ítem".</span></li>
+        </ul>
+        <p style="margin-top:10px; font-size:0.85rem; color:var(--text-muted); font-style:italic;">
+            Nota: en esta sesión los controles todavía no tienen lógica de clic asociada (eso se agrega con
+            <code>ActionListener</code>, como se vio en la Sesión 1) — el objetivo aquí es la estructura
+            visual con contenedores y layouts.</p>
+    </section>
+
+    <section id="errores">
+        <h2>6. Problemas comunes</h2>
+        <div class="errors-wrap">
+            <h4 class="errors-title">⚠️ Solución a errores frecuentes</h4>
+            <div class="error-item">
+                <p class="error-what">❌ <code>javac: command not found</code></p>
+                <p class="error-fix">✅ El JDK no está instalado o no está en el PATH. Instálalo desde
+                adoptium.net y reinicia la terminal.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ No se ve ninguna ventana al ejecutar <code>java
+                CatalogoTiendaAvanzado</code></p>
+                <p class="error-fix">✅ Estás en un entorno sin interfaz gráfica (por ejemplo, SSH sin X11).
+                Ejecuta el programa en tu escritorio local, no en un servidor remoto sin pantalla.</p>
+            </div>
+            <div class="error-item">
+                <p class="error-what">❌ Los botones del catálogo se ven amontonados o cortados</p>
+                <p class="error-fix">✅ Revisa que el <code>JPanel</code> central use
+                <code>new GridLayout(3, 2, 10, 10)</code> y que esté envuelto en un <code>JScrollPane</code>
+                antes de agregarlo con <code>BorderLayout.CENTER</code>.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Manual de Uso · CatalogoTiendaAvanzado.java · Sesión 2 — Taller de Lenguajes de Programación · Ing. Jsumire — Baycodec</p>
+    </footer>
+</div>
+
+</body>
+</html>
