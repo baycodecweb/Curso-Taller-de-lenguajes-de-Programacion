@@ -143,6 +143,24 @@ code { font-family: 'Courier New', Courier, monospace; background: #eef2ff; colo
 
 .mockup-note { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 10px; }
 
+.term-tip { position: relative; display: inline-block; border-bottom: 1px dashed var(--accent); cursor: help; }
+.term-tip .term-tip-bubble {
+    position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 30;
+    width: max-content; max-width: min(340px, 85vw);
+    background: var(--code-bg); color: var(--code-fg);
+    border-radius: 8px; padding: 10px 14px; font-size: 0.78rem; font-style: normal;
+    line-height: 1.5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+    opacity: 0; visibility: hidden; transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: none;
+}
+.term-tip .term-tip-bubble strong { color: #93c5fd; }
+.term-tip .term-tip-bubble code { background: rgba(255,255,255,0.15); color: #e2e8f0; padding: 1px 5px; }
+.term-tip:hover .term-tip-bubble,
+.term-tip:focus .term-tip-bubble,
+.term-tip:focus-within .term-tip-bubble { opacity: 1; visibility: visible; transform: translateY(0); }
+
 .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 20px; }
 .req-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #f8fafc; }
 .req-card-recommended { border-color: var(--success); background: #f0fdf4; }
@@ -199,9 +217,18 @@ code { font-family: 'Courier New', Courier, monospace; background: #eef2ff; colo
     border-top: 3px dashed var(--border);
 }
 .session-block:first-of-type { border-top: none; padding-top: 0; }
-.session-heading { display: flex; align-items: center; gap: 14px; margin: 4px 0 20px; flex-wrap: wrap; scroll-margin-top: 65px; }
+.session-heading {
+    display: flex; align-items: center; gap: 14px; margin: 4px 0 20px; flex-wrap: wrap; scroll-margin-top: 65px;
+    cursor: pointer; user-select: none; border-radius: 8px; padding: 6px 8px; margin-left: -8px; margin-right: -8px;
+    transition: background 0.15s ease;
+}
+.session-heading:hover { background: #eff6ff; }
+.session-heading:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.session-heading .caret { display: inline-block; margin-left: auto; color: var(--primary); font-size: 1rem; transition: transform 0.15s ease; }
+.session-heading[aria-expanded="true"] .caret { transform: rotate(90deg); }
 .session-number { background: var(--primary); color: white; font-weight: 800; font-size: 0.78rem; padding: 6px 14px; border-radius: 20px; letter-spacing: 0.5px; white-space: nowrap; }
 .session-tema { color: var(--primary); font-size: 1.3rem; margin: 0; }
+.session-body[hidden] { display: none; }
 
 footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
 
@@ -314,6 +341,7 @@ html[data-theme="dark"] .req-badge-open { background: rgba(34,197,94,0.2) !impor
 
 html[data-theme="dark"] .checklist-item:hover,
 html[data-theme="dark"] .reset-btn:hover { background: rgba(255,255,255,0.06) !important; }
+html[data-theme="dark"] .session-heading:hover { background: rgba(59,130,246,0.12) !important; }
 html[data-theme="dark"] .progress-bar-bg { background: #334155 !important; }
 
 html[data-theme="dark"] .explain-row:nth-child(even) { background: rgba(255,255,255,0.035) !important; }
@@ -4121,6 +4149,247 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
         cursor: pointer;
     }
 #sesion-8 .mockup-dialog-ok:hover { background: linear-gradient(180deg, #ffffff, #e9e9e9); }
+
+    /* Mismos estilos de tree-wrap y mockup-wrap que la Sesion 8, reutilizados aqui */
+#proyecto-final .tree-caption {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 620px;
+        margin: 0 auto 14px;
+        text-align: left;
+    }
+#proyecto-final .tree-window {
+        display: inline-block;
+        width: 480px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+#proyecto-final .tree-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+#proyecto-final .tree-titlebar-controls { display: flex; gap: 5px; }
+#proyecto-final .tree-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+#proyecto-final .tree-body { background: #ffffff; }
+#proyecto-final .tree-package {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-main);
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+    }
+#proyecto-final .tree-package:first-child { border-top: none; }
+#proyecto-final .tree-package.layer-vista { border-left: 4px solid var(--layer-vista); }
+#proyecto-final .tree-package.layer-modelo { border-left: 4px solid var(--layer-modelo); }
+#proyecto-final .tree-package.layer-dao { border-left: 4px solid var(--layer-dao); }
+#proyecto-final .layer-badge {
+        margin-left: auto;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        color: white;
+        white-space: nowrap;
+    }
+#proyecto-final .layer-badge.layer-vista { background: var(--layer-vista); }
+#proyecto-final .layer-badge.layer-modelo { background: var(--layer-modelo); }
+#proyecto-final .layer-badge.layer-dao { background: var(--layer-dao); }
+#proyecto-final .tree-file {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px 6px 34px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 0.8rem;
+        color: var(--text-main);
+        border-bottom: 1px solid #f1f5f9;
+    }
+#proyecto-final .tree-file .file-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 24px;
+        border-radius: 4px;
+        font-size: 0.58rem;
+        font-weight: bold;
+        color: white;
+        background: #ea580c;
+        font-family: 'Courier New', Courier, monospace;
+        flex-shrink: 0;
+    }
+#proyecto-final .tree-file .file-tag { font-size: 0.68rem; color: var(--text-muted); margin-left: auto; }
+#proyecto-final /* Vista previa: login integrado (mockup GUI + BD simulada) */
+    .mockup-wrap { margin: 6px 0 26px; text-align: center; }
+#proyecto-final .mockup-caption-top {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        max-width: 560px;
+        margin: 0 auto 12px;
+        text-align: left;
+    }
+#proyecto-final .mockup-window {
+        display: inline-block;
+        width: 350px;
+        max-width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.35);
+        border: 1px solid #94a3b8;
+        text-align: left;
+        vertical-align: top;
+    }
+#proyecto-final .mockup-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+#proyecto-final .mockup-titlebar-controls { display: flex; gap: 5px; }
+#proyecto-final .mockup-titlebar-controls .ctrl {
+        width: 16px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        line-height: 1;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+    }
+#proyecto-final .mockup-content {
+        position: relative;
+        width: 350px;
+        max-width: 100%;
+        height: 200px;
+        background: #efefef;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+#proyecto-final .mockup-label {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        color: #1f2937;
+        font-size: 12px;
+    }
+#proyecto-final .mockup-input {
+        position: absolute;
+        box-sizing: border-box;
+        background: #ffffff;
+        border: 1px solid #8a8a8a;
+        border-radius: 2px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 12px;
+        padding: 0 6px;
+        outline: none;
+    }
+#proyecto-final .mockup-input:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
+    }
+#proyecto-final .mockup-button-live {
+        position: absolute;
+        box-sizing: border-box;
+        background: linear-gradient(180deg, #f7f7f7, #e2e2e2);
+        border: 1px solid #adadad;
+        border-radius: 3px;
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        font-size: 12px;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        cursor: pointer;
+    }
+#proyecto-final .mockup-button-live:hover { background: linear-gradient(180deg, #ffffff, #e9e9e9); }
+#proyecto-final .mockup-button-live:active { background: #dcdcdc; box-shadow: inset 0 1px 3px rgba(0,0,0,0.25); }
+#proyecto-final .mockup-dialog-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+        animation: mockup-fade-in 0.12s ease;
+    }
+#proyecto-final .mockup-dialog {
+        width: 250px;
+        max-width: 90%;
+        background: #efefef;
+        border: 1px solid #94a3b8;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px -6px rgba(0,0,0,0.4);
+        font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    }
+#proyecto-final .mockup-dialog-titlebar {
+        background: linear-gradient(180deg, #3b4a5a, #26313d);
+        color: #e5e7eb;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 5px 8px;
+    }
+#proyecto-final .mockup-dialog-body {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 14px 10px;
+    }
+#proyecto-final .mockup-dialog-icon { font-size: 1.4rem; line-height: 1; }
+#proyecto-final .mockup-dialog-message {
+        font-size: 12px;
+        color: #1f2937;
+        line-height: 1.4;
+    }
+#proyecto-final .mockup-dialog-actions {
+        display: flex;
+        justify-content: center;
+        padding: 4px 14px 14px;
+    }
+#proyecto-final .mockup-dialog-ok {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 4px 18px;
+        background: linear-gradient(180deg, #f7f7f7, #e2e2e2);
+        border: 1px solid #adadad;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+#proyecto-final .mockup-dialog-ok:hover { background: linear-gradient(180deg, #ffffff, #e9e9e9); }
 #sesion-8 .criteria-group { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
 #sesion-8 .criteria-group h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
 #sesion-8 .criteria-group ul { list-style: none; margin-left: 0; }
@@ -4172,6 +4441,12 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
 #sesion-8 .request-box { background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid #0284c7; border-radius: 8px; padding: 12px 20px; font-weight: 700; font-size: 0.9rem; color: var(--text-main); }
 #sesion-8 .request-box.is-server { border-top-color: #7c3aed; }
 #sesion-8 .request-box small { display: block; font-weight: 400; color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; }
+#sesion-8 .flow-diagram-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 16px 0 8px; }
+#sesion-8 .flow-step { width: 100%; max-width: 480px; background: var(--bg-card); border: 1px solid var(--border); border-left: 5px solid var(--accent); border-radius: 8px; padding: 10px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(15,23,42,0.06); }
+#sesion-8 .flow-step-emoji { font-size: 1.5rem; flex: none; line-height: 1; }
+#sesion-8 .flow-step-text strong { display: block; font-size: 0.88rem; color: var(--text-main); }
+#sesion-8 .flow-step-text span { font-size: 0.8rem; color: var(--text-muted); }
+#sesion-8 .flow-arrow { font-size: 1.2rem; color: var(--accent); line-height: 1; padding: 4px 0; }
 #sesion-8 .request-arrow-col { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--accent); font-weight: 600; }
 #sesion-8 .request-arrow-col .arrow-glyph { font-size: 1.4rem; line-height: 1; }
 #sesion-8 .compare-wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 16px 0 8px; }
@@ -4377,10 +4652,6 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
 
 
 <section id="sesion-1" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 1</span>
-        <h2 class="session-tema">Programación Orientada a Eventos y Componentes Gráficos Básicos (Java Swing)</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -4391,8 +4662,14 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-1-body">
+        <span class="session-number">SESIÓN 1</span>
+        <h2 class="session-tema">Programación Orientada a Eventos y Componentes Gráficos Básicos (Java Swing)</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-1-body" hidden>
     <section id="s1-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Construir la primera interfaz gráfica de usuario (GUI) en Java utilizando componentes básicos
             (<code>JFrame</code>, <code>JLabel</code>, <code>JTextField</code>, <code>JButton</code>) y programar la
@@ -4402,7 +4679,54 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
     <section id="s1-marco-teorico">
         <h2>Marco Teórico Breve</h2>
 
-        <h3>1. ¿Qué es una librería (biblioteca) de código?</h3>
+        <h3>1. Vocabulario base antes de empezar: Clase, Objeto, Atributo y Método (POO)</h3>
+        <p>Antes de escribir la primera línea de código, conviene tener claras cuatro palabras que vas a ver
+        constantemente durante todo el curso — son la base de la <strong>Programación Orientada a Objetos
+        (POO)</strong>, el estilo de programación que usa Java.</p>
+        <div class="info-card">
+            <p>Piensa en un <strong>molde para hacer galletas</strong> con forma de estrella: el molde en sí no se
+            come, es solo el "plano" que define la forma. Cada galleta que sacas del horno usando ese molde SÍ
+            existe de verdad, la puedes agarrar, y cada una puede tener su propio color de glaseado o su propio
+            tamaño de chispas de chocolate, aunque todas compartan la misma forma de estrella.</p>
+            <p style="margin-top:8px">En programación pasa lo mismo: la <strong>clase</strong> es el molde (el
+            "plano" que escribes una sola vez en tu código), y el <strong>objeto</strong> es cada galleta concreta
+            que se crea a partir de ese molde usando la palabra <code>new</code> (por ejemplo,
+            <code>new Estudiante()</code>).</p>
+        </div>
+        <div class="example-grid">
+            <div class="example-card">
+                <div class="example-card-icon">🍪</div>
+                <div class="example-card-title">Clase</div>
+                <div class="example-card-row">El "molde" o plano: define QUÉ datos y QUÉ acciones tendrá cada
+                objeto creado a partir de ella. Se escribe una sola vez en el código.</div>
+            </div>
+            <div class="example-card">
+                <div class="example-card-icon">🌟</div>
+                <div class="example-card-title">Objeto</div>
+                <div class="example-card-row">Una "galleta" concreta, creada con <code>new</code> a partir de una
+                clase. Puede haber muchos objetos distintos hechos con el mismo molde.</div>
+            </div>
+            <div class="example-card">
+                <div class="example-card-icon">🎨</div>
+                <div class="example-card-title">Atributo</div>
+                <div class="example-card-row">Un dato que guarda el objeto (su "color de glaseado"): por ejemplo,
+                el <code>nombre</code> o los <code>puntos</code> de un estudiante. En código es una
+                <strong>variable</strong> declarada dentro de la clase.</div>
+            </div>
+            <div class="example-card">
+                <div class="example-card-icon">⚙️</div>
+                <div class="example-card-title">Método</div>
+                <div class="example-card-row">Algo que el objeto "sabe hacer" (una acción): por ejemplo,
+                <code>ingresar()</code> o <code>calcularPuntos()</code>. En código es una función escrita dentro
+                de la clase.</div>
+            </div>
+        </div>
+        <p class="mockup-note">* Dos palabras más que verás seguido: una <strong>variable</strong> es una "cajita
+        con nombre" que guarda un dato (puede ser un atributo dentro de una clase, o un dato temporal dentro de un
+        método); y el <strong>tipo de dato</strong> (<code>int</code>, <code>String</code>, <code>boolean</code>...)
+        le dice a Java QUÉ tipo de valor puede guardar esa cajita: un número entero, texto, verdadero/falso, etc.</p>
+
+        <h3>2. ¿Qué es una librería (biblioteca) de código?</h3>
         <div class="info-card">
             <p>Antes de hablar de Swing, conviene entender qué es una <strong>librería</strong> (también llamada
             <em>biblioteca</em>) en programación: es un conjunto de clases y funciones que otras personas ya
@@ -4410,13 +4734,32 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
             todo desde cero.</p>
             <p style="margin-top:8px">Es como una <strong>caja de herramientas</strong>: si necesitas atornillar
             algo, no fabricas un destornillador nuevo, tomas el que ya existe en la caja y lo usas. En Java pasa lo
-            mismo: cuando escribes <code>import javax.swing.*;</code>, le estás diciendo al programa "quiero usar las
-            herramientas (clases) que trae el paquete <code>javax.swing</code>". Gracias a eso, no necesitas
+            mismo: cuando escribes <span class="term-tip" tabindex="0"><code>import javax.swing.*;</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Una sentencia de importación: le indica al compilador qué paquete de
+                clases usar en el archivo, para no tener que escribir la ruta completa (<code>javax.swing.JButton</code>)
+                cada vez. El asterisco <code>*</code> es un comodín que importa todas las clases públicas de ese
+                paquete.<br><br>
+                <strong>¿Por qué se usa?</strong> Ahorra escritura y hace el código más legible; sin el import
+                habría que anteponer el paquete completo antes de cada clase (<code>JButton</code>, <code>JFrame</code>...).<br><br>
+                <strong>¿Desde cuándo?</strong> La sentencia <code>import</code> existe desde la primera versión de
+                Java (JDK 1.0, 1996); el paquete <code>javax.swing</code> se incorporó en <strong>JDK 1.2
+                (1998)</strong> como parte de las Java Foundation Classes (JFC).
+            </span></span>, le estás diciendo al programa "quiero usar las
+            herramientas (clases) que trae el paquete <span class="term-tip" tabindex="0"><code>javax.swing</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> El paquete (biblioteca) de Java que contiene las clases para construir
+                interfaces gráficas de escritorio: ventanas, botones, campos de texto, tablas, etc.<br><br>
+                <strong>¿Por qué se usa?</strong> Evita programar desde cero cómo se dibuja cada componente visual;
+                Swing ya trae listas las clases probadas y optimizadas (<code>JFrame</code>, <code>JButton</code>,
+                <code>JLabel</code>...).<br><br>
+                <strong>¿Desde cuándo?</strong> Se introdujo en <strong>JDK 1.2 (diciembre de 1998)</strong> como
+                parte de las Java Foundation Classes (JFC), reemplazando a la librería anterior más limitada, AWT
+                (Java 1.0, 1996).
+            </span></span>". Gracias a eso, no necesitas
             programar tú mismo cómo se dibuja un botón en pantalla: simplemente usas la clase <code>JButton</code>
             que la librería ya te ofrece, lista para usar.</p>
         </div>
 
-        <h3>2. ¿Qué es Java Swing y los Componentes Básicos?</h3>
+        <h3>3. ¿Qué es Java Swing y los Componentes Básicos?</h3>
         <p>Java Swing es, precisamente, un ejemplo concreto de librería: es la biblioteca gráfica de Java que permite
         crear aplicaciones de escritorio sin programar el dibujo de cada botón o ventana a bajo nivel. Los elementos
         principales son:</p>
@@ -4470,10 +4813,20 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
             </div>
         </div>
 
-        <h3>3. Programación Orientada a Eventos (POE)</h3>
+        <h3>4. Programación Orientada a Eventos (POE)</h3>
         <p>A diferencia de los programas secuenciales tradicionales, en una interfaz gráfica el flujo del programa
         depende de las acciones del usuario (eventos como hacer clic en un botón, mover el mouse, etc.). Se utiliza
-        la interfaz <code>ActionListener</code> para "escuchar" cuándo ocurre un clic y reaccionar ante él.</p>
+        la interfaz <span class="term-tip" tabindex="0"><code>ActionListener</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una interfaz de Java (paquete <code>java.awt.event</code>) que declara el
+            método <code>actionPerformed(ActionEvent e)</code>: el código que se ejecuta cuando ocurre un evento
+            de acción (por ejemplo, un clic de botón).<br><br>
+            <strong>¿Por qué se usa?</strong> Permite "escuchar" el evento sin detener el resto del programa: el
+            objeto que la implementa se registra en el componente con <code>addActionListener(...)</code>, y Java
+            lo invoca automáticamente en el momento del clic.<br><br>
+            <strong>¿Desde cuándo?</strong> Existe desde <strong>Java 1.1 (1997)</strong>, cuando se introdujo el
+            modelo de eventos por delegación (Delegation Event Model) que reemplazó al antiguo modelo por herencia
+            de Java 1.0.
+        </span></span> para "escuchar" cuándo ocurre un clic y reaccionar ante él.</p>
         <div class="info-card">
             <p>Un programa "secuencial" (como una receta de cocina) se ejecuta de arriba hacia abajo, paso por paso,
             sin detenerse a esperar a nadie. Un programa con POE es distinto: se queda "en espera" (como un
@@ -4548,6 +4901,30 @@ html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) 
         </div>
         <p class="mockup-note">* Este es exactamente el recorrido que sigue el código del <strong>Paso 2</strong>
         más abajo cuando pruebas el botón "Ingresar" en la vista previa interactiva.</p>
+
+        <h4>¿Por qué es importante la POE?</h4>
+        <div class="info-card">
+            <p>La Programación Orientada a Eventos no es un detalle técnico aislado: es el paradigma sobre el que
+            funciona prácticamente todo el software con el que interactuamos a diario.</p>
+            <ul style="margin-top:8px">
+                <li><strong>Es la base de toda interfaz gráfica:</strong> aplicaciones de escritorio (como esta
+                GUI en Swing), páginas web, apps móviles y videojuegos funcionan "esperando" que el usuario actúe,
+                igual que viste en los cuatro ejemplos de arriba.</li>
+                <li><strong>Separa el diseño de la lógica:</strong> los componentes visuales (<code>JButton</code>,
+                <code>JTextField</code>) solo se encargan de mostrarse en pantalla; el <code>ActionListener</code>
+                se encarga de decidir qué hacer. Esto ordena el código y facilita modificarlo o corregirlo sin
+                romper la interfaz.</li>
+                <li><strong>Hace el software interactivo y no rígido:</strong> sin este modelo, un programa solo
+                podría ejecutarse de arriba hacia abajo una sola vez; con eventos, el usuario decide en qué orden
+                usa la aplicación (puede escribir su usuario primero, corregirlo, y recién después presionar
+                "Ingresar").</li>
+                <li><strong>Es la puerta de entrada a temas más avanzados del curso:</strong> el mismo principio de
+                "esperar y reaccionar ante un evento" reaparece más adelante con los <em>Listeners</em> de otros
+                componentes (Sesión 2) y, en el desarrollo web, con las peticiones HTTP que atienden los
+                <code>Servlets</code> (Sesión 8) — un servidor también "escucha" y "reacciona", igual que el botón
+                "Ingresar".</li>
+            </ul>
+        </div>
     </section>
     <section id="s1-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
@@ -4805,14 +5182,11 @@ public class GameStoreLogin extends JFrame {
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-2" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 2</span>
-        <h2 class="session-tema">Contenedores Avanzados y Administradores de Diseño (Layouts) en Java Swing</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -4823,8 +5197,14 @@ public class GameStoreLogin extends JFrame {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-2-body">
+        <span class="session-number">SESIÓN 2</span>
+        <h2 class="session-tema">Contenedores Avanzados y Administradores de Diseño (Layouts) en Java Swing</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-2-body" hidden>
     <section id="s2-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Diseñar interfaces gráficas complejas y organizadas en Java Swing utilizando contenedores avanzados
             (<code>JPanel</code>, <code>JScrollPane</code>), administradores de diseño (<code>GridLayout</code>,
@@ -4837,7 +5217,17 @@ public class GameStoreLogin extends JFrame {
 
         <h3>1. Administradores de Diseño (Layout Managers)</h3>
         <div class="info-card">
-            <p>En la Guía N° 1 usaste <code>setLayout(null)</code> y coordenadas fijas (<code>setBounds</code>) para
+            <p>En la Guía N° 1 usaste <span class="term-tip" tabindex="0"><code>setLayout(null)</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Un método heredado de <code>Container</code> que desactiva el
+                administrador de diseño (<em>Layout Manager</em>) del contenedor, permitiendo ubicar cada
+                componente "a mano" con coordenadas fijas (<code>setBounds</code>).<br><br>
+                <strong>¿Por qué se usa?</strong> Sirve para practicar y entender las coordenadas (x, y, ancho,
+                alto) al inicio, pero no se recomienda en aplicaciones reales: si la ventana cambia de tamaño, los
+                componentes no se reacomodan solos.<br><br>
+                <strong>¿Desde cuándo?</strong> El método <code>setLayout()</code> existe desde <strong>Java 1.0
+                (1996)</strong>; pasarle <code>null</code> para desactivar el layout automático es una práctica
+                documentada desde las primeras versiones de AWT/Swing.
+            </span></span> y coordenadas fijas (<code>setBounds</code>) para
             ubicar cada componente a mano — algo parecido a pegar los muebles al piso con cinta métrica: si el
             "cuarto" (la ventana) cambia de tamaño, los muebles no se mueven solos y todo se desordena.</p>
             <p style="margin-top:8px">Un <strong>administrador de diseño</strong> (<em>Layout Manager</em>) resuelve
@@ -4882,7 +5272,18 @@ public class GameStoreLogin extends JFrame {
                         <div class="grid-cell">6</div>
                     </div>
                     <p class="mockup-note" style="max-width:280px">Como un cartón de huevos: 3 filas, 2 columnas,
-                    todas las celdas EXACTAMENTE del mismo tamaño. El siguiente componente que agregues (<code>add()</code>)
+                    todas las celdas EXACTAMENTE del mismo tamaño. El siguiente componente que agregues
+                    (<span class="term-tip" tabindex="0"><code>add()</code><span class="term-tip-bubble">
+                        <strong>¿Qué es?</strong> El método que "mete" un componente (un botón, una etiqueta...)
+                        dentro de un contenedor (<code>JPanel</code>, <code>JFrame</code>), como
+                        <code>panel.add(boton)</code>.<br><br>
+                        <strong>¿Por qué se usa?</strong> Un componente creado con <code>new</code> no aparece solo
+                        en pantalla: existe en memoria, pero hasta que no lo agregas con <code>add()</code> a un
+                        contenedor visible, Java no sabe dónde dibujarlo. El Layout Manager del contenedor decide
+                        DÓNDE cae cada componente según el orden en que se agrega.<br><br>
+                        <strong>¿Desde cuándo?</strong> Es un método de la clase <code>Container</code>, parte de
+                        Java desde su primera versión (JDK 1.0, 1996).
+                    </span></span>)
                     cae en la celda 1, luego la 2, la 3... en ese orden.</p>
                 </div>
             </div>
@@ -5243,14 +5644,11 @@ public class CatalogoTiendaAvanzado extends JFrame {
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-3" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 3</span>
-        <h2 class="session-tema">Polimorfismo, Clases Abstractas e Interfaces en Java</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -5261,8 +5659,14 @@ public class CatalogoTiendaAvanzado extends JFrame {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-3-body">
+        <span class="session-number">SESIÓN 3</span>
+        <h2 class="session-tema">Polimorfismo, Clases Abstractas e Interfaces en Java</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-3-body" hidden>
     <section id="s3-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Programar la lógica de negocio orientada a objetos creando clases abstractas, aplicando herencia y
             ejecutando polimorfismo dinámico para gestionar los diversos tipos de recompensas del sistema.</p>
@@ -5273,7 +5677,17 @@ public class CatalogoTiendaAvanzado extends JFrame {
 
         <h3>1. Clases Abstractas</h3>
         <div class="info-card">
-            <p>Son clases que <strong>no se pueden instanciar directamente</strong> (no puedes escribir
+            <p>Son clases que <strong>no se pueden <span class="term-tip" tabindex="0">instanciar<span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> "Instanciar" una clase significa crear un objeto concreto a partir de
+                ella con <code>new</code> (recordando la analogía del molde de galletas de la Sesión 1: instanciar
+                es "sacar una galleta del molde"). Ese objeto resultante se llama una <strong>instancia</strong>
+                de esa clase.<br><br>
+                <strong>¿Por qué es relevante aquí?</strong> Una clase abstracta define el molde, pero un molde
+                incompleto (le faltan métodos sin terminar de "rellenar"): Java no te deja sacar una galleta de un
+                molde que no está completo, por eso <code>new ItemRecompensa(...)</code> da error.<br><br>
+                <strong>¿Desde cuándo?</strong> El operador <code>new</code> para crear instancias existe desde la
+                primera versión de Java (JDK 1.0, 1996).
+            </span></span> directamente</strong> (no puedes escribir
             <code>new ItemRecompensa(...)</code>); sirven como plantillas o clases base para otras clases hijas.
             Pueden contener métodos normales y <strong>métodos abstractos</strong> (métodos sin cuerpo que
             obligatoriamente deben ser implementados por las subclases).</p>
@@ -5289,7 +5703,14 @@ public class CatalogoTiendaAvanzado extends JFrame {
             las clases hijas son las versiones ya "rellenadas" que sí puedes usar con <code>new</code>.</p>
             <div class="inherit-parent-box">📄 ItemRecompensa
             <small>clase ABSTRACTA — no se puede hacer "new ItemRecompensa()", solo sirve de molde</small></div>
-            <span class="inherit-arrow-label">↓ extends (herencia) ↓</span>
+            <span class="inherit-arrow-label">↓ <span class="term-tip" tabindex="0">extends<span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Palabra reservada (keyword) de Java que indica que una clase hereda
+                atributos y métodos de otra clase (su "clase padre" o superclase).<br><br>
+                <strong>¿Por qué se usa?</strong> Evita repetir código: la subclase reutiliza automáticamente todo
+                lo que ya tiene la clase padre, y solo agrega o sobrescribe lo que necesita cambiar.<br><br>
+                <strong>¿Desde cuándo?</strong> Existe desde la primera versión de Java (JDK 1.0, 1996); la
+                herencia simple (una sola superclase por clase) es parte del diseño original del lenguaje.
+            </span></span> (herencia) ↓</span>
             <div class="inherit-children-row">
                 <div class="inherit-child-box">🎮 ItemAvatar
                 <small>hereda nombre y costoPuntos, y agrega su propio aplicarEfecto()</small></div>
@@ -5298,11 +5719,90 @@ public class CatalogoTiendaAvanzado extends JFrame {
             </div>
         </div>
 
-        <h3>2. Polimorfismo</h3>
+        <h3>2. Interfaces</h3>
+        <div class="info-card">
+            <p>Una <strong>interfaz</strong> es un "contrato" que declara QUÉ métodos debe tener obligatoriamente
+            cualquier clase que decida cumplirlo, pero — a diferencia de una clase abstracta — NO implementa
+            ninguno de ellos: solo escribe la "firma" del método, terminada en punto y coma, sin cuerpo.</p>
+            <p style="margin-top:8px">Piénsalo como un <strong>contrato de trabajo</strong>: el contrato dice "la
+            persona que firme debe saber atender clientes, cobrar y hacer inventario", pero no le importa CÓMO
+            cada empleado hace cada cosa — eso lo decide cada uno al "firmar" el contrato (con
+            <code>implements</code>) y cumplirlo.</p>
+        </div>
+
+        <div class="nest-diagram-title">🖼️ Ejemplo: una interfaz <code>Canjeable</code> y una clase que la implementa</div>
+        <div class="nest-diagram">public interface Canjeable {
+    boolean puedeCanjearse(int puntosDisponibles);   // sin cuerpo: solo la firma
+    void aplicarEfecto();                            // termina en ";", no en "{ }"
+}
+
+public class ItemAvatar extends ItemRecompensa implements Canjeable {
+    // ... atributos y constructor heredados de ItemRecompensa ...
+
+    @Override
+    public boolean puedeCanjearse(int puntosDisponibles) {
+        return puntosDisponibles >= this.costoPuntos;
+    }
+
+    @Override
+    public void aplicarEfecto() {
+        System.out.println("Desbloqueando skin de avatar...");
+    }
+}</div>
+
+        <div class="nest-diagram-title" style="margin-top:16px">🖼️ Una interfaz la puede implementar CUALQUIER
+        clase, aunque no tengan nada más en común</div>
+        <div class="nest-diagram">                    «interface» Canjeable
+                 puedeCanjearse()  ·  aplicarEfecto()
+                     ╱ implements    │ implements    ╲ implements
+                    ╱                │                ╲
+          ItemAvatar        ItemPaseAcademico        MembresiaVIP
+     (extends ItemRecompensa)  (extends ItemRecompensa)  (¡no tiene relación
+                                                            con ItemRecompensa!)</div>
+        <p class="mockup-note">* A diferencia del diagrama de <code>extends</code> de más arriba (un solo tronco,
+        un solo padre), una interfaz se parece más a un club: <code>ItemAvatar</code> e
+        <code>ItemPaseAcademico</code> son "familia" (comparten el padre <code>ItemRecompensa</code>), pero
+        <code>MembresiaVIP</code> podría ser una clase totalmente aparte que ni siquiera hereda de
+        <code>ItemRecompensa</code> — y aun así, con solo escribir <code>implements Canjeable</code>, entra al
+        mismo "club" y puede tratarse igual que las otras dos en cualquier código que espere un <code>Canjeable</code>.</p>
+
+        <p style="margin-top:14px"><strong>¿En qué se diferencia de una clase abstracta?</strong></p>
+        <div class="example-grid">
+            <div class="example-card">
+                <div class="example-card-icon">📄</div>
+                <div class="example-card-title">Clase Abstracta</div>
+                <div class="example-card-row">Puede mezclar métodos YA implementados con métodos abstractos (sin
+                implementar). Una clase solo puede heredar de (<code>extends</code>) UNA clase.</div>
+            </div>
+            <div class="example-card">
+                <div class="example-card-icon">📋</div>
+                <div class="example-card-title">Interfaz</div>
+                <div class="example-card-row">Declara solo firmas de métodos, sin implementación. Una misma clase
+                puede <code>implements</code> VARIAS interfaces a la vez, algo que <code>extends</code> no
+                permite.</div>
+            </div>
+        </div>
+        <p class="mockup-note">* Regla práctica: si necesitas compartir código YA escrito entre clases parecidas,
+        usa herencia (clase abstracta); si solo necesitas garantizar que varias clases distintas — aunque no
+        tengan nada más en común — sepan hacer lo mismo, usa una interfaz.</p>
+        <p class="mockup-note">¿Desde cuándo? Las interfaces existen desde la primera versión de Java (JDK 1.0,
+        1996); desde Java 8 (2014) también pueden incluir métodos con implementación por defecto
+        (<code>default</code>) y métodos <code>static</code>, aunque en este curso las usamos en su forma clásica:
+        solo firmas de métodos.</p>
+
+        <h3>3. Polimorfismo</h3>
         <div class="info-card">
             <p>Es la capacidad que tienen los objetos de diferentes clases para responder a un mismo mensaje o
             método, ejecutando acciones distintas según su propia naturaleza (gracias a la sobrescritura de métodos
-            con <code>@Override</code>). Permite manejar múltiples tipos de objetos bajo una misma referencia común
+            con <span class="term-tip" tabindex="0"><code>@Override</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Una anotación (metadato) de Java que le dice al compilador: "este método
+                está sobrescribiendo uno de la clase padre (o implementando uno de una interfaz)".<br><br>
+                <strong>¿Por qué se usa?</strong> No es obligatoria, pero evita errores tontos: si escribes mal el
+                nombre o los parámetros por un error de tipeo, el compilador te avisa con un error, en vez de dejar
+                que crees sin darte cuenta un método nuevo que nunca se ejecuta.<br><br>
+                <strong>¿Desde cuándo?</strong> Se introdujo en <strong>Java 5 (2004)</strong>; en <strong>Java 6
+                (2006)</strong> se amplió para poder usarla también en métodos que implementan una interfaz.
+            </span></span>). Permite manejar múltiples tipos de objetos bajo una misma referencia común
             (como un arreglo o lista de la clase padre).</p>
             <p style="margin-top:8px">Es como el botón "reproducir" de un control remoto universal: la orden que
             envías es siempre la misma, pero el televisor, el equipo de sonido o el reproductor de DVD (cada uno una
@@ -5324,7 +5824,7 @@ public class CatalogoTiendaAvanzado extends JFrame {
             </div>
         </div>
 
-        <h3>3. Asociación, Composición y Agregación</h3>
+        <h3>4. Asociación, Composición y Agregación</h3>
         <ul>
             <li><strong>Asociación:</strong> Es la relación más general y "débil" entre dos clases independientes:
             un objeto simplemente conoce o usa a otro (por ejemplo, un <code>Estudiante</code> que realiza una
@@ -5561,6 +6061,36 @@ public class Estudiante {
     }
 }</code></pre>
         </div>
+
+        <p class="diagram-caption" style="margin-top:4px">🖼️ <strong>Diagrama:</strong> las dos relaciones de este
+        ejemplo con las clases REALES que acabas de escribir (compara con el diagrama de rombos del Marco
+        Teórico).</p>
+        <div class="relation-compare-wrap">
+            <div class="relation-card">
+                <div class="relation-icon">🧍───🗄️</div>
+                <div class="relation-title">Asociación</div>
+                <div class="relation-mini">
+                    <span>Estudiante</span>
+                    <span class="relation-connector">──── (conoce)</span>
+                    <span>Inventario</span>
+                </div>
+                <div class="relation-desc">El <code>Inventario</code> le llega a <code>Estudiante</code> por el
+                constructor — no lo crea él, solo lo consulta. El mismo <code>Inventario</code> podría entregarse
+                a muchos <code>Estudiante</code> distintos.</div>
+            </div>
+            <div class="relation-card">
+                <div class="relation-icon">🏠➡️🚪</div>
+                <div class="relation-title">Composición</div>
+                <div class="relation-mini">
+                    <span>Inventario</span>
+                    <span class="relation-connector">◆──── (crea)</span>
+                    <span>List&lt;ItemRecompensa&gt;</span>
+                </div>
+                <div class="relation-desc">El <code>ArrayList</code> nace DENTRO del constructor de
+                <code>Inventario</code> (<code>new ArrayList&lt;&gt;()</code>) — si el <code>Inventario</code> deja
+                de existir, su lista de ítems deja de existir con él.</div>
+            </div>
+        </div>
         <p class="mockup-note">* <code>Inventario</code> y su <code>List&lt;ItemRecompensa&gt;</code> son la
         relación fuerte (composición): el <code>ArrayList</code> nace y muere con el <code>Inventario</code>. El
         <code>Inventario</code> que recibe <code>Estudiante</code> en su constructor es la relación débil
@@ -5622,16 +6152,25 @@ public class Estudiante {
             </ul>
         </div>
 
+        <div class="criteria-group">
+            <h3>🌟 Reto Opcional (no obligatorio)</h3>
+            <ul>
+                <li class="checklist-item">
+                    <input type="checkbox" data-key="o1">
+                    <span>Declarar una interfaz simple (por ejemplo <code>Canjeable</code>, como en el ejemplo del
+                    Marco Teórico) e implementarla en al menos una de tus clases con <code>implements</code>,
+                    usando <code>@Override</code> en sus métodos.</span>
+                </li>
+            </ul>
+        </div>
+
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-4" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 4</span>
-        <h2 class="session-tema">Diagramas UML, Constructores, la Referencia this y Métodos Especializados</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -5642,8 +6181,14 @@ public class Estudiante {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-4-body">
+        <span class="session-number">SESIÓN 4</span>
+        <h2 class="session-tema">Diagramas UML, Constructores, la Referencia this y Métodos Especializados</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-4-body" hidden>
     <section id="s4-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Modelar las entidades principales de un sistema mediante diagramas de clases UML y codificarlas
             correctamente en Java implementando constructores, la referencia <code>this</code>, y métodos
@@ -5699,7 +6244,15 @@ public class Estudiante {
         <ul>
             <li><strong>Constructor:</strong> Método especial que se ejecuta automáticamente al crear un objeto
             para inicializar sus atributos.</li>
-            <li><code>this</code>: Palabra reservada que hace referencia al objeto actual de la clase, muy útil
+            <li><span class="term-tip" tabindex="0"><code>this</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Palabra reservada (keyword) que dentro de un método o constructor hace
+                referencia al objeto actual sobre el que se está ejecutando ese código.<br><br>
+                <strong>¿Por qué se usa?</strong> Permite diferenciar un atributo de un parámetro cuando ambos
+                tienen el mismo nombre (<code>this.nombre = nombre;</code>), y también sirve para llamar a otro
+                constructor de la misma clase (<code>this(...)</code>).<br><br>
+                <strong>¿Desde cuándo?</strong> Existe desde la primera versión de Java (JDK 1.0, 1996); es parte
+                del diseño original del lenguaje, heredado del mismo concepto en C++.
+            </span></span>: Palabra reservada que hace referencia al objeto actual de la clase, muy útil
             para diferenciar los atributos de los parámetros cuando tienen el mismo nombre.</li>
         </ul>
         <div class="info-card">
@@ -5731,7 +6284,15 @@ public class Estudiante {
             una condición sobre el estado del objeto (por convención se nombran con el prefijo <code>es</code> o
             <code>tiene</code>, por ejemplo <code>esVIP()</code>); son útiles para tomar decisiones en el resto del
             programa sin exponer directamente los atributos privados.</li>
-            <li><code>toString()</code>: Método para representar el estado del objeto en formato de texto.</li>
+            <li><span class="term-tip" tabindex="0"><code>toString()</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Un método que toda clase en Java hereda de <code>Object</code> y que
+                devuelve una representación del objeto en forma de texto (<code>String</code>).<br><br>
+                <strong>¿Por qué se usa?</strong> Al sobrescribirlo (con <code>@Override</code>), controlas qué se
+                muestra cuando imprimes el objeto directamente (<code>System.out.println(objeto)</code>) o lo
+                concatenas con texto, en vez de ver algo poco útil como <code>Estudiante@1b6d3586</code>.<br><br>
+                <strong>¿Desde cuándo?</strong> Existe desde la primera versión de Java (JDK 1.0, 1996), como
+                parte de la clase raíz <code>Object</code> de la que heredan todas las clases.
+            </span></span>: Método para representar el estado del objeto en formato de texto.</li>
         </ul>
 
         <div class="method-compare-wrap">
@@ -6003,14 +6564,11 @@ public class Estudiante {
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-5" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 5</span>
-        <h2 class="session-tema">Manejo de Archivos de Texto (Text-File), Binarios y Excepciones en Java</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -6021,8 +6579,14 @@ public class Estudiante {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-5-body">
+        <span class="session-number">SESIÓN 5</span>
+        <h2 class="session-tema">Manejo de Archivos de Texto (Text-File), Binarios y Excepciones en Java</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-5-body" hidden>
     <section id="s5-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Implementar algoritmos que utilicen almacenamiento permanente mediante flujos de entrada y salida en
             archivos de texto plano y archivos binarios, controlando adecuadamente las excepciones de lectura y
@@ -6063,8 +6627,25 @@ public class Estudiante {
 
         <h3>2. Manejo de Excepciones (<code>try-catch</code>)</h3>
         <p>Las operaciones con archivos son propensas a errores externos (disco lleno, archivo inexistente, permisos
-        denegados). Por ello, es obligatorio envolver el código en bloques <code>try-catch</code> para capturar
-        excepciones como <code>IOException</code>.</p>
+        denegados). Por ello, es obligatorio envolver el código en bloques <span class="term-tip" tabindex="0"><code>try-catch</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una estructura de control con dos bloques: <code>try { }</code> contiene el
+            código que podría fallar, y <code>catch (...) { }</code> contiene lo que se ejecuta SOLO si ocurre un
+            error dentro del <code>try</code>.<br><br>
+            <strong>¿Por qué se usa?</strong> Sin ella, un error (como un archivo inexistente) detiene por completo
+            el programa; con <code>try-catch</code> puedes capturar ese error, avisar al usuario y dejar que el
+            programa siga funcionando.<br><br>
+            <strong>¿Desde cuándo?</strong> El manejo de excepciones con <code>try/catch/finally</code> es parte
+            del diseño original de Java desde su primera versión (JDK 1.0, 1996).
+        </span></span> para capturar
+        excepciones como <span class="term-tip" tabindex="0"><code>IOException</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una clase de Java que representa un error de entrada/salida (<em>Input/Output</em>):
+            problemas al leer o escribir archivos, como que no existan, falten permisos o el disco esté lleno.<br><br>
+            <strong>¿Por qué se usa?</strong> Java obliga a capturarla (es una excepción "verificada" o
+            <em>checked</em>) porque los errores de archivos son comunes y externos al programa; así te fuerza a
+            decidir qué hacer si algo sale mal, en vez de ignorarlo.<br><br>
+            <strong>¿Desde cuándo?</strong> Forma parte del paquete <code>java.io</code> desde la primera versión
+            de Java (JDK 1.0, 1996).
+        </span></span>.</p>
         <div class="info-card">
             <p>Piensa en los flujos (<em>streams</em>) como tubos de agua encadenados: <code>FileWriter</code> es el
             tubo que llega directo al archivo, y <code>PrintWriter</code> es un embudo con forma más cómoda que
@@ -6109,7 +6690,51 @@ public class Estudiante {
         <p class="mockup-note">* Si todo sale bien en el <code>try</code>, los pasos 2-4 simplemente no ocurren: el
         <code>catch</code> se salta por completo y el programa sigue de largo.</p>
 
-        <h3>3. Excepciones Personalizadas</h3>
+        <h3>3. Cierre Automático de Recursos (<span class="term-tip" tabindex="0">try-with-resources<span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una variante de <code>try</code> que declara el recurso a usar (un archivo,
+            más adelante una conexión a base de datos) DENTRO de paréntesis justo después de <code>try</code>, en
+            vez de abrirlo por separado.<br><br>
+            <strong>¿Por qué se usa?</strong> Java cierra automáticamente ese recurso al salir del bloque, incluso
+            si ocurrió un error — sin necesitar escribir un <code>finally</code> manual para acordarte de llamar a
+            <code>close()</code>.<br><br>
+            <strong>¿Desde cuándo?</strong> Se introdujo en <strong>Java 7 (2011)</strong>, específicamente para
+            simplificar este patrón de "abrir y siempre cerrar" que antes requería mucho código repetitivo.
+        </span></span>)</h3>
+        <p>Cada vez que abres un archivo (o, más adelante en el curso, una conexión a base de datos), ese recurso
+        queda "ocupando un cupo" del sistema hasta que lo cierras explícitamente con <code>close()</code>. Si
+        olvidas cerrarlo — sobre todo cuando el <code>try</code> lanza una excepción antes de llegar al
+        <code>close()</code> — el archivo puede quedar "trabado" para otros programas.</p>
+
+        <div class="nest-diagram-title">Forma clásica (más código): cerrar "a mano" con <code>finally</code></div>
+        <div class="nest-diagram">FileWriter escritor = null;
+try {
+    escritor = new FileWriter("datos.txt");
+    escritor.write("Hola");
+} catch (IOException e) {
+    System.out.println("Error: " + e.getMessage());
+} finally {
+    if (escritor != null) {
+        try { escritor.close(); } catch (IOException e) { /* ya no se puede hacer mucho aquí */ }
+    }
+}</div>
+
+        <div class="nest-diagram-title" style="margin-top:16px">Forma moderna: <code>try-with-resources</code></div>
+        <div class="nest-diagram">try (FileWriter escritor = new FileWriter("datos.txt")) {
+    escritor.write("Hola");
+} catch (IOException e) {
+    System.out.println("Error: " + e.getMessage());
+}
+// Java cierra "escritor" automáticamente al salir del try, incluso si hubo un error</div>
+
+        <div class="info-card" style="margin-top:14px">
+            <p>La diferencia está en los paréntesis inmediatamente después de <code>try</code>: cualquier recurso
+            declarado ahí dentro (debe implementar la interfaz <code>AutoCloseable</code>, como
+            <code>FileWriter</code> o, más adelante, <code>Connection</code> de JDBC en la Sesión 7) se cierra
+            SOLO al terminar el bloque — sin necesitar un <code>finally</code> manual. A partir de esta sesión, el
+            curso usa siempre esta forma moderna.</p>
+        </div>
+
+        <h3>4. Excepciones Personalizadas</h3>
         <p>Además de las excepciones ya definidas por Java (<code>IOException</code>, <code>SQLException</code>,
         etc.), se pueden crear <strong>excepciones propias</strong> extendiendo la clase <code>Exception</code> (o
         <code>RuntimeException</code>). Sirven para representar errores específicos de la lógica del negocio que
@@ -6414,14 +7039,11 @@ public class PrincipalExcepcion {
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-6" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 6</span>
-        <h2 class="session-tema">Base de Datos: Fundamentos de SQL y MySQL</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -6432,11 +7054,26 @@ public class PrincipalExcepcion {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-6-body">
+        <span class="session-number">SESIÓN 6</span>
+        <h2 class="session-tema">Base de Datos: Fundamentos de SQL y MySQL</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-6-body" hidden>
     <section id="s6-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Diseñar, crear y gestionar bases de datos relacionales en MySQL mediante la aplicación de comandos
-            SQL para estructurar la información del sistema y garantizar la integridad referencial.</p>
+            SQL para estructurar la información del sistema y garantizar la <span class="term-tip" tabindex="0">integridad referencial<span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> La garantía de que toda <code>FOREIGN KEY</code> apunta SIEMPRE a una
+                fila que realmente existe en la otra tabla; la base de datos rechaza automáticamente cualquier
+                operación que la rompa (por ejemplo, borrar un estudiante que todavía tiene canjes registrados).<br><br>
+                <strong>¿Por qué se usa?</strong> Sin ella podrían quedar registros "huérfanos" — un canje que
+                apunta a un <code>id_estudiante</code> que ya no existe — corrompiendo la información sin que nadie
+                lo note.<br><br>
+                <strong>¿Desde cuándo?</strong> Es parte del estándar SQL desde SQL-89/SQL-92; MySQL la aplica en
+                el motor de almacenamiento InnoDB (el que usarás en este curso).
+            </span></span>.</p>
         </div>
     </section>
     <section id="s6-marco-teorico">
@@ -6444,8 +7081,23 @@ public class PrincipalExcepcion {
 
         <h3>1. Bases de Datos Relacionales y MySQL</h3>
         <p>Una base de datos relacional organiza los datos en tablas compuestas por filas (registros) y columnas
-        (campos), las cuales se relacionan entre sí mediante claves primarias (<code>PRIMARY KEY</code>) y claves
-        foráneas (<code>FOREIGN KEY</code>). MySQL es uno de los sistemas de gestión de bases de datos relacionales
+        (campos), las cuales se relacionan entre sí mediante claves primarias (<span class="term-tip" tabindex="0"><code>PRIMARY KEY</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> La columna (o combinación de columnas) que identifica de forma única a cada
+            fila de una tabla; no puede repetirse ni quedar vacía (<code>NULL</code>).<br><br>
+            <strong>¿Por qué se usa?</strong> Garantiza que cada registro sea distinguible de los demás y es el
+            "punto de anclaje" que otras tablas usan para referenciarlo mediante una <code>FOREIGN KEY</code>.<br><br>
+            <strong>¿Desde cuándo?</strong> Es parte del estándar SQL desde su primera versión formal, SQL-86
+            (1986); MySQL la soporta desde sus primeras versiones (1995).
+        </span></span>) y claves
+        foráneas (<span class="term-tip" tabindex="0"><code>FOREIGN KEY</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una columna cuyo valor debe coincidir con la <code>PRIMARY KEY</code> de otra
+            tabla (o de la misma), creando un vínculo entre ambas.<br><br>
+            <strong>¿Por qué se usa?</strong> Conecta información relacionada sin duplicarla (por ejemplo, un canje
+            "apunta" al estudiante que lo hizo en vez de repetir todos sus datos) y evita datos huérfanos, ya que
+            la base de datos rechaza valores que no existan en la tabla referenciada.<br><br>
+            <strong>¿Desde cuándo?</strong> Es parte del estándar SQL desde SQL-89/SQL-92; MySQL la soporta en el
+            motor de almacenamiento InnoDB desde finales de los años 90.
+        </span></span>). MySQL es uno de los sistemas de gestión de bases de datos relacionales
         (RDBMS) más populares y compatibles con entornos de desarrollo en Java.</p>
         <div class="info-card">
             <p>Piensa en una base de datos relacional como un archivador de oficina con carpetas (tablas): cada
@@ -6508,6 +7160,46 @@ public class PrincipalExcepcion {
                 <div class="ddl-dml-desc">Como mover los muebles dentro de una casa ya construida: inserta,
                 consulta, actualiza o borra las FILAS de una tabla que ya existe.</div>
             </div>
+        </div>
+
+        <h3>3. Combinando Tablas: <span class="term-tip" tabindex="0"><code>JOIN</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una cláusula SQL que combina filas de dos (o más) tablas en un solo
+            resultado, usando una condición de coincidencia (normalmente una <code>FOREIGN KEY</code> que apunta a
+            una <code>PRIMARY KEY</code>).<br><br>
+            <strong>¿Por qué se usa?</strong> Los datos están repartidos en varias tablas para no duplicarlos (por
+            eso existe la <code>FOREIGN KEY</code>); <code>JOIN</code> es la forma de "volver a juntarlos" al
+            momento de consultar, sin tener que copiar la información de una tabla dentro de otra.<br><br>
+            <strong>¿Desde cuándo?</strong> Es parte del estándar SQL desde SQL-92 (1992); MySQL lo soporta desde
+            sus primeras versiones.
+        </span></span></h3>
+        <p>Las tres tablas del diagrama de arriba guardan cada una SOLO su propia información — la tabla
+        <code>historial_canjes</code> no repite el nombre del estudiante ni el del ítem, solo guarda sus IDs. Para
+        mostrar un historial legible ("Ana Torres canjeó Skin Legendario"), hay que "reunir" las tres tablas en
+        una sola consulta con <code>JOIN</code>.</p>
+        <div class="info-card">
+            <p>Piensa otra vez en el archivador de oficina: la ficha de <code>historial_canjes</code> solo dice
+            "ver ficha N° 3 en la carpeta <em>estudiantes</em>" y "ver ficha N° 7 en la carpeta
+            <em>recompensas</em>". Hacer un <code>JOIN</code> es como ponerte a caminar entre carpetas: sacas la
+            ficha del canje, sigues su nota hasta la carpeta de estudiantes para copiar el nombre, sigues la otra
+            nota hasta la carpeta de recompensas para copiar el ítem, y armas una sola hoja con todo junto.</p>
+        </div>
+        <div class="nest-diagram-title">Ejemplo: unir las 3 tablas en una sola consulta</div>
+        <div class="nest-diagram">SELECT e.nombre, r.nombre_item, h.fecha_canje
+FROM historial_canjes h
+JOIN estudiantes e  ON h.id_estudiante = e.id_estudiante   -- sigue la nota hacia "estudiantes"
+JOIN recompensas r  ON h.id_recompensa = r.id_recompensa;  -- sigue la nota hacia "recompensas"</div>
+        <p class="mockup-note">* Sin el <code>JOIN</code>, esa consulta solo podría mostrarte números de ID
+        (<code>id_estudiante = 3</code>, <code>id_recompensa = 7</code>) — el <code>JOIN</code> es lo que
+        convierte esos IDs en nombres legibles para un humano.</p>
+
+        <h4 style="margin-top:16px">¿Por qué es importante todo esto?</h4>
+        <div class="info-card">
+            <p>Las bases de datos relacionales son la memoria a largo plazo de casi cualquier sistema real: a
+            diferencia de las variables de un programa (que desaparecen al cerrarlo), los datos en MySQL persisten
+            aunque apagues la computadora. Diseñar bien las claves (<code>PRIMARY KEY</code>/<code>FOREIGN
+            KEY</code>) y saber combinarlas con <code>JOIN</code> es exactamente lo que te permitirá, en la Sesión
+            7, conectar tu programa Java (con JDBC) a datos reales y persistentes — la base sobre la que se
+            construye el Proyecto Final completo.</p>
         </div>
     </section>
     <section id="s6-actividades">
@@ -6689,14 +7381,11 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-7" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 7</span>
-        <h2 class="session-tema">Conectividad a Bases de Datos con JDBC en Java</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -6707,11 +7396,27 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-7-body">
+        <span class="session-number">SESIÓN 7</span>
+        <h2 class="session-tema">Conectividad a Bases de Datos con JDBC en Java</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-7-body" hidden>
     <section id="s7-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Implementar la conectividad entre aplicaciones Java y bases de datos relacionales mediante la API
-            JDBC y el uso de <code>PreparedStatement</code> para realizar operaciones CRUD seguras.</p>
+            JDBC y el uso de <code>PreparedStatement</code> para realizar operaciones <span class="term-tip" tabindex="0">CRUD<span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Sigla en inglés de las cuatro operaciones básicas sobre datos:
+                <strong>C</strong>reate (crear/insertar), <strong>R</strong>ead (leer/consultar),
+                <strong>U</strong>pdate (actualizar) y <strong>D</strong>elete (eliminar) — en SQL corresponden a
+                <code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code> y <code>DELETE</code> (Sesión 6).<br><br>
+                <strong>¿Por qué se usa?</strong> Casi cualquier sistema (una tienda, una red social, este mismo
+                proyecto) necesita hacer exactamente estas cuatro cosas con sus datos; agruparlas bajo un solo
+                nombre facilita hablar de "toda la lógica de datos" de un objeto sin enumerar las cuatro cada vez.<br><br>
+                <strong>¿Desde cuándo?</strong> El término se popularizó en la literatura de bases de datos desde
+                los años 80; hoy es vocabulario estándar en cualquier lenguaje o framework que use bases de datos.
+            </span></span> seguras.</p>
         </div>
     </section>
     <section id="s7-marco-teorico">
@@ -6720,13 +7425,25 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
         <h3>1. Java Database Connectivity (JDBC)</h3>
         <p>Es la API estándar de Java que permite la ejecución de operaciones contra bases de datos relacionales.
         Utiliza un driver específico del motor (como MySQL Connector) para puentear la aplicación con el servidor
-        de bases de datos mediante la clase <code>DriverManager</code> y la interfaz <code>Connection</code>.</p>
+        de bases de datos mediante la clase <code>DriverManager</code> y la interfaz <span class="term-tip" tabindex="0"><code>Connection</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> El objeto que representa el canal de comunicación abierto entre tu programa
+            Java y la base de datos; se obtiene con <code>DriverManager.getConnection(url, usuario, clave)</code>.<br><br>
+            <strong>¿Por qué se usa?</strong> Todas las operaciones con la base de datos (consultas, inserciones,
+            actualizaciones) necesitan una conexión activa; a partir de ella se crean los objetos
+            <code>Statement</code>/<code>PreparedStatement</code> que ejecutan el SQL.<br><br>
+            <strong>¿Desde cuándo?</strong> Es parte de la API JDBC desde su primera versión, incluida en
+            <strong>JDK 1.1 (1997)</strong>.
+        </span></span>.</p>
         <div class="info-card">
             <p>Piensa en JDBC como un adaptador de enchufe universal: tu programa Java "habla" un idioma, y cada
             motor de base de datos (MySQL, PostgreSQL, etc.) "habla" otro. El <em>driver</em> (MySQL Connector/J)
             es el adaptador específico que traduce entre ambos; <code>DriverManager</code> es quien elige
             automáticamente el adaptador correcto según la URL que le des (<code>jdbc:mysql://...</code>).</p>
         </div>
+        <p class="mockup-note">* Igual que un archivo abierto con <code>FileWriter</code> en la Sesión 5, una
+        <code>Connection</code> es un recurso que hay que cerrar. Por eso, a partir de esta sesión, toda conexión
+        se abre con <code>try-with-resources</code> (<code>try (Connection conn = ...) { }</code>, ver Sesión 5):
+        Java la cierra automáticamente al salir del bloque, haya error o no.</p>
 
         <p class="diagram-caption" style="margin-top:4px">🖼️ <strong>Diagrama:</strong> el camino que recorre tu
         programa Java hasta poder "hablar" con MySQL.</p>
@@ -6763,7 +7480,15 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
         </div>
 
         <h3>2. Consultas Preparadas (<code>PreparedStatement</code>)</h3>
-        <p>A diferencia de <code>Statement</code>, la interfaz <code>PreparedStatement</code> permite compilar la
+        <p>A diferencia de <code>Statement</code>, la interfaz <span class="term-tip" tabindex="0"><code>PreparedStatement</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una subinterfaz de <code>Statement</code> que representa una consulta SQL
+            "precompilada", con espacios reservados (<code>?</code>) que se rellenan después con datos reales.<br><br>
+            <strong>¿Por qué se usa?</strong> Es más segura (previene inyección SQL, porque los datos nunca se
+            mezclan con el texto de la consulta) y más eficiente cuando la misma consulta se ejecuta muchas veces
+            con distintos valores.<br><br>
+            <strong>¿Desde cuándo?</strong> Está en la API JDBC desde su primera versión, incluida en <strong>JDK
+            1.1 (1997)</strong>.
+        </span></span> permite compilar la
         consulta SQL previamente y pasarle parámetros de forma segura (<code>?</code>), previniendo ataques de
         inyección SQL y mejorando el rendimiento en consultas repetitivas. El manejo de los resultados de lectura
         se realiza mediante la interfaz <code>ResultSet</code>.</p>
@@ -6825,6 +7550,68 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
                 veces que quieras.</div>
             </div>
         </div>
+
+        <h3>4. Organizando el Acceso a Datos: el Patrón <span class="term-tip" tabindex="0">DAO<span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Sigla de <em>Data Access Object</em> (Objeto de Acceso a Datos): una forma
+            de organizar el código en la que TODA la lógica JDBC para una entidad (<code>Connection</code>,
+            <code>PreparedStatement</code>, SQL) vive dentro de una sola clase dedicada, en vez de mezclarse con
+            el resto del programa.<br><br>
+            <strong>¿Por qué se usa?</strong> Separa "CÓMO se guardan los datos" (dentro del DAO) de "QUÉ hace el
+            programa con esos datos" (el resto de la aplicación); si mañana cambias de MySQL a otro motor, solo
+            tocas el DAO, sin modificar el resto del código.<br><br>
+            <strong>¿Desde cuándo?</strong> Es un patrón de diseño documentado por Sun Microsystems desde
+            principios de los 2000 (en sus guías de "Core J2EE Patterns"), y sigue siendo el estándar de facto
+            para organizar el acceso a bases de datos en Java.
+        </span></span></h3>
+        <p>En vez de escribir <code>Connection</code>, SQL y <code>PreparedStatement</code> sueltos en cualquier
+        parte del programa, se agrupan todos los métodos CRUD de una entidad (por ejemplo, <code>Estudiante</code>)
+        dentro de una única clase con el sufijo <code>DAO</code>: <code>EstudianteDAO</code>. Esa clase es la
+        ÚNICA que "sabe" hablar SQL; el resto del programa solo le pide cosas como
+        <code>dao.insertar(estudiante)</code> o <code>dao.buscarPorId(3)</code>, sin preocuparse de cómo se hace
+        la consulta por dentro.</p>
+        <div class="info-card">
+            <p>Piensa en el DAO como el <strong>mesero</strong> de un restaurante: tú (el resto del programa) le
+            pides "un estudiante con ID 3", y el mesero (el DAO) es quien entra a la cocina (la base de datos),
+            arma la consulta SQL exacta y te trae el resultado ya listo — nunca tienes que entrar tú mismo a la
+            cocina a revolver ollas (escribir SQL) desde cualquier parte de tu aplicación.</p>
+        </div>
+
+        <p class="diagram-caption" style="margin-top:4px">🖼️ <strong>Diagrama:</strong> por dónde pasa un
+        <code>dao.buscarPorId(3)</code> hasta volver con el resultado.</p>
+        <div class="jdbc-flow-wrap">
+            <div class="jdbc-step">
+                <span class="jdbc-step-emoji">🖱️</span>
+                <span class="jdbc-step-text"><strong>1. El resto del programa pide un dato</strong>
+                <span>Por ejemplo: <code>dao.buscarPorId(3)</code>, sin saber nada de SQL.</span></span>
+            </div>
+            <span class="jdbc-arrow">↓</span>
+            <div class="jdbc-step">
+                <span class="jdbc-step-emoji">🧑‍🍳</span>
+                <span class="jdbc-step-text"><strong>2. EstudianteDAO recibe el pedido</strong>
+                <span>Es la ÚNICA clase que sabe armar el SQL correspondiente.</span></span>
+            </div>
+            <span class="jdbc-arrow">↓</span>
+            <div class="jdbc-step">
+                <span class="jdbc-step-emoji">🔌</span>
+                <span class="jdbc-step-text"><strong>3. Abre Connection y PreparedStatement</strong>
+                <span>Usando <code>try-with-resources</code>, como viste más arriba.</span></span>
+            </div>
+            <span class="jdbc-arrow">↓</span>
+            <div class="jdbc-step">
+                <span class="jdbc-step-emoji">🐬</span>
+                <span class="jdbc-step-text"><strong>4. MySQL ejecuta la consulta</strong>
+                <span>Y devuelve las filas que coinciden en un <code>ResultSet</code>.</span></span>
+            </div>
+            <span class="jdbc-arrow">↓</span>
+            <div class="jdbc-step">
+                <span class="jdbc-step-emoji">📦</span>
+                <span class="jdbc-step-text"><strong>5. El DAO devuelve un objeto Java listo</strong>
+                <span>Un <code>Estudiante</code> normal — quien llamó a <code>buscarPorId</code> nunca vio el SQL.</span></span>
+            </div>
+        </div>
+        <p class="mockup-note">* Este es exactamente el patrón que vas a construir en el Paso 2 de esta sesión
+        (<code>EstudianteDAO.java</code>) y el mismo que organiza todo el paquete <code>dao</code> del Proyecto
+        Final más adelante.</p>
     </section>
     <section id="s7-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
@@ -7094,14 +7881,11 @@ public class EstudianteRowSetDAO {
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="sesion-8" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">SESIÓN 8</span>
-        <h2 class="session-tema">Servlets y Desarrollo Web (JSP)</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -7112,8 +7896,14 @@ public class EstudianteRowSetDAO {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="sesion-8-body">
+        <span class="session-number">SESIÓN 8</span>
+        <h2 class="session-tema">Servlets y Desarrollo Web (JSP)</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="sesion-8-body" hidden>
     <section id="s8-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Trasladar la lógica ya construida en las Sesiones 1 a 7 (interfaces, POO y persistencia con JDBC)
             al entorno web, implementando <code>Servlets</code> y páginas <code>JSP</code> que procesen peticiones
@@ -7125,7 +7915,16 @@ public class EstudianteRowSetDAO {
 
         <h3>🏛️ Arquitectura de Servlets</h3>
         <p>Todo lo aprendido hasta ahora corre en el <strong>computador del usuario</strong> como una aplicación
-        de escritorio. Un <code>Servlet</code> traslada esa lógica a la <strong>web</strong>: es una clase Java que
+        de escritorio. Un <span class="term-tip" tabindex="0"><code>Servlet</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> Una clase Java que se ejecuta dentro de un servidor web (un contenedor de
+            Servlets, como Apache Tomcat) y responde a peticiones HTTP generando contenido dinámico, normalmente
+            HTML.<br><br>
+            <strong>¿Por qué se usa?</strong> Traslada la lógica de negocio del escritorio a la web: un mismo
+            Servlet puede atender a miles de usuarios desde su navegador, sin que instalen nada en su computadora.<br><br>
+            <strong>¿Desde cuándo?</strong> Sun Microsystems creó la tecnología en <strong>1997</strong> (Java
+            Servlet API 1.0) y se estandarizó dentro de J2EE en 1999; hoy forma parte de <strong>Jakarta EE</strong>
+            (desde 2019, tras donarse el proyecto a la Eclipse Foundation).
+        </span></span> traslada esa lógica a la <strong>web</strong>: es una clase Java que
         vive dentro de un servidor (un contenedor de Servlets como Apache Tomcat) y genera páginas HTML dinámicas
         en respuesta a las peticiones de un navegador.</p>
         <ul>
@@ -7171,9 +7970,25 @@ public class EstudianteRowSetDAO {
         <h3>📨 Procesamiento de Peticiones: doGet vs. doPost</h3>
         <p>El contenedor llama automáticamente a uno de estos dos métodos, según el método HTTP de la petición:</p>
         <ul>
-            <li><strong><code>doGet</code>:</strong> atiende peticiones GET, las que se disparan al escribir una
+            <li><strong><span class="term-tip" tabindex="0"><code>doGet</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> Un método de la clase <code>HttpServlet</code> que el contenedor llama
+                automáticamente cuando llega una petición HTTP de tipo <code>GET</code>.<br><br>
+                <strong>¿Por qué se usa?</strong> Se sobrescribe para decidir qué mostrar cuando el usuario escribe
+                una URL o hace clic en un enlace; por convención NO debe usarse para modificar datos, solo para
+                mostrarlos.<br><br>
+                <strong>¿Desde cuándo?</strong> Existe desde la primera versión de la Servlet API (1997), como
+                parte de la clase <code>HttpServlet</code>.
+            </span></span>:</strong> atiende peticiones GET, las que se disparan al escribir una
             URL o seguir un enlace. Se usa para <em>mostrar</em> una página, como el formulario de acceso.</li>
-            <li><strong><code>doPost</code>:</strong> atiende peticiones POST, las que genera un formulario HTML
+            <li><strong><span class="term-tip" tabindex="0"><code>doPost</code><span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> El método de <code>HttpServlet</code> que el contenedor llama
+                automáticamente cuando llega una petición HTTP de tipo <code>POST</code>.<br><br>
+                <strong>¿Por qué se usa?</strong> Se usa para enviar datos (por ejemplo, un formulario de login):
+                a diferencia de <code>GET</code>, los datos viajan en el cuerpo de la petición y no quedan
+                visibles en la URL.<br><br>
+                <strong>¿Desde cuándo?</strong> Existe desde la primera versión de la Servlet API (1997), como
+                parte de la clase <code>HttpServlet</code>.
+            </span></span>:</strong> atiende peticiones POST, las que genera un formulario HTML
             con <code>method="post"</code>. Se usa para <em>enviar</em> datos, como las credenciales del
             usuario.</li>
         </ul>
@@ -7194,7 +8009,16 @@ public class EstudianteRowSetDAO {
         </div>
 
         <h3>📄 JSP: la Vista del Lado del Servidor</h3>
-        <p><code>JSP</code> (JavaServer Pages) es la otra mitad de la tecnología: en vez de imprimir HTML línea
+        <p><span class="term-tip" tabindex="0"><code>JSP</code><span class="term-tip-bubble">
+            <strong>¿Qué es?</strong> JavaServer Pages: una tecnología que permite escribir páginas casi como HTML
+            normal, con pequeños fragmentos de código Java incrustados entre <code>&lt;% %&gt;</code>; el
+            contenedor la compila automáticamente a un Servlet la primera vez que se solicita.<br><br>
+            <strong>¿Por qué se usa?</strong> Es más cómoda que imprimir HTML línea por línea con
+            <code>out.println(...)</code> desde un Servlet puro; separa mejor la VISTA (JSP) de la LÓGICA
+            (Servlet).<br><br>
+            <strong>¿Desde cuándo?</strong> Sun Microsystems la lanzó en <strong>1999</strong> (JSP 1.0), poco
+            después de la Servlet API; hoy forma parte de Jakarta EE.
+        </span></span> (JavaServer Pages) es la otra mitad de la tecnología: en vez de imprimir HTML línea
         por línea con <code>out.println(...)</code> (como en un Servlet puro), un archivo <code>.jsp</code> se
         escribe casi como HTML normal, con pequeños fragmentos de Java incrustados entre
         <code>&lt;% %&gt;</code> (código) y <code>&lt;%= %&gt;</code> (para imprimir un valor). Por ejemplo:</p>
@@ -7228,6 +8052,78 @@ public class EstudianteRowSetDAO {
         <h3>🌍 Java Web vs. Otras Tecnologías (cultura general)</h3>
         <p>Vale la pena ubicar lo aprendido en esta sesión dentro del panorama más amplio del desarrollo web, para
         entender por qué existen tantas piezas distintas y cuándo se usa cada una.</p>
+
+        <h4 style="margin:14px 0 6px">🕰️ Un poco de historia: ¿qué problema vino a resolver Tomcat?</h4>
+        <p>Antes de comparar Tomcat con Apache HTTP Server, ayuda saber <strong>por qué tuvo que aparecer un
+        servidor nuevo</strong> en vez de simplemente usar el que ya existía.</p>
+        <div class="info-card">
+            <p><strong>El problema original (años 90):</strong> los primeros servidores web, como el propio Apache
+            HTTP Server (nacido en 1995 a partir del antiguo NCSA HTTPd), solo sabían hacer una cosa muy bien:
+            leer un archivo del disco y entregarlo tal cual al navegador. Para generar contenido
+            <em>dinámico</em> (una página distinta según el usuario, una consulta a una base de datos) se usaba el
+            estándar <strong>CGI</strong> (<em>Common Gateway Interface</em>, 1993): el servidor lanzaba un
+            <strong>proceso del sistema operativo completamente nuevo</strong> por cada petición para ejecutar un
+            programa aparte. Funcionaba, pero era lento y pesado: con mucho tráfico, el servidor se veía obligado a
+            crear y destruir cientos de procesos por segundo.</p>
+        </div>
+        <div class="info-card">
+            <p><strong>La propuesta de Java (1997):</strong> Sun Microsystems presentó la <strong>Servlet
+            API</strong> como alternativa directa a CGI: en vez de crear un proceso nuevo por cada petición, un
+            Servlet es un objeto Java que se carga <strong>una sola vez</strong> y permanece en memoria, listo para
+            atender miles de peticiones sucesivas (cada una en su propio hilo, no en un proceso aparte). Es mucho
+            más eficiente, pero tiene un requisito que Apache HTTP Server no podía cumplir por sí solo: para
+            ejecutar un Servlet hace falta una <strong>Máquina Virtual de Java (JVM)</strong> corriendo de forma
+            continua dentro del servidor — y httpd está escrito en C, sin ninguna JVM integrada.</p>
+        </div>
+        <p style="margin-top:8px"><strong>¿Por qué no simplemente usar Apache HTTP Server para todo?</strong>
+        Porque httpd extiende sus capacidades con <em>módulos</em> escritos en C (como <code>mod_php</code> para
+        PHP), pero no existe una forma igual de eficiente de incrustarle una JVM completa: haría falta arrancar y
+        administrar el ciclo de vida de máquinas virtuales de Java dentro de un proceso que no fue diseñado para
+        eso. La comunidad de Java resolvió esto creando su propio servidor especializado — un
+        <strong>contenedor de Servlets</strong> que nace ya con la JVM embebida y sabe de forma nativa cómo
+        cargar, ejecutar y mantener vivos los Servlets entre peticiones.</p>
+        <p class="diagram-caption" style="margin-top:4px">🖼️ <strong>Línea de tiempo:</strong> del problema (CGI)
+        a la solución (Tomcat) y su evolución hasta hoy.</p>
+        <div class="flow-diagram-wrap">
+            <div class="flow-step">
+                <span class="flow-step-emoji">🐌</span>
+                <span class="flow-step-text"><strong>1993 — Nace CGI</strong>
+                <span>Primer estándar amplio para contenido dinámico: un proceso nuevo del SO por cada
+                petición.</span></span>
+            </div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">
+                <span class="flow-step-emoji">🪶</span>
+                <span class="flow-step-text"><strong>1995 — Nace Apache HTTP Server</strong>
+                <span>A partir del antiguo NCSA HTTPd; pensado para servir archivos, sin JVM integrada.</span></span>
+            </div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">
+                <span class="flow-step-emoji">☕</span>
+                <span class="flow-step-text"><strong>1997 — Sun presenta la Servlet API</strong>
+                <span>La alternativa de Java a CGI: un objeto que vive en memoria, no un proceso nuevo cada vez.</span></span>
+            </div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">
+                <span class="flow-step-emoji">🐈</span>
+                <span class="flow-step-text"><strong>1999 — Nace Tomcat</strong>
+                <span>Sun dona el código a la Apache Software Foundation ("Proyecto Jakarta"): el primer servidor
+                con JVM integrada para ejecutar Servlets.</span></span>
+            </div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">
+                <span class="flow-step-emoji">🏛️</span>
+                <span class="flow-step-text"><strong>2017-2019 — Jakarta EE</strong>
+                <span>Oracle transfiere Java EE a la Eclipse Foundation; <code>javax.servlet</code> pasa a
+                <code>jakarta.servlet</code>.</span></span>
+            </div>
+        </div>
+        <p class="mockup-note">* Detalle curioso: según su autor original en Sun, James Duncan Davidson, el
+        nombre "Tomcat" venía de querer un animal que pudiera "cuidarse solo" — un servidor capaz de correr por sí
+        mismo, sin depender de otro software para ejecutar Java. Desde entonces, Tomcat es la
+        <strong>implementación de referencia (RI)</strong> oficial de las especificaciones Servlet y JSP: cada
+        versión nueva del estándar se estrena primero en una versión nueva de Tomcat (por ejemplo, Tomcat 9
+        implementa Servlet 4.0).</p>
 
         <h4 style="margin:14px 0 6px">Apache Tomcat vs. Apache HTTP Server (httpd)</h4>
         <p>Ambos se llaman "Apache" y ambos son servidores, pero resuelven problemas distintos — es uno de los
@@ -7355,6 +8251,39 @@ public class GameStoreLoginServlet extends HttpServlet {
             <div class="explain-panel" id="explain-code1" hidden></div>
         </div>
 
+        <div class="mockup-wrap">
+            <p class="mockup-caption-top">🖼️ <strong>Vista previa interactiva:</strong> así se ve en el navegador
+            el HTML que <code>doGet</code> imprime línea por línea con <code>out.println(...)</code>. Escribe un
+            usuario y presiona "Ingresar" para simular la respuesta que generaría <code>doPost</code>.</p>
+            <div class="mockup-window">
+                <div class="mockup-titlebar">
+                    <span>🌐 localhost:8080/gamestore/login</span>
+                    <span class="mockup-titlebar-controls">
+                        <span class="ctrl">─</span>
+                        <span class="ctrl">▢</span>
+                        <span class="ctrl">✕</span>
+                    </span>
+                </div>
+                <div class="mockup-content" id="mockup9-content">
+                    <div class="mockup-label" style="left:20px; top:16px; width:310px; height:22px; font-weight:bold; font-size:14px;">GameStore Escolar - Acceso Web</div>
+                    <div class="mockup-label" style="left:20px; top:64px; width:70px; height:25px;">Usuario:</div>
+                    <input type="text" class="mockup-input" id="mockup9-input" style="left:90px; top:64px; width:200px; height:25px;">
+                    <button type="button" class="mockup-button-live" id="mockup9-btn" style="left:90px; top:104px; width:100px; height:30px;">Ingresar</button>
+                </div>
+            </div>
+            <p class="mockup-note">* Prueba dejando el campo "Usuario" vacío para ver el mensaje de error de
+            <code>doPost</code>. No es la aplicación web real ni se conecta a Tomcat.</p>
+        </div>
+
+        <div class="info-card">
+            <p>⚠️ <strong>Ojo, esto es intencional:</strong> este Servlet todavía valida el usuario igual de
+            "simple" que la Sesión 1 (solo revisa que el campo no esté vacío) — a propósito, para que te
+            concentres en aprender <code>doGet</code>/<code>doPost</code> sin mezclar dos cosas nuevas a la vez.
+            Conectar este mismo formulario a la base de datos real (llamando a <code>EstudianteDAO</code>, como en
+            la Sesión 7, para comprobar que el usuario existe de verdad) es exactamente lo que vas a construir en
+            el <strong>Proyecto Final</strong>, cuando integres GUI + POO + Base de Datos en una sola aplicación.</p>
+        </div>
+
         <span class="step-tag">PASO 2</span>
         <h3 style="margin-top:0">Despliegue y Prueba en Tomcat</h3>
         <p>Coloca el proyecto en tu servidor Apache Tomcat (o usa el soporte integrado de tu IDE), inícialo, y
@@ -7417,14 +8346,11 @@ public class GameStoreLoginServlet extends HttpServlet {
 
         </div>
     </section>
+    </div>
 </section>
 
 
 <section id="proyecto-final" class="session-block">
-    <div class="session-heading">
-        <span class="session-number">PROYECTO FINAL</span>
-        <h2 class="session-tema">Integración y Consolidación del Proyecto Final (GUI, POO y Base de Datos)</h2>
-    </div>
     <div class="progress-wrap">
         <div class="progress-label">
             <span>Progreso de entrega</span>
@@ -7435,8 +8361,14 @@ public class GameStoreLoginServlet extends HttpServlet {
         </div>
         <button class="reset-btn" id="reset-checklist">Reiniciar checklist</button>
     </div>
+    <div class="session-heading" role="button" tabindex="0" aria-expanded="false" aria-controls="proyecto-final-body">
+        <span class="session-number">PROYECTO FINAL</span>
+        <h2 class="session-tema">Integración y Consolidación del Proyecto Final (GUI, POO y Base de Datos)</h2>
+        <span class="caret" aria-hidden="true">▶</span>
+    </div>
+    <div class="session-body" id="proyecto-final-body" hidden>
     <section id="pf-objetivo">
-        <h2>Objetivo de la Guía</h2>
+        <h2>Objetivo de la Sesión</h2>
         <div class="info-card">
             <p>Consolidar e integrar todos los conocimientos de la unidad didáctica desarrollando un sistema de
             software funcional que unifique interfaces gráficas avanzadas (Java Swing), lógica de negocio orientada
@@ -7453,7 +8385,16 @@ public class GameStoreLoginServlet extends HttpServlet {
             <code>JPanel</code>, layouts) que interactúan con el usuario.</li>
             <li><strong>Capa de Lógica de Negocio (POO):</strong> Clases abstractas, herencia y polimorfismo
             (<code>ItemRecompensa</code>, subclases) que procesan las reglas del sistema.</li>
-            <li><strong>Capa de Persistencia (DAO / JDBC):</strong> Clases encargadas de conectar la aplicación con
+            <li><strong>Capa de Persistencia (<span class="term-tip" tabindex="0">DAO<span class="term-tip-bubble">
+                <strong>¿Qué es?</strong> <em>Data Access Object</em>: clases dedicadas exclusivamente a hablar
+                con la base de datos (<code>EstudianteDAO</code>, <code>TransaccionDAO</code>), vistas a fondo en
+                la Sesión 7.<br><br>
+                <strong>¿Por qué se usa?</strong> El resto del programa (la GUI, la lógica POO) nunca escribe SQL
+                directamente: solo le pide cosas al DAO (<code>dao.buscarPorId(3)</code>), lo que mantiene cada
+                capa independiente de cómo funcionan las demás.<br><br>
+                <strong>¿Desde cuándo?</strong> Patrón documentado por Sun Microsystems desde principios de los
+                2000; sigue siendo el estándar para organizar el acceso a datos en Java.
+            </span></span> / JDBC):</strong> Clases encargadas de conectar la aplicación con
             el servidor MySQL mediante consultas preparadas (<code>PreparedStatement</code>).</li>
         </ul>
         <div class="info-card">
@@ -7462,6 +8403,36 @@ public class GameStoreLoginServlet extends HttpServlet {
             y reglas (tus clases POO); y la <strong>Persistencia</strong> es la despensa donde se guardan y sacan
             los ingredientes (JDBC + MySQL). Cada una hace su trabajo sin necesitar saber los detalles internos de
             las otras dos.</p>
+        </div>
+
+        <div class="nest-diagram-title">🖼️ Diagrama: por dónde pasa un clic del usuario, capa por capa</div>
+        <div class="nest-diagram">🖱️ Usuario hace clic en "Ingresar" (GameStoreLoginIntegrado.java)
+        │
+        ▼
+📱 CAPA DE PRESENTACIÓN (vista)   — btnIngresar.addActionListener(...)
+        │  no sabe SQL, solo le pide el dato al DAO
+        ▼
+🧠 CAPA DE LÓGICA DE NEGOCIO (modelo)  — reglas POO, validaciones, ItemRecompensa...
+        │  no sabe Swing, no sabe SQL
+        ▼
+🗄️ CAPA DE PERSISTENCIA (dao)   — EstudianteDAO.buscarPorNombre(...)
+        │  la ÚNICA capa que habla SQL
+        ▼
+🐬 MySQL (la base de datos real, creada en la Sesión 6)</div>
+        <p class="mockup-note">* Cada flecha solo va hacia ABAJO: la vista le pide cosas al modelo, el modelo le
+        pide cosas al DAO — pero el DAO nunca "conoce" a la vista, ni la lógica de negocio sabe cómo se dibuja un
+        botón. Esa separación es la que permite, por ejemplo, cambiar toda la interfaz gráfica sin tocar una sola
+        línea de SQL.</p>
+
+        <div class="info-card">
+            <p>🤔 <strong>¿Y qué pasó con los archivos de la Sesión 5?</strong> No se perdieron: le enseñaron a
+            manejar <code>try-catch</code>/<code>try-with-resources</code> y excepciones, exactamente lo mismo que
+            usa el <code>catch (SQLException e)</code> de tu DAO. En este proyecto, MySQL reemplaza a los archivos
+            de texto/binarios como el lugar donde se guardan los datos de forma permanente — es un "upgrade" del
+            mismo problema (guardar información que sobreviva a cerrar el programa), no un tema aparte. Si quieres
+            un reto extra, puedes agregar una opción de "Exportar respaldo" que guarde el historial de canjes en un
+            archivo <code>.txt</code> además de en la base de datos, reutilizando <code>FileWriter</code> de la
+            Sesión 5.</p>
         </div>
     </section>
     <section id="pf-actividades">
@@ -7715,6 +8686,7 @@ public class GameStoreLoginIntegrado extends JFrame {
 
         </div>
     </section>
+    </div>
 </section>
 
 
@@ -7823,7 +8795,10 @@ public class GameStoreLoginIntegrado extends JFrame {
             <p class="mindmap-node-hint">▸ Toca para ver el detalle</p>
             <div class="mindmap-node-detail" hidden>
                 <p><strong>Qué se construye:</strong> Se traslada la lógica de acceso a un Servlet que corre en un contenedor web (Apache Tomcat): doGet muestra el formulario y doPost procesa lo enviado.</p>
-                <p><strong>Cómo se integra al proyecto final:</strong> Es la versión WEB del mismo login que las Sesiones 1 y 7 construyeron para escritorio; demuestra que la misma lógica de negocio puede exponerse tanto en una ventana Swing como en un navegador.</p>
+                <p><strong>Cómo se integra al proyecto final:</strong> No forma parte del entregable del Proyecto
+                Final (que es una aplicación de <strong>escritorio</strong>, sin Servlets ni Tomcat): es una ruta
+                de despliegue ALTERNATIVA que demuestra que la misma lógica de negocio (POO + JDBC) también podría
+                exponerse a través de un navegador, en vez de una ventana Swing.</p>
             </div>
         </div>
         <div class="mindmap-node is-final" style="--node-accent:#1e3a8a">
@@ -7835,7 +8810,11 @@ public class GameStoreLoginIntegrado extends JFrame {
             <p class="mindmap-node-hint">▸ Toca para ver el detalle</p>
             <div class="mindmap-node-detail" hidden>
                 <p><strong>Qué se construye:</strong> Es el punto donde todas las piezas anteriores se conectan en un solo sistema funcional de 3 capas (presentación, lógica, persistencia).</p>
-                <p><strong>Cómo se integra al proyecto final:</strong> Es la SÍNTESIS de las 8 sesiones anteriores: reutiliza la GUI (S1/S2), el modelo POO (S3/S4), la persistencia en archivos (S5), la base de datos (S6), JDBC (S7) y la capa web (S8) en una sola aplicación de escritorio.</p>
+                <p><strong>Cómo se integra al proyecto final:</strong> Es la SÍNTESIS de la ruta de
+                <strong>escritorio</strong> del curso: reutiliza la GUI (S1/S2), el modelo POO (S3/S4), el manejo
+                de excepciones con <code>try-with-resources</code> (S5), la base de datos (S6) y JDBC (S7) en una
+                sola aplicación Swing de 3 capas. NO incluye Servlets ni Tomcat (S8): esa es la ruta de despliegue
+                web alternativa del Nodo 8, no parte de este entregable.</p>
             </div>
         </div>
         </div>
@@ -12037,6 +13016,76 @@ public class GameStoreLoginIntegrado extends JFrame {
         });
     });
 
+    /* ---- Vista previa interactiva del Servlet de Acceso: simula doGet/doPost ---- */
+    (function () {
+        const content = $id("mockup9-content");
+        const input = $id("mockup9-input");
+        const btn = $id("mockup9-btn");
+        if (!content || !input || !btn) return;
+
+        function showDialog(title, icon, message) {
+            const existing = content.querySelector(".mockup-dialog-overlay");
+            if (existing) existing.remove();
+
+            const overlay = document.createElement("div");
+            overlay.className = "mockup-dialog-overlay";
+
+            const dialog = document.createElement("div");
+            dialog.className = "mockup-dialog";
+
+            const bar = document.createElement("div");
+            bar.className = "mockup-dialog-titlebar";
+            bar.textContent = title;
+
+            const body = document.createElement("div");
+            body.className = "mockup-dialog-body";
+            const iconEl = document.createElement("span");
+            iconEl.className = "mockup-dialog-icon";
+            iconEl.textContent = icon;
+            const msgEl = document.createElement("span");
+            msgEl.className = "mockup-dialog-message";
+            msgEl.textContent = message;
+            body.appendChild(iconEl);
+            body.appendChild(msgEl);
+
+            const actions = document.createElement("div");
+            actions.className = "mockup-dialog-actions";
+            const ok = document.createElement("button");
+            ok.type = "button";
+            ok.className = "mockup-dialog-ok";
+            ok.textContent = "Aceptar";
+            ok.addEventListener("click", function () { overlay.remove(); });
+            actions.appendChild(ok);
+
+            dialog.appendChild(bar);
+            dialog.appendChild(body);
+            dialog.appendChild(actions);
+            overlay.appendChild(dialog);
+
+            overlay.addEventListener("click", function (ev) {
+                if (ev.target === overlay) overlay.remove();
+            });
+
+            content.appendChild(overlay);
+            ok.focus();
+        }
+
+        // Equivale a la respuesta que doPost imprime con out.println(...)
+        btn.addEventListener("click", function () {
+            const usuario = input.value.trim();
+
+            if (usuario !== "") {
+                showDialog("Respuesta de doPost", "🌐", "Bienvenido, " + usuario);
+            } else {
+                showDialog("Respuesta de doPost", "🛑", "Error: ingrese un usuario");
+            }
+        });
+
+        input.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter") btn.click();
+        });
+    })();
+
     /* ---- Checklist de criterios de entrega con persistencia local ---- */
     const STORAGE_KEY = "guia8-checklist";
     const checkboxes = Array.from(root.querySelectorAll(".checklist-item input[type=checkbox]"));
@@ -12572,23 +13621,6 @@ public class GameStoreLoginIntegrado extends JFrame {
         input.addEventListener("keydown", function (ev) {
             if (ev.key === "Enter") btn.click();
         });
-
-    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
-    function setupToggle(toggleId, bodyId, showText, hideText) {
-        var btn = $id(toggleId);
-        var body = $id(bodyId);
-        var label = btn.querySelector(".toggle-label");
-        btn.addEventListener("click", function () {
-            var expanded = btn.getAttribute("aria-expanded") === "true";
-            btn.setAttribute("aria-expanded", String(!expanded));
-            body.hidden = expanded;
-            label.textContent = expanded ? showText : hideText;
-        });
-    }
-    setupToggle("s8-actividades-toggle", "s8-actividades-body",
-        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
-    setupToggle("s8-criterios-toggle", "s8-criterios-body",
-        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 
     /* ---- Checklist de criterios de entrega con persistencia local ---- */
@@ -12705,6 +13737,47 @@ public class GameStoreLoginIntegrado extends JFrame {
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+})();
+
+/* ============ Acordeón de sesiones: mostrar/ocultar contenido al hacer clic en el título ============ */
+(function () {
+    "use strict";
+    var headings = Array.from(document.querySelectorAll('.session-heading'));
+
+    function toggle(heading) {
+        var body = document.getElementById(heading.getAttribute('aria-controls'));
+        if (!body) return;
+        var expanded = heading.getAttribute('aria-expanded') === 'true';
+        heading.setAttribute('aria-expanded', String(!expanded));
+        body.hidden = expanded;
+    }
+
+    function expand(heading) {
+        if (heading.getAttribute('aria-expanded') !== 'true') toggle(heading);
+    }
+
+    headings.forEach(function (heading) {
+        heading.addEventListener('click', function () { toggle(heading); });
+        heading.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                toggle(heading);
+            }
+        });
+    });
+
+    function expandFromHash() {
+        var hash = window.location.hash;
+        if (!hash) return;
+        var target;
+        try { target = document.querySelector(hash); } catch (e) { return; }
+        if (!target || !target.classList.contains('session-block')) return;
+        var heading = target.querySelector('.session-heading');
+        if (heading) expand(heading);
+    }
+
+    window.addEventListener('hashchange', expandFromHash);
+    expandFromHash();
 })();
 </script>
 
