@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Curso Completo — Taller de Lenguajes de Programación (Java, SQL y Servlets/JSP)</title>
+<script>
+(function () {
+    try {
+        var saved = localStorage.getItem("taller-theme");
+        if (saved === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+        }
+    } catch (e) { /* localStorage no disponible: se queda en tema claro */ }
+})();
+</script>
 <style>
 :root {
     --primary: #1e3a8a;
@@ -22,6 +32,7 @@
     --border: #e2e8f0;
     --code-bg: #0f172a;
     --code-fg: #e2e8f0;
+    --container-max: min(1100px, 100%);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,7 +58,7 @@ header.top p { opacity: 0.92; font-size: 1.05rem; margin-top: 4px; max-width: 72
 .badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
 .badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; }
 
-.container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+.container { max-width: var(--container-max); margin: 0 auto; padding: 0 20px; }
 
 nav.toc {
     position: sticky; top: 0; z-index: 20;
@@ -58,7 +69,7 @@ nav.toc {
 }
 nav.toc ul {
     list-style: none; display: flex; flex-wrap: nowrap;
-    max-width: 900px; margin: 0 auto; padding: 10px 20px; gap: 6px;
+    max-width: var(--container-max); margin: 0 auto; padding: 10px 20px; gap: 6px;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
 }
@@ -84,7 +95,7 @@ li { margin-bottom: 6px; }
 
 code { font-family: 'Courier New', Courier, monospace; background: #eef2ff; color: #3730a3; padding: 1px 6px; border-radius: 4px; font-size: 0.92em; }
 
-.info-card { background: #eff6ff; border-left: 4px solid var(--primary-light); padding: 14px 18px; border-radius: 6px; margin-bottom: 14px; }
+.info-card { background: #eff6ff; padding: 14px 18px; border-radius: 6px; margin-bottom: 14px; }
 
 .step-tag { display: inline-block; background: var(--primary-light); color: white; font-weight: bold; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-bottom: 10px; }
 
@@ -161,6 +172,18 @@ code { font-family: 'Courier New', Courier, monospace; background: #eef2ff; colo
 .reset-btn { margin-top: 12px; background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
 .reset-btn:hover { background: #f1f5f9; }
 
+.activities-toggle-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: white; border: none;
+    padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; margin-bottom: 6px; transition: background 0.15s ease;
+}
+.activities-toggle-btn:hover { background: var(--accent); }
+.activities-toggle-btn .caret { display: inline-block; transition: transform 0.15s ease; }
+.activities-toggle-btn[aria-expanded="true"] .caret { transform: rotate(90deg); }
+.activities-body { margin-top: 18px; }
+.activities-body[hidden] { display: none; }
+
 .master-progress .progress-label span:first-child { font-size: 1rem; }
 
 .session-block {
@@ -236,6 +259,90 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
 .mindmap-node-detail[hidden] { display: none; }
 .mindmap-node-detail p { margin-bottom: 6px; }
 .mindmap-node-detail strong { color: var(--node-accent, var(--primary)); }
+
+/* ============================================================
+   TEMA OSCURO
+   Se activa poniendo data-theme="dark" en <html> (botón + localStorage).
+   Casi todo el documento ya usa var(--bg-main), var(--bg-card),
+   var(--text-main), var(--text-muted), var(--border), etc., así que
+   redefinir estas variables re-colorea automáticamente el 90% del
+   documento (incluidas las reglas repetidas por sesión más abajo).
+   Lo que sigue son los colores sueltos (no ligados a variables) que
+   quedarían como "cajas claras" sobre fondo oscuro si no se ajustan;
+   se usa !important porque varias de esas reglas originales están
+   escritas como "#sesion-N .clase" y tienen más especificidad que
+   un simple selector de clase.
+   Las ventanas/diálogos "mockup" (simulación de una ventana Java
+   Swing/consola) se dejan con su apariencia clara a propósito: son
+   una vista previa de cómo se ve la app real, no parte del sitio.
+   ============================================================ */
+html[data-theme="dark"] {
+    --primary: #3b82f6;
+    --primary-light: #60a5fa;
+    --accent: #38bdf8;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #f87171;
+    --bg-main: #0b1220;
+    --bg-card: #1a2436;
+    --text-main: #e5e7eb;
+    --text-muted: #94a3b8;
+    --border: #334155;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] section,
+html[data-theme="dark"] .code-block,
+html[data-theme="dark"] .info-card,
+html[data-theme="dark"] .activities-toggle-btn {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+html[data-theme="dark"] code { background: rgba(96,165,250,0.15) !important; color: #93c5fd !important; }
+html[data-theme="dark"] .info-card { background: rgba(59,130,246,0.12) !important; }
+html[data-theme="dark"] section h2 { border-bottom-color: rgba(96,165,250,0.3) !important; }
+html[data-theme="dark"] nav.toc a:hover,
+html[data-theme="dark"] nav.toc a.active { background: rgba(59,130,246,0.22) !important; }
+
+html[data-theme="dark"] .class-card { background: #202b40 !important; }
+html[data-theme="dark"] .class-card .class-name { background: rgba(59,130,246,0.18) !important; }
+html[data-theme="dark"] .class-card .nest-note { background: rgba(245,158,11,0.15) !important; color: #fbbf24 !important; }
+
+html[data-theme="dark"] .req-card { background: #202b40 !important; }
+html[data-theme="dark"] .req-card-recommended { background: rgba(34,197,94,0.12) !important; }
+html[data-theme="dark"] .req-badge-open { background: rgba(34,197,94,0.2) !important; color: #4ade80 !important; }
+
+html[data-theme="dark"] .checklist-item:hover,
+html[data-theme="dark"] .reset-btn:hover { background: rgba(255,255,255,0.06) !important; }
+html[data-theme="dark"] .progress-bar-bg { background: #334155 !important; }
+
+html[data-theme="dark"] .explain-row:nth-child(even) { background: rgba(255,255,255,0.035) !important; }
+
+html[data-theme="dark"] .bl-toggle-btn,
+html[data-theme="dark"] .console-run-btn { background: var(--bg-card) !important; }
+html[data-theme="dark"] .bl-toggle-btn:hover,
+html[data-theme="dark"] .console-run-btn:hover { background: rgba(59,130,246,0.15) !important; }
+
+html[data-theme="dark"] .file-row-new { background: rgba(34,197,94,0.12) !important; }
+html[data-theme="dark"] .files-body,
+html[data-theme="dark"] .tree-body { background: var(--bg-card) !important; }
+
+html[data-theme="dark"] .this-object-attrs { background: rgba(255,255,255,0.06) !important; }
+
+html[data-theme="dark"] .safety-card.is-unsafe,
+html[data-theme="dark"] .rowset-card.is-closed { background: rgba(248,113,113,0.12) !important; border-color: #f87171 !important; }
+html[data-theme="dark"] .safety-card.is-safe,
+html[data-theme="dark"] .rowset-card.is-open { background: rgba(34,197,94,0.12) !important; border-color: #4ade80 !important; }
+
+.theme-toggle-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.14); color: white;
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; margin-top: 22px; transition: background 0.15s ease;
+}
+.theme-toggle-btn:hover { background: rgba(255,255,255,0.28); }
+.theme-toggle-icon { font-size: 1rem; line-height: 1; }
 
 
 /* ============ Sesion 1: Programación Orientada a Eventos y Componentes Gráficos Básicos (Java Swing) ============ */
@@ -345,7 +452,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-1 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -982,7 +1088,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-2 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -1441,7 +1546,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-3 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -1856,7 +1960,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-4 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -2327,7 +2430,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-5 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -2801,7 +2903,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-6 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -3195,7 +3296,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-7 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -3610,7 +3710,6 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     }
 #sesion-8 .info-card {
         background: #eff6ff;
-        border-left: 4px solid var(--primary-light);
         padding: 14px 18px;
         border-radius: 6px;
         margin-bottom: 14px;
@@ -4100,7 +4199,41 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
         <span class="badge">SQL + MySQL + JDBC</span>
         <span class="badge">100% Open Source</span>
     </div>
+    <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-pressed="false">
+        <span class="theme-toggle-icon">🌙</span>
+        <span class="theme-toggle-label">Modo oscuro</span>
+    </button>
 </header>
+<script>
+(function () {
+    "use strict";
+    var btn = document.getElementById("theme-toggle");
+    var icon = btn.querySelector(".theme-toggle-icon");
+    var label = btn.querySelector(".theme-toggle-label");
+
+    function applyState(isDark) {
+        btn.setAttribute("aria-pressed", String(isDark));
+        icon.textContent = isDark ? "☀️" : "🌙";
+        label.textContent = isDark ? "Modo claro" : "Modo oscuro";
+    }
+
+    applyState(document.documentElement.getAttribute("data-theme") === "dark");
+
+    btn.addEventListener("click", function () {
+        var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        var next = !isDark;
+        if (next) {
+            document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+            document.documentElement.removeAttribute("data-theme");
+        }
+        applyState(next);
+        try {
+            localStorage.setItem("taller-theme", next ? "dark" : "light");
+        } catch (e) { /* localStorage no disponible: el cambio no se recuerda */ }
+    });
+})();
+</script>
 
 <nav class="toc">
     <ul>
@@ -4419,6 +4552,13 @@ footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-si
     <section id="s1-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
 
+        <button type="button" class="activities-toggle-btn" id="s1-actividades-toggle" aria-expanded="false" aria-controls="s1-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s1-actividades-body" hidden>
+
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Diseño de la Interfaz Visual)</h3>
         <p>Crea una clase en Java llamada <code>GameStoreLogin.java</code> dentro de tu entorno de desarrollo
@@ -4603,9 +4743,19 @@ public class GameStoreLogin extends JFrame {
             <code>ActionListener</code> del código de arriba (campo vacío → advertencia; campo con texto → mensaje de
             bienvenida). No es la aplicación Java real, es solo una guía visual.</p>
         </div>
+
+        </div>
     </section>
     <section id="s1-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s1-criterios-toggle" aria-expanded="false" aria-controls="s1-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s1-criterios-body" hidden>
+
         <p>Para superar con éxito esta guía y obtener la calificación aprobatoria (≥ 13), debes entregar los
         siguientes productos a través de la plataforma virtual o repositorio del curso:</p>
 
@@ -4651,6 +4801,8 @@ public class GameStoreLogin extends JFrame {
                     <span>Entrega puntual dentro del plazo establecido.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -4788,6 +4940,13 @@ public class GameStoreLogin extends JFrame {
     </section>
     <section id="s2-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s2-actividades-toggle" aria-expanded="false" aria-controls="s2-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s2-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Estructuración de Paneles y Layouts)</h3>
@@ -5027,9 +5186,19 @@ public class CatalogoTiendaAvanzado extends JFrame {
             elegirlos), pero el código de este paso todavía no programa qué hacer con esa elección ni con el clic en
             "Canjear Ítem" — eso se resuelve agregando <code>ActionListener</code>s, como en la Sesión 1.</p>
         </div>
+
+        </div>
     </section>
     <section id="s2-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s2-criterios-toggle" aria-expanded="false" aria-controls="s2-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s2-criterios-body" hidden>
+
         <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes presentar lo
         siguiente:</p>
 
@@ -5070,6 +5239,8 @@ public class CatalogoTiendaAvanzado extends JFrame {
                     plazo establecido en el cronograma de clases.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -5216,6 +5387,13 @@ public class CatalogoTiendaAvanzado extends JFrame {
     </section>
     <section id="s3-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s3-actividades-toggle" aria-expanded="false" aria-controls="s3-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s3-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Creación de Clases Abstractas y Herencia)</h3>
@@ -5388,9 +5566,19 @@ public class Estudiante {
         <code>Inventario</code> que recibe <code>Estudiante</code> en su constructor es la relación débil
         (asociación): el mismo objeto <code>Inventario</code> podría ser consultado por muchos estudiantes distintos
         sin pertenecerle a ninguno de ellos.</p>
+
+        </div>
     </section>
     <section id="s3-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s3-criterios-toggle" aria-expanded="false" aria-controls="s3-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s3-criterios-body" hidden>
+
         <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
         siguientes productos:</p>
 
@@ -5432,6 +5620,8 @@ public class Estudiante {
                     orientada a objetos y entrega oportuna.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -5567,6 +5757,13 @@ public class Estudiante {
     </section>
     <section id="s4-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s4-actividades-toggle" aria-expanded="false" aria-controls="s4-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s4-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Modelado UML)</h3>
@@ -5749,9 +5946,19 @@ public class Estudiante {
             <p class="mockup-note">* Esta terminal es una simulación en HTML/CSS/JS con el texto que produciría tu
             programa real; no compila ni ejecuta Java de verdad.</p>
         </div>
+
+        </div>
     </section>
     <section id="s4-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s4-criterios-toggle" aria-expanded="false" aria-controls="s4-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s4-criterios-body" hidden>
+
         <p>Para superar satisfactoriamente esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
         siguientes productos:</p>
 
@@ -5792,6 +5999,8 @@ public class Estudiante {
                     entrega oportuna según el cronograma.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -5930,6 +6139,13 @@ public class Estudiante {
     </section>
     <section id="s5-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s5-actividades-toggle" aria-expanded="false" aria-controls="s5-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s5-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Módulo de Registro en Texto Plano)</h3>
@@ -6141,9 +6357,19 @@ public class PrincipalExcepcion {
         </div>
         <p class="mockup-note">* Salida esperada al ejecutar PrincipalExcepcion.java:<br>
         <code>No se pudo canjear: Saldo insuficiente: tienes 100 puntos y el ítem cuesta 300.</code></p>
+
+        </div>
     </section>
     <section id="s5-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s5-criterios-toggle" aria-expanded="false" aria-controls="s5-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s5-criterios-body" hidden>
+
         <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
         siguientes productos:</p>
 
@@ -6184,6 +6410,8 @@ public class PrincipalExcepcion {
                     <em>try-with-resources</em>) y entrega puntual.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -6284,6 +6512,13 @@ public class PrincipalExcepcion {
     </section>
     <section id="s6-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s6-actividades-toggle" aria-expanded="false" aria-controls="s6-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s6-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Diseño de Esquema Relacional en MySQL)</h3>
@@ -6397,9 +6632,19 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
             ejecutes el INSERT (CURRENT_TIMESTAMP); el valor de la tabla es solo un ejemplo. Estas tablas son una
             simulación en HTML de cómo se vería el resultado en tu cliente MySQL, no una consulta real.</p>
         </div>
+
+        </div>
     </section>
     <section id="s6-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s6-criterios-toggle" aria-expanded="false" aria-controls="s6-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s6-criterios-body" hidden>
+
         <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
         siguientes productos:</p>
 
@@ -6440,6 +6685,8 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
                     de base de datos.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -6581,6 +6828,13 @@ JOIN recompensas r ON h.id_recompensa = r.id_recompensa;</code></pre>
     </section>
     <section id="s7-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s7-actividades-toggle" aria-expanded="false" aria-controls="s7-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s7-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Desarrollo del Trabajo 1 (Clase de Conexión Centralizada)</h3>
@@ -6781,9 +7035,19 @@ public class EstudianteRowSetDAO {
         <code>PreparedStatement</code>/<code>ResultSet</code> los datos solo son válidos MIENTRAS la
         <code>Connection</code> siga abierta; con <code>CachedRowSet</code> los datos siguen disponibles aunque la
         conexión ya se haya cerrado, porque quedaron cacheados en memoria.</p>
+
+        </div>
     </section>
     <section id="s7-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s7-criterios-toggle" aria-expanded="false" aria-controls="s7-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s7-criterios-body" hidden>
+
         <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar los
         siguientes productos:</p>
 
@@ -6826,6 +7090,8 @@ public class EstudianteRowSetDAO {
                     entrega puntual.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -7023,6 +7289,13 @@ public class EstudianteRowSetDAO {
     <section id="s8-actividades">
         <h2>Actividades Prácticas Paso a Paso</h2>
 
+        <button type="button" class="activities-toggle-btn" id="s8-actividades-toggle" aria-expanded="false" aria-controls="s8-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso</span>
+        </button>
+
+        <div class="activities-body" id="s8-actividades-body" hidden>
+
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Servlet de Acceso (doGet y doPost)</h3>
         <p>El siguiente Servlet lleva el login de las Sesiones 1 y 7 a la web: <code>doGet</code> dibuja el
@@ -7088,9 +7361,19 @@ public class GameStoreLoginServlet extends HttpServlet {
         abre en el navegador <code>http://localhost:8080/&lt;proyecto&gt;/login</code>: debe aparecer el
         formulario de <code>doGet</code>; al enviarlo, <code>doPost</code> responde con el mensaje de bienvenida
         o de error.</p>
+
+        </div>
     </section>
     <section id="s8-criterios">
         <h2>Criterios de Entrega y Evaluación</h2>
+
+        <button type="button" class="activities-toggle-btn" id="s8-criterios-toggle" aria-expanded="false" aria-controls="s8-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación</span>
+        </button>
+
+        <div class="activities-body" id="s8-criterios-body" hidden>
+
         <p>Para cumplir satisfactoriamente con esta sesión y obtener una nota aprobatoria (≥ 13), debes entregar
         los siguientes productos:</p>
 
@@ -7130,6 +7413,8 @@ public class GameStoreLoginServlet extends HttpServlet {
                     try-with-resources) y entrega puntual.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -7181,6 +7466,13 @@ public class GameStoreLoginServlet extends HttpServlet {
     </section>
     <section id="pf-actividades">
         <h2>Actividades Prácticas Paso a Paso (Integración del Sistema)</h2>
+
+        <button type="button" class="activities-toggle-btn" id="pf-actividades-toggle" aria-expanded="false" aria-controls="pf-actividades-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Actividades Prácticas Paso a Paso (Integración del Sistema)</span>
+        </button>
+
+        <div class="activities-body" id="pf-actividades-body" hidden>
 
         <span class="step-tag">PASO 1</span>
         <h3 style="margin-top:0">Unificación de la Capa de Datos y la Lógica</h3>
@@ -7364,9 +7656,19 @@ public class GameStoreLoginIntegrado extends JFrame {
             7), o cualquier otro nombre para ver el mensaje de error. No es la aplicación Java real ni se conecta a
             ninguna base de datos.</p>
         </div>
+
+        </div>
     </section>
     <section id="pf-criterios">
         <h2>Criterios de Entrega y Evaluación Final</h2>
+
+        <button type="button" class="activities-toggle-btn" id="pf-criterios-toggle" aria-expanded="false" aria-controls="pf-criterios-body">
+            <span class="caret">▶</span>
+            <span class="toggle-label">Mostrar Criterios de Entrega y Evaluación Final</span>
+        </button>
+
+        <div class="activities-body" id="pf-criterios-body" hidden>
+
         <p>Para aprobar satisfactoriamente el proyecto final y la unidad didáctica con nota ≥ 13, el equipo de
         estudiantes debe entregar y sustentar lo siguiente:</p>
 
@@ -7409,6 +7711,8 @@ public class GameStoreLoginIntegrado extends JFrame {
                     implementación técnica de las capas de software.</span>
                 </li>
             </ul>
+        </div>
+
         </div>
     </section>
 </section>
@@ -8131,6 +8435,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s1-actividades-toggle", "s1-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s1-criterios-toggle", "s1-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
+
     })();
 </script>
 
@@ -8707,6 +9028,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s2-actividades-toggle", "s2-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s2-criterios-toggle", "s2-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 </script>
 
@@ -9215,6 +9553,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s3-actividades-toggle", "s3-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s3-criterios-toggle", "s3-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 </script>
 
@@ -9720,6 +10075,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s4-actividades-toggle", "s4-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s4-criterios-toggle", "s4-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 </script>
 
@@ -10274,6 +10646,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s5-actividades-toggle", "s5-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s5-criterios-toggle", "s5-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 </script>
 
@@ -10720,6 +11109,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s6-actividades-toggle", "s6-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s6-criterios-toggle", "s6-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 </script>
 
@@ -11269,6 +11675,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s7-actividades-toggle", "s7-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s7-criterios-toggle", "s7-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 </script>
 
@@ -12149,6 +12572,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         input.addEventListener("keydown", function (ev) {
             if (ev.key === "Enter") btn.click();
         });
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("s8-actividades-toggle", "s8-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso", "Ocultar Actividades Prácticas Paso a Paso");
+    setupToggle("s8-criterios-toggle", "s8-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación", "Ocultar Criterios de Entrega y Evaluación");
     })();
 
     /* ---- Checklist de criterios de entrega con persistencia local ---- */
@@ -12209,6 +12649,23 @@ public class GameStoreLoginIntegrado extends JFrame {
         updateProgress();
     });
 
+
+    /* ---- Toggle de secciones colapsables (Actividades / Criterios) ---- */
+    function setupToggle(toggleId, bodyId, showText, hideText) {
+        var btn = $id(toggleId);
+        var body = $id(bodyId);
+        var label = btn.querySelector(".toggle-label");
+        btn.addEventListener("click", function () {
+            var expanded = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", String(!expanded));
+            body.hidden = expanded;
+            label.textContent = expanded ? showText : hideText;
+        });
+    }
+    setupToggle("pf-actividades-toggle", "pf-actividades-body",
+        "Mostrar Actividades Prácticas Paso a Paso (Integración del Sistema)", "Ocultar Actividades Prácticas Paso a Paso (Integración del Sistema)");
+    setupToggle("pf-criterios-toggle", "pf-criterios-body",
+        "Mostrar Criterios de Entrega y Evaluación Final", "Ocultar Criterios de Entrega y Evaluación Final");
     })();
 </script>
 
