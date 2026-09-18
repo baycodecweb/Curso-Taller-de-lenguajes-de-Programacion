@@ -1,0 +1,2009 @@
+<meta charset="utf-8">
+<title>Recorrido de Código - Proyecto Antivirus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#EEF1F6;
+    --surface:#FFFFFF;
+    --surface-2:#F5F7FB;
+    --ink:#17202C;
+    --ink-muted:#5C6879;
+    --border:#D9E0E9;
+    --accent:#2C4E82;
+    --accent-soft:#E2EAF6;
+    --warn:#B4502E;
+    --warn-soft:#F7E5DB;
+    --ok:#2F7D57;
+    --ok-soft:#E0F0E6;
+    --shadow: 0 1px 2px rgba(23,32,44,0.06), 0 6px 20px -8px rgba(23,32,44,0.12);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D131B;
+      --surface:#151C26;
+      --surface-2:#1B2430;
+      --ink:#E7EDF4;
+      --ink-muted:#8E9AAC;
+      --border:#29323F;
+      --accent:#82A8DD;
+      --accent-soft:#1E2E48;
+      --warn:#E08659;
+      --warn-soft:#3A2519;
+      --ok:#6FC79A;
+      --ok-soft:#163227;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.55);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D131B;
+    --surface:#151C26;
+    --surface-2:#1B2430;
+    --ink:#E7EDF4;
+    --ink-muted:#8E9AAC;
+    --border:#29323F;
+    --accent:#82A8DD;
+    --accent-soft:#1E2E48;
+    --warn:#E08659;
+    --warn-soft:#3A2519;
+    --ok:#6FC79A;
+    --ok-soft:#163227;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.55);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding-inline:20px;
+    padding-block: 28px 64px;
+  }
+
+  header.top{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:22px;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(24px, 3.2vw, 32px);
+    font-weight:700;
+    text-wrap:balance;
+    letter-spacing:-0.01em;
+  }
+  .sub{
+    margin:0;
+    max-width:62ch;
+    color:var(--ink-muted);
+    font-size:15px;
+    line-height:1.55;
+  }
+
+  .flow{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin:20px 0 26px;
+    padding:14px 16px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+  }
+  .flow-label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    color:var(--ink-muted);
+    margin-right:8px;
+  }
+  .flow-chip{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    font-weight:500;
+    padding:5px 10px;
+    border-radius:6px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    border:1px solid transparent;
+    cursor:pointer;
+    line-height:1.3;
+  }
+  .flow-chip:hover{ border-color:var(--accent); }
+  .flow-arrow{ color:var(--ink-muted); font-size:13px; }
+
+  .layout{
+    display:grid;
+    grid-template-columns:248px 1fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  nav.tree{
+    position:sticky;
+    top:16px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:8px;
+    max-height:calc(100vh - 32px);
+    overflow-y:auto;
+  }
+  .tree-caption{
+    padding:8px 10px 10px;
+    font-size:11.5px;
+    line-height:1.5;
+    color:var(--ink-muted);
+    border-bottom:1px dashed var(--border);
+    margin-bottom:6px;
+  }
+  .tree-caption b{ color:var(--ink); }
+  .group-title{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-muted);
+    padding:10px 10px 4px;
+  }
+  .file-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    text-align:left;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:7px;
+    padding:7px 9px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .file-btn:hover{ background:var(--surface-2); }
+  .file-btn.active{
+    background:var(--accent-soft);
+    color:var(--accent);
+    border-color:var(--accent);
+    font-weight:600;
+  }
+  .order-badge{
+    flex-shrink:0;
+    width:17px;
+    height:17px;
+    border-radius:50%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--ink-muted);
+    font-family:"IBM Plex Mono", monospace;
+    font-size:9.5px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .file-btn.active .order-badge{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--surface);
+  }
+  .tag{
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    padding:1px 5px;
+    border-radius:4px;
+    flex-shrink:0;
+  }
+  .tag-java{ background:var(--accent-soft); color:var(--accent); }
+  .tag-bash{ background:var(--ok-soft); color:var(--ok); }
+  .tag-bat{ background:var(--warn-soft); color:var(--warn); }
+  .tag-db{ background:var(--surface-2); color:var(--ink-muted); border:1px solid var(--border); }
+
+  main.detail{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .detail-head{
+    padding:18px 22px;
+    border-bottom:1px solid var(--border);
+  }
+  .path{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    color:var(--ink-muted);
+    margin:0 0 6px;
+  }
+  .path b{ color:var(--ink); font-weight:600; }
+  .diagram-jump{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin:0 0 10px;
+    padding:5px 10px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    border:1px solid transparent;
+    border-radius:7px;
+    font-size:12.5px;
+    font-family:"IBM Plex Mono", monospace;
+    cursor:pointer;
+  }
+  .diagram-jump:hover{ border-color:var(--accent); }
+  .diagram-jump b{ font-weight:700; }
+  .diagram-none{
+    margin:0 0 10px;
+    font-size:12.5px;
+    color:var(--ink-muted);
+    font-style:italic;
+  }
+  .role{
+    margin:0;
+    font-size:16.5px;
+    font-weight:600;
+    letter-spacing:-0.005em;
+  }
+  .bullets{
+    margin:14px 0 0;
+    padding-left:18px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    color:var(--ink);
+    font-size:14px;
+    line-height:1.6;
+    max-width:74ch;
+  }
+  .bullets code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.92em;
+    background:var(--surface-2);
+    padding:0 4px;
+    border-radius:4px;
+  }
+  .connects{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed var(--border);
+    font-size:13px;
+    color:var(--ink-muted);
+  }
+  .connects b{ color:var(--ink); font-weight:600; }
+
+  .order-why{
+    margin-top:10px;
+    padding:10px 12px;
+    background:var(--accent-soft);
+    border-radius:7px;
+    font-size:13px;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  .order-why b{ color:var(--accent); }
+  .order-why code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.92em;
+    background:var(--surface);
+    padding:0 4px;
+    border-radius:4px;
+  }
+
+  .learn{
+    margin-top:16px;
+    padding:14px 16px;
+    background:var(--ok-soft);
+    border:1px solid var(--ok);
+    border-radius:8px;
+  }
+  .learn-title{
+    margin:0 0 8px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ok);
+    font-weight:700;
+  }
+  .learn-list{
+    display:flex;
+    flex-direction:column;
+  }
+  .learn-item{
+    border-top:1px solid rgba(0,0,0,0.08);
+  }
+  :root:not([data-theme="light"]) .learn-item{ border-top-color:rgba(255,255,255,0.08); }
+  .learn-item:first-child{ border-top:none; }
+  .learn-item summary{
+    cursor:pointer;
+    padding:8px 0;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--ink);
+    list-style:none;
+  }
+  .learn-item summary::-webkit-details-marker{ display:none; }
+  .learn-item summary::before{ content:"▸ "; color:var(--ok); font-weight:700; }
+  .learn-item[open] summary::before{ content:"▾ "; }
+  .learn-item summary:hover{ color:var(--ok); }
+  .learn-answer{
+    margin:0 0 10px 14px;
+    padding-left:2px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--ink);
+    max-width:78ch;
+  }
+  .learn code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.92em;
+    background:var(--surface);
+    padding:0 4px;
+    border-radius:4px;
+  }
+
+  details.glossary{
+    margin:0 0 26px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:2px 18px;
+  }
+  details.glossary summary{
+    cursor:pointer;
+    padding:13px 0;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+    list-style:none;
+  }
+  details.glossary summary::-webkit-details-marker{ display:none; }
+  details.glossary summary::before{ content:"▸ "; }
+  details.glossary[open] summary::before{ content:"▾ "; }
+  details.glossary summary .sub{
+    display:block;
+    margin-top:3px;
+    font-family:"IBM Plex Sans", sans-serif;
+    font-weight:400;
+    font-size:12.5px;
+    color:var(--ink-muted);
+  }
+  .glossary-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+    gap:12px 24px;
+    padding:2px 0 18px;
+    border-top:1px solid var(--border);
+    padding-top:16px;
+  }
+  .glossary-item dt{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:3px;
+  }
+  .glossary-item dd{
+    margin:0;
+    font-size:12.8px;
+    line-height:1.55;
+    color:var(--ink-muted);
+  }
+
+  .architecture{
+    margin:0 0 20px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:16px 18px;
+  }
+  .architecture-title{
+    margin:0 0 2px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+  }
+  .architecture-sub{
+    margin:0 0 14px;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--ink-muted);
+    max-width:70ch;
+  }
+  .architecture-svg{
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    overflow-x:auto;
+  }
+  .architecture-svg svg{
+    display:block;
+    width:100%;
+    max-width:645px;
+    height:auto;
+    margin:0 auto;
+  }
+  /* El SVG trae texto y flechas en negro fijo; como el fondo ahora es transparente,
+     esos trazos se atan a los colores de tema para no perderse en modo oscuro. Los
+     recuadros de clase no se tocan: tienen su propio relleno claro y siguen legibles. */
+  .architecture-svg .cluster > rect{ stroke:var(--ink) !important; }
+  .architecture-svg .link path{ stroke:var(--ink-muted) !important; }
+  .architecture-svg .link polygon{ fill:var(--ink-muted); stroke:var(--ink-muted) !important; }
+  .architecture-svg .title text,
+  .architecture-svg .link text{
+    fill:var(--ink);
+    paint-order:stroke;
+    stroke:var(--surface);
+    stroke-width:4px;
+    stroke-linejoin:round;
+  }
+
+  /* Resalta en el diagrama la clase/carpeta que corresponde al archivo elegido en el árbol */
+  .architecture-svg .diagram-highlight{
+    filter: drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 3px var(--accent));
+    transition: filter 0.2s ease;
+  }
+  .architecture-svg .entity.diagram-highlight > rect{
+    stroke:var(--accent) !important;
+    stroke-width:2.5px !important;
+  }
+  .architecture-svg #ent0009.diagram-highlight path{
+    stroke:var(--accent) !important;
+    stroke-width:2px !important;
+  }
+  .architecture-svg .cluster.diagram-highlight > rect{
+    stroke:var(--accent) !important;
+    stroke-width:2.5px !important;
+  }
+
+  .howto{
+    margin:0 0 20px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:16px 18px;
+  }
+  .howto-title{
+    margin:0 0 2px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+  }
+  .howto-sub{
+    margin:0 0 14px;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--ink-muted);
+    max-width:70ch;
+  }
+  .howto-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:760px){ .howto-grid{ grid-template-columns:1fr; } }
+  .howto-col{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .howto-col h3{
+    margin:0 0 10px;
+    font-size:13px;
+    font-family:"IBM Plex Mono", monospace;
+    color:var(--ink);
+  }
+  .howto-steps{
+    margin:0;
+    padding-left:18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    font-size:13px;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  .howto-steps code.cmd{
+    display:block;
+    margin-top:5px;
+    padding:6px 10px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .howto-steps code:not(.cmd){
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.92em;
+    background:var(--surface);
+    padding:0 4px;
+    border-radius:4px;
+  }
+  .howto-note{
+    margin:14px 0 0;
+    padding-top:12px;
+    border-top:1px dashed var(--border);
+    font-size:12.5px;
+    line-height:1.55;
+    color:var(--ink-muted);
+  }
+  .howto-note code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.92em;
+    background:var(--surface-2);
+    padding:0 4px;
+    border-radius:4px;
+  }
+
+  .filetree-card{
+    margin:0 0 20px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:16px 18px;
+  }
+  .filetree-title{
+    margin:0 0 2px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+  }
+  .filetree-sub{
+    margin:0 0 10px;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--ink-muted);
+    max-width:70ch;
+  }
+  .filetree-legend{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:0 0 12px;
+    font-size:12px;
+  }
+  .filetree-legend span{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:4px 10px 4px 8px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:20px;
+    color:var(--ink);
+    font-weight:500;
+  }
+  .legend-dot{
+    width:11px;
+    height:11px;
+    border-radius:50%;
+    display:inline-block;
+    flex-shrink:0;
+    box-shadow:0 0 0 1px var(--surface);
+  }
+  .legend-dot.create{ background:var(--accent); }
+  .legend-dot.gen{ background:var(--warn); }
+  pre.filetree{
+    margin:0;
+    padding:14px 16px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow-x:auto;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12.5px;
+    line-height:1.65;
+    color:var(--ink);
+    white-space:pre;
+  }
+  pre.filetree .ft-gen{ color:var(--warn); }
+  pre.filetree .ft-note{ color:var(--ink-muted); font-style:italic; }
+  .filetree-card .order-badge,
+  .filetree-legend .order-badge{
+    background:var(--accent) !important;
+    border-color:var(--accent) !important;
+    color:var(--surface) !important;
+    font-weight:700;
+  }
+
+  .code-toolbar{
+    display:flex;
+    justify-content:flex-end;
+    padding:10px 16px;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+  }
+  .notes-toggle{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    font-weight:500;
+    padding:6px 12px;
+    border-radius:7px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    border:1px solid transparent;
+    cursor:pointer;
+  }
+  .notes-toggle:hover{ border-color:var(--accent); }
+  .notes-toggle.active{ background:var(--accent); color:var(--surface); }
+
+  .code-scroll{
+    overflow-x:auto;
+    background:var(--surface-2);
+  }
+  pre.code{
+    margin:0;
+    padding:16px 0;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12.8px;
+    line-height:1.65;
+    min-width:100%;
+    width:max-content;
+  }
+  .line{ display:flex; align-items:baseline; }
+  .line.has-note{ cursor:pointer; }
+  .line.has-note:hover .lc{ text-decoration:underline dotted var(--accent); text-underline-offset:4px; }
+  .ln{
+    flex-shrink:0;
+    width:44px;
+    text-align:right;
+    padding-right:14px;
+    color:var(--ink-muted);
+    opacity:0.55;
+    user-select:none;
+  }
+  .lc{ padding-right:8px; white-space:pre; }
+  .note-flag{
+    flex-shrink:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:1px solid var(--accent);
+    color:var(--accent);
+    font-size:9.5px;
+    font-weight:700;
+    font-family:"IBM Plex Mono", monospace;
+    margin-left:2px;
+    user-select:none;
+  }
+  .note-box{
+    margin:2px 0 8px 58px;
+    padding:8px 12px;
+    max-width:640px;
+    background:var(--accent-soft);
+    border-left:3px solid var(--accent);
+    border-radius:0 6px 6px 0;
+    color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif;
+    font-size:12.5px;
+    line-height:1.55;
+    white-space:normal;
+  }
+  .note-box code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.92em;
+    background:var(--surface);
+    padding:0 4px;
+    border-radius:4px;
+  }
+
+  .tk-cmt{ color:var(--ink-muted); font-style:italic; }
+  .tk-str{ color:var(--ok); }
+  .tk-kw{ color:var(--accent); font-weight:600; }
+  .tk-type{ color:var(--warn); }
+  .tk-num{ color:var(--ok); }
+  .tk-ann{ color:var(--ink-muted); }
+
+  footer.note{
+    margin-top:18px;
+    font-size:12.5px;
+    color:var(--ink-muted);
+    text-align:center;
+  }
+
+  @media (max-width: 760px){
+    .layout{ grid-template-columns:1fr; }
+    nav.tree{
+      position:static;
+      max-height:none;
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+    }
+    .group-title{ width:100%; padding-top:8px; }
+    .file-btn{ width:auto; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">proyecto antivirus · mvp</span>
+    <h1>Recorrido de código</h1>
+    <p class="sub">Qué hace cada archivo del proyecto y cómo se conectan entre sí, con el código completo al lado para revisarlo sin abrir el editor.</p>
+  </header>
+
+  <div class="architecture">
+    <p class="architecture-title">🗺️ Diagrama de arquitectura</p>
+    <p class="architecture-sub">Las mismas clases y carpetas de abajo, pero como diagrama UML: cada rectángulo es una clase con sus métodos públicos, y las flechas muestran quién le pide algo a quién.</p>
+    <div class="architecture-svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="682px" preserveAspectRatio="none" style="width:645px;height:682px;background:transparent;" version="1.1" viewBox="0 0 645 682" width="645px" zoomAndPan="magnify"><title>Arquitectura Minima - Antivirus en Java (MVP)</title><defs/><g><g class="title" data-source-line="5"><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="364.5469" x="133.2266" y="22.9951">Arquitectura Minima - Antivirus en Java (MVP)</text></g><!--cluster ui (Interfaz de Usuario)--><g class="cluster" data-qualified-name="ui .Interfaz de Usuario." data-source-line="7" id="ent0002"><rect fill="#E8F8F5" height="148" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.5;" width="264" x="7" y="44.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="184.0918" x="46.9541" y="59.292">ui (Interfaz de Usuario)</text></g><!--cluster core (Motor de Escaneo)--><g class="cluster" data-qualified-name="core .Motor de Escaneo." data-source-line="15" id="ent0004"><rect fill="#FADBD8" height="311" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.5;" width="292" x="33" y="241.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="192.7393" x="82.6304" y="256.292">core (Motor de Escaneo)</text></g><!--cluster database (Firmas)--><g class="cluster" data-qualified-name="database .Firmas." data-source-line="26" id="ent0007"><rect fill="#EAEDED" height="256" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.5;" width="290" x="349" y="420.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="144.2109" x="421.8945" y="435.292">database (Firmas)</text></g><!--class VentanaPrincipal--><g class="entity" data-qualified-name="ui .Interfaz de Usuario..VentanaPrincipal" data-source-line="8" id="ent0003"><rect fill="#F1F1F1" height="96.8906" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="231.8369" x="23" y="79.2969"/><ellipse cx="75.4248" cy="95.2969" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/><path d="M78.3936,100.9375 Q77.8154,101.2344 77.1748,101.375 Q76.5342,101.5313 75.8311,101.5313 Q73.3311,101.5313 72.0029,99.8906 Q70.6904,98.2344 70.6904,95.1094 Q70.6904,91.9844 72.0029,90.3281 Q73.3311,88.6719 75.8311,88.6719 Q76.5342,88.6719 77.1748,88.8281 Q77.8311,88.9844 78.3936,89.2813 L78.3936,92 Q77.7686,91.4219 77.1748,91.1563 Q76.5811,90.875 75.9561,90.875 Q74.6123,90.875 73.9248,91.9531 Q73.2373,93.0156 73.2373,95.1094 Q73.2373,97.2031 73.9248,98.2813 Q74.6123,99.3438 75.9561,99.3438 Q76.5811,99.3438 77.1748,99.0781 Q77.7686,98.7969 78.3936,98.2188 L78.3936,100.9375 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="118.4873" x="95.9248" y="100.1436">VentanaPrincipal</text><line style="stroke:#181818;stroke-width:0.5;" x1="24" x2="253.8369" y1="111.2969" y2="111.2969"/><line style="stroke:#181818;stroke-width:0.5;" x1="24" x2="253.8369" y1="119.2969" y2="119.2969"/><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="34" cy="132.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="113.6611" x="43" y="136.292">mostrarEstado()</text><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="34" cy="149.2422" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="195.5078" x="43" y="152.5889">iniciarEscaneoManual(Ruta)</text><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="34" cy="165.5391" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="205.8369" x="43" y="168.8857">mostrarResultado(Resultado)</text></g><!--class Escaneador--><g class="entity" data-qualified-name="core .Motor de Escaneo..Escaneador" data-source-line="16" id="ent0005"><rect fill="#F1F1F1" height="80.5938" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="259.8506" x="49" y="276.2969"/><ellipse cx="133.8306" cy="292.2969" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/><path d="M136.7993,297.9375 Q136.2212,298.2344 135.5806,298.375 Q134.9399,298.5313 134.2368,298.5313 Q131.7368,298.5313 130.4087,296.8906 Q129.0962,295.2344 129.0962,292.1094 Q129.0962,288.9844 130.4087,287.3281 Q131.7368,285.6719 134.2368,285.6719 Q134.9399,285.6719 135.5806,285.8281 Q136.2368,285.9844 136.7993,286.2813 L136.7993,289 Q136.1743,288.4219 135.5806,288.1563 Q134.9868,287.875 134.3618,287.875 Q133.0181,287.875 132.3306,288.9531 Q131.6431,290.0156 131.6431,292.1094 Q131.6431,294.2031 132.3306,295.2813 Q133.0181,296.3438 134.3618,296.3438 Q134.9868,296.3438 135.5806,296.0781 Q136.1743,295.7969 136.7993,295.2188 L136.7993,297.9375 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="81.6895" x="154.3306" y="297.1436">Escaneador</text><line style="stroke:#181818;stroke-width:0.5;" x1="50" x2="307.8506" y1="308.2969" y2="308.2969"/><line style="stroke:#181818;stroke-width:0.5;" x1="50" x2="307.8506" y1="316.2969" y2="316.2969"/><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="60" cy="329.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="216.8701" x="69" y="333.292">analizarArchivo(Ruta): boolean</text><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="60" cy="346.2422" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="233.8506" x="69" y="349.5889">analizarCarpeta(Ruta): Resultado</text></g><!--class Cuarentena--><g class="entity" data-qualified-name="core .Motor de Escaneo..Cuarentena" data-source-line="20" id="ent0006"><rect fill="#F1F1F1" height="80.5938" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="186.9316" x="66.5" y="455.2969"/><ellipse cx="114.7036" cy="471.2969" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/><path d="M117.6724,476.9375 Q117.0942,477.2344 116.4536,477.375 Q115.813,477.5313 115.1099,477.5313 Q112.6099,477.5313 111.2817,475.8906 Q109.9692,474.2344 109.9692,471.1094 Q109.9692,467.9844 111.2817,466.3281 Q112.6099,464.6719 115.1099,464.6719 Q115.813,464.6719 116.4536,464.8281 Q117.1099,464.9844 117.6724,465.2813 L117.6724,468 Q117.0474,467.4219 116.4536,467.1563 Q115.8599,466.875 115.2349,466.875 Q113.8911,466.875 113.2036,467.9531 Q112.5161,469.0156 112.5161,471.1094 Q112.5161,473.2031 113.2036,474.2813 Q113.8911,475.3438 115.2349,475.3438 Q115.8599,475.3438 116.4536,475.0781 Q117.0474,474.7969 117.6724,474.2188 L117.6724,476.9375 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="82.0244" x="135.2036" y="476.1436">Cuarentena</text><line style="stroke:#181818;stroke-width:0.5;" x1="67.5" x2="252.4316" y1="487.2969" y2="487.2969"/><line style="stroke:#181818;stroke-width:0.5;" x1="67.5" x2="252.4316" y1="495.2969" y2="495.2969"/><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="77.5" cy="508.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134.2236" x="86.5" y="512.292">aislarArchivo(Ruta)</text><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="77.5" cy="525.2422" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="160.9316" x="86.5" y="528.5889">restaurarArchivo(Ruta)</text></g><!--class BaseFirmas--><g class="entity" data-qualified-name="database .Firmas..BaseFirmas" data-source-line="27" id="ent0008"><rect fill="#F1F1F1" height="80.5938" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="257.1982" x="365.5" y="455.2969"/><ellipse cx="449.1992" cy="471.2969" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/><path d="M452.168,476.9375 Q451.5898,477.2344 450.9492,477.375 Q450.3086,477.5313 449.6055,477.5313 Q447.1055,477.5313 445.7773,475.8906 Q444.4648,474.2344 444.4648,471.1094 Q444.4648,467.9844 445.7773,466.3281 Q447.1055,464.6719 449.6055,464.6719 Q450.3086,464.6719 450.9492,464.8281 Q451.6055,464.9844 452.168,465.2813 L452.168,468 Q451.543,467.4219 450.9492,467.1563 Q450.3555,466.875 449.7305,466.875 Q448.3867,466.875 447.6992,467.9531 Q447.0117,469.0156 447.0117,471.1094 Q447.0117,473.2031 447.6992,474.2813 Q448.3867,475.3438 449.7305,475.3438 Q450.3555,475.3438 450.9492,475.0781 Q451.543,474.7969 452.168,474.2188 L452.168,476.9375 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="81.2998" x="469.6992" y="476.1436">BaseFirmas</text><line style="stroke:#181818;stroke-width:0.5;" x1="366.5" x2="621.6982" y1="487.2969" y2="487.2969"/><line style="stroke:#181818;stroke-width:0.5;" x1="366.5" x2="621.6982" y1="495.2969" y2="495.2969"/><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="376.5" cy="508.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="231.1982" x="385.5" y="512.292">esHashMalicioso(Texto): boolean</text><g data-visibility-modifier="PUBLIC_METHOD"><ellipse cx="376.5" cy="525.2422" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/></g><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.3867" x="385.5" y="528.5889">cargarFirmas()</text></g><!--entity BD--><g class="entity" data-qualified-name="database .Firmas..BD" data-source-line="31" id="ent0009"><path d="M451,625.2969 C451,615.2969 494.1543,615.2969 494.1543,615.2969 C494.1543,615.2969 537.3086,615.2969 537.3086,625.2969 L537.3086,650.5938 C537.3086,660.5938 494.1543,660.5938 494.1543,660.5938 C494.1543,660.5938 451,660.5938 451,650.5938 L451,625.2969" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/><path d="M451,625.2969 C451,635.2969 494.1543,635.2969 494.1543,635.2969 C494.1543,635.2969 537.3086,635.2969 537.3086,625.2969" fill="none" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="66.3086" x="461" y="652.292">firmas.db</text></g><!--link VentanaPrincipal to Escaneador--><g class="link" data-entity-1="ent0003" data-entity-2="ent0005" data-link-type="dependency" data-source-line="35" id="lnk10"><path codeLine="35" d="M90.8,176.7169 C81.18,191.8669 75.94,208.9369 83,225.2969 C91.44,244.8569 101.9609,258.1323 117.6109,272.2223" fill="none" id="VentanaPrincipal-to-Escaneador" style="stroke:#181818;stroke-width:1;"/><polygon fill="#181818" points="122.07,276.2369,118.0578,267.2423,118.3541,272.8914,112.705,273.1877,122.07,276.2369" style="stroke:#181818;stroke-width:1;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="105.46" x="84" y="221.3638">Solicita escaneo</text></g><!--link Escaneador to VentanaPrincipal--><g class="link" data-entity-1="ent0005" data-entity-2="ent0003" data-link-type="dependency" data-source-line="38" id="lnk13"><path codeLine="38" d="M192.72,276.0569 C197.79,255.4769 200.82,230.1569 194,208.2969 C190.55,197.2469 188.1678,191.4474 181.8478,181.4574" fill="none" id="Escaneador-to-VentanaPrincipal" style="stroke:#181818;stroke-width:1;"/><polygon fill="#181818" points="178.64,176.3869,180.0713,186.1312,181.3131,180.6123,186.832,181.8541,178.64,176.3869" style="stroke:#181818;stroke-width:1;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126.6104" x="198" y="221.3638">Devuelve resultado</text></g><!--link Escaneador to BaseFirmas--><g class="link" data-entity-1="ent0005" data-entity-2="ent0008" data-link-type="dependency" data-source-line="36" id="lnk11"><path codeLine="36" d="M270.07,357.4469 C289.77,366.7269 310.29,376.9369 329,387.2969 C366.24,407.9169 401.3162,430.5364 432.6262,451.7964" fill="none" id="Escaneador-to-BaseFirmas" style="stroke:#181818;stroke-width:1;"/><polygon fill="#181818" points="437.59,455.1669,432.3913,446.8019,433.4535,452.3581,427.8972,453.4203,437.59,455.1669" style="stroke:#181818;stroke-width:1;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="107.0786" x="357" y="400.3638">Consulta hashes</text></g><!--link Escaneador to Cuarentena--><g class="link" data-entity-1="ent0005" data-entity-2="ent0006" data-link-type="dependency" data-source-line="37" id="lnk12"><path codeLine="37" d="M174.74,357.5169 C171.61,386.6669 168.0212,420.1212 164.8912,449.2412" fill="none" id="Escaneador-to-Cuarentena" style="stroke:#181818;stroke-width:1;"/><polygon fill="#181818" points="164.25,455.2069,169.1889,446.6859,164.7844,450.2355,161.2347,445.8309,164.25,455.2069" style="stroke:#181818;stroke-width:1;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="147.145" x="173" y="400.3638">Mueve si detecta virus</text></g><!--link BaseFirmas to BD--><g class="link" data-entity-1="ent0008" data-entity-2="ent0009" data-link-type="dependency" data-source-line="40" id="lnk14"><path codeLine="40" d="M494,536.5369 C494,562.0869 494,588.2869 494,609.1969" fill="none" id="BaseFirmas-to-BD" style="stroke:#181818;stroke-width:1;"/><polygon fill="#181818" points="494,615.1969,498,606.1969,494,610.1969,490,606.1969,494,615.1969" style="stroke:#181818;stroke-width:1;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="68.3071" x="495" y="581.3638">Lee firmas</text></g></g></svg></div>
+  </div>
+
+  <div class="howto">
+    <p class="howto-title">🚀 Cómo ejecutar este proyecto</p>
+    <p class="howto-sub">Necesitás el JDK (Java Development Kit) 17 o superior instalado. Son dos pasos siempre: <b>compilar</b> (traducir el código Java a algo que la computadora entiende) y <b>ejecutar</b> (abrir la ventana del antivirus).</p>
+    <div class="howto-grid">
+      <div class="howto-col">
+        <h3>🐧 Linux / macOS</h3>
+        <ol class="howto-steps">
+          <li>Abrí una terminal dentro de la carpeta <code>Proyecto-Antivirus/</code>.</li>
+          <li>Compilá (solo hace falta la primera vez, o después de cambiar un archivo .java):<code class="cmd">./compile.sh</code></li>
+          <li>Ejecutá:<code class="cmd">./run.sh</code></li>
+        </ol>
+      </div>
+      <div class="howto-col">
+        <h3>🪟 Windows</h3>
+        <ol class="howto-steps">
+          <li>Entrá a la carpeta <code>Proyecto-Antivirus\windows\</code>.</li>
+          <li>Compilá con doble clic en <code>compile.bat</code>, o desde cmd:<code class="cmd">windows\compile.bat</code></li>
+          <li>Ejecutá con doble clic en <code>run.bat</code>, o desde cmd:<code class="cmd">windows\run.bat</code></li>
+        </ol>
+      </div>
+    </div>
+    <p class="howto-note">Si <code>./compile.sh</code> o <code>./run.sh</code> dan "Permission denied", corré una sola vez <code>chmod +x compile.sh run.sh</code> para darles permiso de ejecución. No hace falta recompilar cada vez: solo cuando cambiás código Java. Al abrir la ventana, el botón "Seleccionar y escanear..." deja elegir un archivo o carpeta para analizar.</p>
+  </div>
+
+  <div class="filetree-card">
+    <p class="filetree-title">🗂️ Distribución de archivos</p>
+    <p class="filetree-sub">Así queda armada la carpeta del proyecto. Para recrearlo desde cero, solo hace falta escribir los archivos en blanco — el resto aparece solo al compilar o al escanear algo por primera vez. Los números en círculo marcan en qué orden conviene crear cada archivo (el mismo orden que ves en el árbol de la izquierda, más abajo).</p>
+    <div class="filetree-legend">
+      <span><i class="legend-dot create"></i> Lo escribís vos</span>
+      <span><i class="legend-dot gen"></i> Aparece solo (compilado/generado)</span>
+      <span><span class="order-badge">n</span> Orden sugerido de creación</span>
+    </div>
+    <pre class="filetree">└── Proyecto-Antivirus
+    ├── compile.sh <span class="order-badge">8</span>          <span class="ft-note">← script (comandos), no es programar Java</span>
+    ├── <span class="ft-gen">cuarentena           <span class="ft-note">← se crea sola al aislar el primer archivo, no la crees vos</span></span>
+    ├── firmas.db <span class="order-badge">3</span>           <span class="ft-note">← dato (lista de hashes), no es código</span>
+    ├── <span class="ft-gen">out                   <span class="ft-note">← la genera compile.sh con javac, no la escribas ni la edites a mano</span></span>
+    │   <span class="ft-gen">├── core</span>
+    │   <span class="ft-gen">│   ├── Cuarentena.class    <span class="ft-note">← si lo editás, se pisa en la próxima compilación</span></span>
+    │   <span class="ft-gen">│   ├── Escaneador.class</span>
+    │   <span class="ft-gen">│   └── Resultado.class</span>
+    │   <span class="ft-gen">├── database</span>
+    │   <span class="ft-gen">│   └── BaseFirmas.class</span>
+    │   <span class="ft-gen">├── Main.class</span>
+    │   <span class="ft-gen">└── ui</span>
+    │       <span class="ft-gen">└── VentanaPrincipal.class</span>
+    ├── recorrido-proyecto-antivirus.html
+    ├── run.sh <span class="order-badge">9</span>              <span class="ft-note">← script (comandos), no es programar Java</span>
+    ├── src                 <span class="ft-note">← acá programás de verdad: 6 archivos .java con lógica real</span>
+    │   ├── core
+    │   │   ├── Cuarentena.java <span class="order-badge">4</span>
+    │   │   ├── Escaneador.java <span class="order-badge">5</span>
+    │   │   └── Resultado.java <span class="order-badge">1</span>
+    │   ├── database
+    │   │   └── BaseFirmas.java <span class="order-badge">2</span>
+    │   ├── Main.java <span class="order-badge">7</span>
+    │   └── ui
+    │       └── VentanaPrincipal.java <span class="order-badge">6</span>
+    └── windows                                    <span class="ft-note">← scripts (comandos), no es programar Java</span>
+        ├── compile.bat <span class="order-badge">10</span>
+        └── run.bat <span class="order-badge">11</span></pre>
+  </div>
+
+  <div class="flow" id="flow">
+    <span class="flow-label">Flujo de un escaneo</span>
+    <button class="flow-chip" data-goto="main">Main</button>
+    <span class="flow-arrow">→</span>
+    <button class="flow-chip" data-goto="ventana">VentanaPrincipal</button>
+    <span class="flow-arrow">→</span>
+    <button class="flow-chip" data-goto="escaneador">Escaneador</button>
+    <span class="flow-arrow">→</span>
+    <button class="flow-chip" data-goto="basefirmas">BaseFirmas</button>
+    <span class="flow-arrow">/</span>
+    <button class="flow-chip" data-goto="cuarentena">Cuarentena</button>
+    <span class="flow-arrow">→</span>
+    <button class="flow-chip" data-goto="resultado">Resultado</button>
+  </div>
+
+  <details class="glossary">
+    <summary>📖 Glosario para quien nunca programó<span class="sub">Términos que vas a ver una y otra vez en el código, explicados en español simple.</span></summary>
+    <dl class="glossary-grid">
+      <div class="glossary-item"><dt>Clase (class)</dt><dd>Un molde que describe cómo es y qué sabe hacer un tipo de "cosa" en el programa. Ej: la clase Escaneador describe todo lo que un escáner sabe hacer.</dd></div>
+      <div class="glossary-item"><dt>Objeto</dt><dd>Una "cosa" concreta creada a partir de un molde (clase), usando la palabra <code>new</code>. Ej: <code>new Escaneador(...)</code> crea un objeto escáner real y usable.</dd></div>
+      <div class="glossary-item"><dt>Método (o función)</dt><dd>Un bloque de código con nombre que hace una tarea específica y se puede "llamar" (ejecutar) desde otras partes del programa cuando se necesita.</dd></div>
+      <div class="glossary-item"><dt>Variable</dt><dd>Un espacio con nombre donde se guarda un valor (un número, un texto, un archivo, etc.) para poder usarlo más adelante en el código.</dd></div>
+      <div class="glossary-item"><dt>Parámetro / argumento</dt><dd>Un valor que se le entrega a un método para que trabaje con él. Ej: en <code>main(String[] args)</code>, <code>args</code> es un parámetro.</dd></div>
+      <div class="glossary-item"><dt>Atributo o campo (field)</dt><dd>Una variable que pertenece a una clase (o a un objeto) y guarda su información. Ej: <code>escaneador</code> es un atributo de VentanaPrincipal.</dd></div>
+      <div class="glossary-item"><dt>Constructor</dt><dd>Un método especial, con el mismo nombre que la clase, que se ejecuta automáticamente cada vez que se crea un objeto nuevo con <code>new</code>.</dd></div>
+      <div class="glossary-item"><dt>Paquete (package)</dt><dd>Un grupo de clases relacionadas. La línea <code>package core;</code> arriba de un archivo no "llama" a ninguna carpeta: es una declaración, como escribir tu apellido — le dice al compilador a qué grupo pertenece esa clase. La carpeta (<code>src/core/</code>) coincide con ese nombre solo por convención: es tan fuerte que casi todos la siguen, pero lo que realmente define el paquete es el <code>package</code> del archivo, no el nombre de la carpeta. Al compilar, <code>javac</code> lee esa línea y decide ahí adentro de qué carpeta poner el <code>.class</code> resultante.</dd></div>
+      <div class="glossary-item"><dt>import</dt><dd>Le avisa a Java "voy a usar esta clase que vive en otro paquete", para no tener que escribir su nombre completo (con paquete y todo) cada vez que se la nombra.</dd></div>
+      <div class="glossary-item"><dt>public</dt><dd>El nivel de acceso más abierto: cualquier otra clase, de cualquier paquete, puede ver y usar esto.</dd></div>
+      <div class="glossary-item"><dt>private</dt><dd>Lo opuesto a public: solo la propia clase puede usarlo, nadie de afuera tiene acceso directo.</dd></div>
+      <div class="glossary-item"><dt>static</dt><dd>Significa que algo pertenece a la clase en sí misma, no a un objeto en particular, y por eso se puede usar sin crear (<code>new</code>) nada primero.</dd></div>
+      <div class="glossary-item"><dt>final</dt><dd>"Esto no se puede volver a cambiar una vez definido." Una variable final se asigna una sola vez.</dd></div>
+      <div class="glossary-item"><dt>void</dt><dd>Significa que un método no devuelve ningún valor: solo realiza una acción y termina.</dd></div>
+      <div class="glossary-item"><dt>Tipo de dato</dt><dd>La clase de valor que puede guardar una variable. Ej: <code>int</code> (números enteros), <code>boolean</code> (verdadero/falso), <code>String</code> (texto).</dd></div>
+      <div class="glossary-item"><dt>this</dt><dd>Dentro de una clase, la palabra <code>this</code> se refiere "a mí mismo": al objeto actual que está ejecutando el código.</dd></div>
+      <div class="glossary-item"><dt>return</dt><dd>La palabra que hace que un método entregue un resultado hacia quien lo llamó, y termina su ejecución justo ahí.</dd></div>
+      <div class="glossary-item"><dt>if / else (condicional)</dt><dd>Permite que el programa tome un camino u otro según si algo es verdadero o falso. "Si pasa esto, hacé A; si no, hacé B."</dd></div>
+      <div class="glossary-item"><dt>for / while (bucle)</dt><dd>Repite un bloque de código varias veces. Ej: una vez por cada archivo dentro de una carpeta.</dd></div>
+      <div class="glossary-item"><dt>try / catch</dt><dd>"Intentá hacer esto; si algo sale mal, atrapá el error acá y decidí qué hacer", en vez de que el programa se rompa de golpe.</dd></div>
+      <div class="glossary-item"><dt>extends (herencia)</dt><dd>Dice que una clase "hereda" de otra: nace ya sabiendo hacer todo lo que sabe la clase de la que hereda. Ej: VentanaPrincipal <code>extends</code> JFrame ya es una ventana.</dd></div>
+      <div class="glossary-item"><dt>Interfaz (List, Set)</dt><dd>Un contrato que dice "cualquier cosa que cumpla esto debe saber hacer tal cosa", sin importar cómo lo resuelva por dentro.</dd></div>
+    </dl>
+  </details>
+
+  <div class="layout">
+    <nav class="tree" id="tree"></nav>
+    <main class="detail" id="detail"></main>
+  </div>
+
+  <footer class="note">Proyecto Antivirus — Baycodec 941233826, arquitectura mínima (UI directa + core + database, sin servicio ni IPC).</footer>
+</div>
+
+<script>
+const FILES = [
+  {
+    id:"main", group:"Núcleo (src)", path:"src/Main.java", lang:"java", order:7,
+    role:"Punto de entrada del programa.",
+    bullets:[
+      "Contiene un único método: <code>main(String[] args)</code>.",
+      "Levanta <code>VentanaPrincipal</code> con <code>SwingUtilities.invokeLater</code>, la forma correcta de crear una interfaz Swing (corre en el Event Dispatch Thread, el hilo que Swing usa para dibujar y manejar eventos)."
+    ],
+    connects:"Crea → <b>ui.VentanaPrincipal</b>",
+    why:"Es el último archivo Java porque depende, aunque sea indirectamente, de todos los demás: solo crea VentanaPrincipal, pero esa clase por dentro ya necesita que Escaneador, Cuarentena, BaseFirmas y Resultado existan y funcionen.",
+    learn:[
+      "<b>¿Qué archivo se crea primero?</b> Este es el primer archivo que corre el programa completo. Cuando ejecutás <code>run.sh</code> (o <code>run.bat</code>), la orden es <code>java -cp out Main</code>: Java busca la clase Main y arranca desde acá. Todo lo demás (la ventana, el escáner, la base de firmas) nace después, como consecuencia de estas 9 líneas.",
+      "<b>¿Por qué se llama Main?</b> Por dos razones a la vez: (1) el archivo se llama Main.java porque adentro hay una <code>class Main</code>, y en Java el nombre del archivo tiene que coincidir con el nombre de su clase pública; y (2) dentro de esa clase, Java exige que exista un método llamado exactamente <code>main</code> — es una regla fija del lenguaje, no un nombre que alguien eligió: así es como la máquina virtual de Java (JVM) sabe por dónde empezar a ejecutar.",
+      "<b>¿Por qué <code>ui.VentanaPrincipal</code> tiene 'ui' en el nombre?</b> 'ui' es el paquete (la carpeta) donde vive VentanaPrincipal.java, es decir <code>src/ui/VentanaPrincipal.java</code>. En Java el nombre completo de una clase incluye su paquete, y acá el paquete se llama 'ui' porque agrupa las clases de interfaz de usuario (user interface) — por eso <code>import ui.VentanaPrincipal;</code>.",
+      "<b>¿Qué es <code>invokeLater</code>?</b> Es un método (una acción con nombre) de la clase SwingUtilities que significa literalmente 'invocá esto más adelante'. En vez de crear la ventana ya mismo, le pide a Swing que la cree apenas el hilo correcto (el EDT) esté libre para dibujar en pantalla — hacerlo así evita ventanas que se traban o se dibujan mal.",
+      "<b>¿Qué significa <code>public</code>?</b> Es el nivel de acceso más abierto que existe en Java: cualquier otra clase del programa (o de afuera) puede ver y usar esta clase o este método. Sin <code>public</code>, nadie fuera de Main.java podría arrancar el programa.",
+      "<b>¿Qué significa <code>static</code>?</b> Que el método pertenece a la clase Main en sí misma, no a un objeto Main creado con <code>new</code>. Por eso la JVM puede ejecutar <code>main</code> directamente al arrancar, sin tener que construir nada antes: no existe todavía ningún objeto en ese momento.",
+      "<b>¿Qué es un <code>import</code> y por qué aparece 'core', 'database', etc. en otros archivos?</b> <code>import</code> le dice a Java 'voy a usar esta clase que vive en otro paquete'. Los nombres después de import (como <code>core</code> o <code>database</code>) son paquetes: carpetas del proyecto que agrupan clases relacionadas, así que <code>import core.Escaneador;</code> significa 'traé la clase Escaneador que está guardada en la carpeta/paquete core'.",
+      "<b>¿Qué es una variable?</b> Un espacio con nombre donde se guarda un valor para poder usarlo después. En este archivo, <code>args</code> (dentro de <code>main(String[] args)</code>) es una variable: guarda la lista de textos que alguien le pasó al programa al ejecutarlo desde la terminal (acá no se usa, pero siempre está disponible)."
+    ],
+    notes:{
+      1:"Importa la clase <code>VentanaPrincipal</code> del paquete <code>ui</code>: es la única pieza del proyecto que <code>Main</code> necesita conocer.",
+      3:"<code>SwingUtilities</code> es una clase de utilidades de <code>javax.swing</code> (la librería estándar de Java para interfaces gráficas de escritorio). Se importa solo por su método <code>invokeLater</code>.",
+      5:"Declara la clase pública <code>Main</code>, el punto de entrada obligatorio de cualquier programa Java (debe existir un método <code>main</code>).",
+      6:"Firma estándar del método main: público, estático (se llama sin crear un objeto Main), sin valor de retorno (void), y recibe los argumentos de línea de comandos (aquí no se usan).",
+      7:"<code>invokeLater()</code> encola la creación de <code>VentanaPrincipal</code> para que corra en el Event Dispatch Thread (EDT), el único hilo autorizado a tocar componentes Swing. <code>VentanaPrincipal::new</code> es una referencia al constructor, equivalente a escribir una lambda que hace <code>new VentanaPrincipal()</code>.",
+      8:"Cierra el cuerpo del método <code>main</code>.",
+      9:"Cierra la clase <code>Main</code>."
+    },
+    code:`import ui.VentanaPrincipal;
+
+import javax.swing.SwingUtilities;
+
+public class Main {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(VentanaPrincipal::new);
+    }
+}
+`
+  },
+  {
+    id:"ventana", group:"Núcleo (src)", path:"src/ui/VentanaPrincipal.java", lang:"java", order:6,
+    diagramIds:["ent0002","ent0003"], diagramLabel:"ui (Interfaz de Usuario) → VentanaPrincipal",
+    role:"Interfaz gráfica (Swing). La única clase con la que el usuario interactúa.",
+    bullets:[
+      "Al construirse arma las tres piezas del backend: <code>BaseFirmas</code> (carga <code>firmas.db</code>), <code>Cuarentena</code> (crea la carpeta <code>cuarentena/</code>) y, con ambas, el <code>Escaneador</code>.",
+      "<code>construirInterfaz()</code> arma el layout: un botón para escanear, una etiqueta de estado y un área de texto para el resultado.",
+      "<code>iniciarEscaneoManual()</code> abre un <code>JFileChooser</code>; al elegir un archivo o carpeta llama a <code>escaneador.analizarCarpeta(ruta)</code>.",
+      "<code>mostrarEstado()</code> y <code>mostrarResultado()</code> actualizan la ventana con el progreso y el resultado del escaneo."
+    ],
+    connects:"Usa → <b>core.Escaneador</b>, <b>core.Cuarentena</b>, <b>database.BaseFirmas</b>, <b>core.Resultado</b>",
+    why:"Necesita que Escaneador, Cuarentena, BaseFirmas y Resultado ya existan como archivos .java, porque los crea y los usa directamente dentro del constructor y los métodos de la ventana.",
+    learn:[
+      "<b>¿Qué es <code>extends</code>?</b> Dice que una clase 'hereda' de otra: <code>class VentanaPrincipal extends JFrame</code> significa que VentanaPrincipal ya nace sabiendo todo lo que sabe hacer una ventana de Swing (JFrame), y además le agrega sus propias funciones (el botón, el área de resultados, etc.).",
+      "<b>¿Qué es un constructor?</b> Es un método especial que tiene el mismo nombre que la clase (<code>public VentanaPrincipal() { ... }</code>) y se ejecuta automáticamente una sola vez, apenas se crea el objeto con <code>new</code>. Acá es donde se arma todo el backend (BaseFirmas, Cuarentena, Escaneador) antes de mostrar la ventana.",
+      "<b>¿Qué son <code>areaResultado</code>, <code>etiquetaEstado</code> y <code>escaneador</code>?</b> Son atributos (también llamados campos): variables que pertenecen a la clase entera, no a un solo método. Por eso cualquier método de VentanaPrincipal (como <code>mostrarResultado</code>) puede leerlas y usarlas.",
+      "<b>¿Qué hace <code>super(...)</code>?</b> Llama al constructor de la clase de la que se hereda (JFrame). Como VentanaPrincipal extends JFrame, <code>super(\"Antivirus Java - MVP\")</code> le pide a JFrame que se construya a sí mismo con ese título de ventana.",
+      "<b>¿Qué es <code>e -&gt; iniciarEscaneoManual()</code>?</b> Es una lambda: una forma corta de escribir 'cuando pase el evento e (un clic), ejecutá este código'. Es el reemplazo moderno de escribir una clase entera solo para reaccionar a un clic de botón.",
+      "<b>¿Por qué algunas cosas son <code>private</code> y otras <code>public</code>?</b> Los atributos (areaResultado, etiquetaEstado, escaneador) son <code>private</code> porque son detalles internos de la ventana; los métodos que otras clases podrían necesitar llamar (como <code>mostrarEstado</code>) son <code>public</code>."
+    ],
+    notes:{
+      1:"Declara que esta clase pertenece al paquete <code>ui</code>, la capa de interfaz gráfica del proyecto.",
+      3:"Importa <code>Cuarentena</code> del paquete core: se usa para crear la carpeta de cuarentena y, junto con el Escaneador, aislar archivos maliciosos.",
+      4:"Importa <code>Escaneador</code> del paquete core: es el motor que hace el trabajo real de escanear; la ventana solo lo invoca.",
+      5:"Importa <code>Resultado</code> del paquete core: agrupa las estadísticas de un escaneo para poder mostrarlas en pantalla.",
+      6:"Importa <code>BaseFirmas</code> del paquete database: la 'base de datos' de hashes maliciosos que necesita el Escaneador.",
+      8:"<code>JButton</code>: componente de Swing para el botón clicable 'Seleccionar y escanear...'.",
+      9:"<code>JFileChooser</code>: diálogo estándar de Swing para elegir un archivo o carpeta del sistema; así indica el usuario qué escanear.",
+      10:"<code>JFrame</code>: la clase base de una ventana de escritorio en Swing. VentanaPrincipal hereda de ella con <code>extends JFrame</code>.",
+      11:"<code>JLabel</code>: componente de texto no editable de Swing, usado aquí para la etiqueta de estado ('Listo' / 'Escaneando...').",
+      12:"<code>JPanel</code>: contenedor de Swing para agrupar otros componentes (el botón y la etiqueta) dentro de la ventana.",
+      13:"<code>JScrollPane</code>: envoltorio de Swing que agrega barras de scroll; hace que el área de resultados sea desplazable si el texto es largo.",
+      14:"<code>JTextArea</code>: componente de Swing de texto multilínea, usado como área de resultados de solo lectura.",
+      15:"<code>BorderLayout</code>: gestor de diseño de Swing que ubica componentes en 5 zonas (norte, sur, este, oeste, centro); organiza el botón arriba y el resultado en el centro.",
+      16:"<code>Font</code>: clase de AWT (la librería gráfica base sobre la que se construye Swing) para definir tipografía y estilo del texto.",
+      17:"<code>Path</code>: la API moderna de Java (<code>java.nio.file</code>) para representar rutas de archivos y carpetas de forma segura entre sistemas operativos.",
+      19:"Declara la clase pública VentanaPrincipal, que extiende JFrame: al heredar de JFrame, esta clase ES una ventana de Swing.",
+      21:"Campo de instancia: el área de texto donde se muestra el resultado del escaneo. Es <code>final</code> porque se crea una sola vez y solo se le cambia el contenido.",
+      22:"Campo de instancia: la etiqueta de estado, inicializada con el texto 'Listo'.",
+      23:"Campo de instancia: referencia al Escaneador que hace el trabajo; se declara aquí pero se inicializa en el constructor porque depende de BaseFirmas y Cuarentena.",
+      25:"Constructor de VentanaPrincipal: se ejecuta una sola vez, cuando Main crea la ventana.",
+      26:"Llama al constructor de JFrame (<code>super</code>) pasando el título que aparecerá en la barra de la ventana.",
+      28:"Obtiene la carpeta desde la que se ejecuta el programa como Path, para ubicar firmas.db y cuarentena/ siempre en el mismo lugar relativo al proyecto.",
+      29:"Crea la BaseFirmas apuntando a firmas.db dentro de la raíz del proyecto; al construirse ya carga todas las firmas en memoria.",
+      30:"Crea la Cuarentena apuntando a la carpeta cuarentena/; al construirse crea esa carpeta si no existe.",
+      31:"Ensambla el Escaneador con las dos piezas anteriores. Este es el punto donde se conecta todo el backend.",
+      33:"Llama a construirInterfaz() para armar los componentes visuales antes de mostrar la ventana.",
+      35:"Fija el tamaño inicial de la ventana en píxeles (600 de ancho x 400 de alto).",
+      36:"Indica qué hacer al cerrar la ventana: EXIT_ON_CLOSE termina todo el proceso Java, no solo esta ventana.",
+      37:"Centra la ventana en la pantalla (null significa 'centrar respecto a la pantalla completa').",
+      38:"Hace visible la ventana; sin esta línea existiría en memoria pero nunca se vería.",
+      41:"Método privado que arma el layout visual; se llama una sola vez desde el constructor.",
+      42:"Aplica BorderLayout como gestor de diseño de esta misma ventana.",
+      44:"Crea el panel superior donde van el botón y la etiqueta.",
+      45:"Crea el botón con el texto que verá el usuario.",
+      46:"Conecta el clic del botón con iniciarEscaneoManual(), usando una lambda (<code>e -&gt; ...</code>) como manejador de eventos: la forma moderna de escribir un ActionListener.",
+      47:"Agrega el botón al panel superior.",
+      48:"Agrega la etiqueta de estado al mismo panel, junto al botón.",
+      50:"Hace que el área de resultados no se pueda editar manualmente: es solo para mostrar salida.",
+      51:"Define la tipografía del área de resultados como monoespaciada (todas las letras ocupan el mismo ancho), ideal para alinear columnas de texto.",
+      53:"Coloca el panel superior en la zona NORTH del BorderLayout, arriba de todo.",
+      54:"Coloca el área de resultados, envuelta en un JScrollPane, en la zona CENTER, que ocupa el resto del espacio disponible.",
+      55:"Cierra el método construirInterfaz().",
+      57:"Método público que se dispara cuando el usuario hace clic en el botón de escanear.",
+      58:"Crea el diálogo de selección de archivos.",
+      59:"Configura el diálogo para permitir elegir tanto archivos individuales como carpetas completas.",
+      60:"Muestra el diálogo (bloquea hasta que el usuario elige algo o cancela) y guarda qué opción escogió.",
+      61:"Comprueba si el usuario realmente eligió algo, en vez de cancelar el diálogo.",
+      62:"Si canceló, corta la ejecución del método aquí mismo: no hay nada que escanear.",
+      63:"Cierra el bloque if.",
+      64:"Convierte el File elegido por el diálogo en un Path, el tipo que espera el resto del sistema.",
+      65:"Actualiza la etiqueta de estado para dar feedback visual mientras dura el escaneo.",
+      66:"Llama al Escaneador para que analice la ruta elegida: esta es la línea que realmente ejecuta la lógica antivirus y devuelve las estadísticas.",
+      67:"Muestra el resultado obtenido en el área de texto.",
+      68:"Vuelve a poner el estado en 'Listo' una vez terminado el escaneo.",
+      69:"Cierra el método iniciarEscaneoManual().",
+      71:"Método auxiliar que actualiza el texto de la etiqueta de estado.",
+      72:"Cambia el texto visible de la etiqueta.",
+      73:"Cierra el método mostrarEstado().",
+      75:"Método auxiliar que vuelca un Resultado en el área de texto.",
+      76:"Usa el toString() de Resultado (que arma el reporte legible) como contenido del área de texto.",
+      77:"Cierra el método mostrarResultado().",
+      78:"Cierra la clase VentanaPrincipal."
+    },
+    code:`package ui;
+
+import core.Cuarentena;
+import core.Escaneador;
+import core.Resultado;
+import database.BaseFirmas;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.nio.file.Path;
+
+public class VentanaPrincipal extends JFrame {
+
+    private final JTextArea areaResultado = new JTextArea();
+    private final JLabel etiquetaEstado = new JLabel("Listo");
+    private final Escaneador escaneador;
+
+    public VentanaPrincipal() {
+        super("Antivirus Java - MVP");
+
+        Path raizProyecto = Path.of(System.getProperty("user.dir"));
+        BaseFirmas baseFirmas = new BaseFirmas(raizProyecto.resolve("firmas.db"));
+        Cuarentena cuarentena = new Cuarentena(raizProyecto.resolve("cuarentena"));
+        this.escaneador = new Escaneador(baseFirmas, cuarentena);
+
+        construirInterfaz();
+
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void construirInterfaz() {
+        setLayout(new BorderLayout());
+
+        JPanel panelSuperior = new JPanel();
+        JButton botonEscanear = new JButton("Seleccionar y escanear...");
+        botonEscanear.addActionListener(e -> iniciarEscaneoManual());
+        panelSuperior.add(botonEscanear);
+        panelSuperior.add(etiquetaEstado);
+
+        areaResultado.setEditable(false);
+        areaResultado.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+
+        add(panelSuperior, BorderLayout.NORTH);
+        add(new JScrollPane(areaResultado), BorderLayout.CENTER);
+    }
+
+    public void iniciarEscaneoManual() {
+        JFileChooser selector = new JFileChooser();
+        selector.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        int seleccion = selector.showOpenDialog(this);
+        if (seleccion != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        Path ruta = selector.getSelectedFile().toPath();
+        mostrarEstado("Escaneando...");
+        Resultado resultado = escaneador.analizarCarpeta(ruta);
+        mostrarResultado(resultado);
+        mostrarEstado("Listo");
+    }
+
+    public void mostrarEstado(String estado) {
+        etiquetaEstado.setText(estado);
+    }
+
+    public void mostrarResultado(Resultado resultado) {
+        areaResultado.setText(resultado.toString());
+    }
+}
+`
+  },
+  {
+    id:"escaneador", group:"Núcleo (src)", path:"src/core/Escaneador.java", lang:"java", order:5,
+    diagramIds:["ent0004","ent0005"], diagramLabel:"core (Motor de Escaneo) → Escaneador",
+    role:"El motor de escaneo: calcula hashes y decide si un archivo es una amenaza.",
+    bullets:[
+      "<code>analizarArchivo(Ruta)</code> calcula el SHA-256 del archivo y le pregunta a <code>BaseFirmas</code> si ese hash es malicioso.",
+      "<code>analizarCarpeta(Ruta)</code>: si la ruta es un archivo, lo analiza directo; si es una carpeta, recorre todos sus archivos con <code>Files.walk()</code>.",
+      "Cada archivo detectado se registra en el <code>Resultado</code> y se le pide a <code>Cuarentena</code> que lo aísle.",
+      "<code>calcularSha256()</code> usa <code>MessageDigest(\"SHA-256\")</code> + <code>HexFormat</code> para convertir el contenido del archivo en su huella digital."
+    ],
+    connects:"Usa → <b>database.BaseFirmas</b>, <b>core.Cuarentena</b>, <b>core.Resultado</b>",
+    why:"No puede compilarse hasta que existan BaseFirmas, Cuarentena y Resultado, porque su código las nombra directamente (las recibe en el constructor y crea un Resultado adentro). Compilarlo antes daría un error del tipo 'cannot find symbol'.",
+    learn:[
+      "<b>¿Qué es un tipo de retorno?</b> La palabra antes del nombre del método (<code>boolean analizarArchivo</code>, <code>Resultado analizarCarpeta</code>) dice qué tipo de valor va a devolver ese método con <code>return</code>. <code>boolean</code> solo puede ser verdadero o falso; <code>Resultado</code> devuelve un objeto completo con las estadísticas del escaneo.",
+      "<b>¿Por qué el constructor recibe BaseFirmas y Cuarentena en vez de crearlos él mismo?</b> Se llama 'inyección de dependencias': en vez de que Escaneador construya sus propias herramientas, se las pasan ya hechas desde afuera (VentanaPrincipal). Esto facilita cambiar una pieza sin tocar las demás.",
+      "<b>¿Qué es <code>try / catch</code> acá?</b> Leer archivos puede fallar (por ejemplo, si no hay permisos). <code>try</code> dice 'intentá hacer esto'; si algo sale mal, el bloque <code>catch (IOException e)</code> atrapa ese error y decide qué hacer, en vez de que el programa se cierre de golpe.",
+      "<b>¿Qué hace <code>Files.walk(ruta)</code>?</b> Recorre una carpeta y todas sus subcarpetas, entregando la ruta de cada archivo que encuentra uno por uno, sin necesidad de escribir manualmente un bucle que entre carpeta por carpeta.",
+      "<b>¿Por qué hay dos métodos parecidos, <code>analizarArchivo</code> y <code>analizarCarpeta</code>?</b> Uno resuelve el caso simple (un solo archivo) y el otro el caso general (una carpeta entera, que puede contener muchos archivos); <code>analizarCarpeta</code> termina llamando, por dentro, a la misma lógica que analiza un archivo."
+    ],
+    notes:{
+      1:"Pertenece al paquete <code>core</code>: la lógica de negocio del antivirus.",
+      3:"Importa BaseFirmas para poder consultar si un hash es malicioso.",
+      5:"<code>IOException</code>: la excepción estándar de Java para errores de entrada/salida (leer o recorrer archivos puede fallar, por ejemplo sin permisos).",
+      6:"<code>Files</code>: clase de utilidades de <code>java.nio.file</code> con métodos estáticos para leer, listar y recorrer archivos y carpetas.",
+      7:"<code>Path</code>: representa una ruta de archivo o carpeta de forma independiente del sistema operativo.",
+      8:"<code>MessageDigest</code>: clase de <code>java.security</code> que implementa algoritmos de hash criptográfico (aquí SHA-256); es la pieza central de la detección por firmas.",
+      9:"<code>NoSuchAlgorithmException</code>: excepción que MessageDigest podría lanzar si el algoritmo pedido ('SHA-256') no estuviera disponible en la instalación de Java.",
+      10:"<code>HexFormat</code>: utilidad (desde Java 17) para convertir bytes en texto hexadecimal legible; convierte el hash binario en el string de firma que se compara contra firmas.db.",
+      11:"<code>Stream</code>: la API de streams de Java, usada junto con <code>Files.walk()</code> para recorrer un árbol de carpetas de forma perezosa, sin cargar todo en memoria de una vez.",
+      13:"Declara la clase pública Escaneador.",
+      15:"Referencia a la base de firmas: de aquí saca la lista de hashes maliciosos conocidos.",
+      16:"Referencia a la cuarentena: a ella le delega el aislamiento de archivos detectados.",
+      18:"Constructor: recibe ambas dependencias ya construidas (inyección de dependencias manual) en vez de crearlas él mismo, lo que facilita probar y reemplazar cada pieza por separado.",
+      19:"Guarda la referencia a BaseFirmas recibida.",
+      20:"Guarda la referencia a Cuarentena recibida.",
+      21:"Cierra el constructor.",
+      23:"Analiza un único archivo y devuelve true si coincide con una firma maliciosa.",
+      24:"Calcula el hash SHA-256 del archivo.",
+      25:"Le pregunta a BaseFirmas si ese hash específico está en su lista de amenazas conocidas.",
+      26:"Cierra analizarArchivo().",
+      28:"Punto de entrada del escaneo: recibe una ruta que puede ser un archivo suelto o una carpeta completa.",
+      29:"Crea un Resultado vacío que se irá llenando durante el recorrido.",
+      30:"Comprueba si la ruta es un archivo individual, no una carpeta.",
+      31:"Si es un archivo, lo analiza directamente y lo registra en el resultado.",
+      32:"Devuelve el resultado de inmediato: no hace falta recorrer nada más.",
+      33:"Cierra el caso 'es un archivo individual'.",
+      34:"Si llegó hasta aquí, ruta es una carpeta: <code>Files.walk()</code> genera un Stream perezoso con todas las rutas dentro de ella (incluyendo subcarpetas), y el try-with-resources garantiza que ese stream se cierre correctamente al terminar.",
+      35:"Filtra el stream para quedarse solo con archivos reales, descartando las carpetas que también aparecen en el recorrido.",
+      36:"Por cada archivo encontrado, ejecuta analizarYRegistrar: aquí es donde realmente se analiza cada archivo de la carpeta.",
+      37:"Si Files.walk() falla, por ejemplo por permisos insuficientes, se captura la excepción de entrada/salida.",
+      38:"Relanza el error como una RuntimeException con un mensaje más claro, para no obligar a quien llama a este método a manejar IOException explícitamente.",
+      39:"Cierra el bloque catch.",
+      40:"Devuelve el Resultado ya completo, con todos los archivos de la carpeta analizados.",
+      41:"Cierra analizarCarpeta().",
+      43:"Método auxiliar privado que analiza un archivo y actualiza las estadísticas; lo usan tanto el caso de archivo único como el recorrido de carpeta, evitando repetir código.",
+      44:"Suma uno al contador de archivos analizados, sin importar si resulta malicioso o no.",
+      45:"Vuelve a llamar a analizarArchivo() para decidir si este archivo es una amenaza.",
+      46:"Si lo es, registra su ruta en la lista de archivos maliciosos del Resultado.",
+      47:"Le pide a Cuarentena que aísle físicamente el archivo, moviéndolo lejos de su ubicación original.",
+      48:"Cierra el bloque if.",
+      49:"Cierra analizarYRegistrar().",
+      51:"Método privado que calcula el hash SHA-256 del contenido de un archivo.",
+      52:"Abre un bloque try porque calcular el hash puede fallar por errores de lectura o de algoritmo.",
+      53:"Obtiene una instancia del algoritmo SHA-256, el mismo estándar que usan los antivirus reales para identificar archivos únicos.",
+      54:"Lee todo el contenido del archivo a memoria como un arreglo de bytes: simple para archivos pequeños, pero no escala a archivos gigantes.",
+      55:"Calcula el hash: procesa esos bytes y produce la 'huella digital' de 32 bytes del archivo.",
+      56:"Convierte esos bytes del hash a un string hexadecimal, el formato en que se guardan las firmas en firmas.db, y lo devuelve.",
+      57:"Captura ambos tipos de error posibles, de lectura o de algoritmo no disponible, usando la sintaxis de captura múltiple con <code>|</code>.",
+      58:"Relanza el error como RuntimeException con contexto (qué archivo falló) para simplificar el manejo en las capas superiores.",
+      59:"Cierra el catch.",
+      60:"Cierra calcularSha256().",
+      61:"Cierra la clase Escaneador."
+    },
+    code:`package core;
+
+import database.BaseFirmas;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.stream.Stream;
+
+public class Escaneador {
+
+    private final BaseFirmas baseFirmas;
+    private final Cuarentena cuarentena;
+
+    public Escaneador(BaseFirmas baseFirmas, Cuarentena cuarentena) {
+        this.baseFirmas = baseFirmas;
+        this.cuarentena = cuarentena;
+    }
+
+    public boolean analizarArchivo(Path ruta) {
+        String hash = calcularSha256(ruta);
+        return baseFirmas.esHashMalicioso(hash);
+    }
+
+    public Resultado analizarCarpeta(Path ruta) {
+        Resultado resultado = new Resultado();
+        if (Files.isRegularFile(ruta)) {
+            analizarYRegistrar(ruta, resultado);
+            return resultado;
+        }
+        try (Stream<Path> archivos = Files.walk(ruta)) {
+            archivos.filter(Files::isRegularFile)
+                    .forEach(archivo -> analizarYRegistrar(archivo, resultado));
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo recorrer la carpeta: " + e.getMessage(), e);
+        }
+        return resultado;
+    }
+
+    private void analizarYRegistrar(Path archivo, Resultado resultado) {
+        resultado.registrarArchivoAnalizado();
+        if (analizarArchivo(archivo)) {
+            resultado.registrarArchivoMalicioso(archivo.toString());
+            cuarentena.aislarArchivo(archivo);
+        }
+    }
+
+    private String calcularSha256(Path ruta) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] contenido = Files.readAllBytes(ruta);
+            byte[] hash = digest.digest(contenido);
+            return HexFormat.of().formatHex(hash);
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException("No se pudo calcular el hash de " + ruta + ": " + e.getMessage(), e);
+        }
+    }
+}
+`
+  },
+  {
+    id:"cuarentena", group:"Núcleo (src)", path:"src/core/Cuarentena.java", lang:"java", order:4,
+    diagramIds:["ent0004","ent0006"], diagramLabel:"core (Motor de Escaneo) → Cuarentena",
+    role:"Aísla archivos maliciosos y permite restaurarlos.",
+    bullets:[
+      "Al crearse, genera (si no existe) la carpeta <code>cuarentena/</code> dentro del proyecto.",
+      "<code>aislarArchivo(Ruta)</code> mueve el archivo a <code>cuarentena/</code> con un nombre único (timestamp + nombre original) y guarda su ubicación original en <code>manifest.properties</code>.",
+      "<code>restaurarArchivo(Ruta)</code> busca en el manifiesto qué archivo en cuarentena corresponde a esa ruta original y lo devuelve a su lugar.",
+      "El manifiesto es la 'memoria' que permite deshacer una cuarentena sin perder de dónde vino cada archivo."
+    ],
+    connects:"Sin dependencias propias del proyecto — la usan <b>Escaneador</b> y <b>VentanaPrincipal</b>",
+    why:"Tampoco depende de ninguna otra clase propia: solo usa herramientas de Java (Files, Properties). Puede crearse en cualquier momento antes de Escaneador, que es quien la necesita para aislar archivos.",
+    learn:[
+      "<b>¿Qué es <code>Properties</code>?</b> Es como una mini base de datos de texto en formato clave=valor (ej: <code>1700000000_virus.exe=/home/user/virus.exe</code>). Acá se usa para recordar, para cada archivo aislado, dónde estaba originalmente.",
+      "<b>¿Qué es <code>try-with-resources</code>?</b> La forma <code>try (InputStream in = ...)</code> abre un recurso (un archivo) y garantiza que se cierre solo al terminar, incluso si algo falla en el medio — evita el error clásico de 'me olvidé de cerrar el archivo'.",
+      "<b>¿Qué son <code>IOException</code> y <code>RuntimeException</code>?</b> Son excepciones: formas que tiene Java de representar 'algo salió mal'. IOException aparece cuando falla una operación de archivos; el código la atrapa y la relanza como RuntimeException con un mensaje más claro para quien use esta clase.",
+      "<b>¿Qué hace el bucle <code>for (String nombreCuarentena : manifest.stringPropertyNames())</code>?</b> Recorre, uno por uno, todos los nombres guardados en el manifiesto, buscando cuál corresponde al archivo que se quiere restaurar.",
+      "<b>¿Por qué los métodos auxiliares son <code>private</code>?</b> <code>guardarEnManifiesto</code>, <code>cargarManifiesto</code> y <code>guardarManifiestoCompleto</code> son detalles internos de cómo funciona la cuarentena; nadie fuera de esta clase necesita llamarlos directamente, por eso están ocultos con <code>private</code>."
+    ],
+    notes:{
+      1:"Pertenece al paquete core.",
+      3:"<code>IOException</code>: puede ocurrir al crear carpetas, mover archivos o leer/escribir el manifiesto.",
+      4:"<code>InputStream</code>: flujo de lectura de bytes, usado para leer manifest.properties desde el disco.",
+      5:"<code>OutputStream</code>: flujo de escritura de bytes, usado para guardar manifest.properties en disco.",
+      6:"<code>Files</code>: utilidades para crear carpetas, mover archivos y abrir flujos de lectura/escritura.",
+      7:"<code>Path</code>: representa la carpeta de cuarentena y el archivo de manifiesto.",
+      8:"<code>StandardCopyOption</code>: enumeración con opciones para Files.move()/Files.copy(); aquí se usa REPLACE_EXISTING para no fallar si ya existe un archivo con ese nombre.",
+      9:"<code>Properties</code>: clase de Java para manejar archivos de configuración clave=valor, como manifest.properties; aquí guarda 'nombre en cuarentena' → 'ruta original'.",
+      11:"Declara la clase pública Cuarentena.",
+      13:"Carpeta donde se guardan físicamente los archivos aislados.",
+      14:"Ruta al archivo manifest.properties, calculada una sola vez a partir de la carpeta de cuarentena.",
+      16:"Constructor: recibe la carpeta de cuarentena a usar.",
+      17:"Guarda la referencia a la carpeta recibida.",
+      18:"Calcula la ruta del manifiesto como carpetaCuarentena/manifest.properties.",
+      19:"Abre un try porque crear la carpeta puede fallar, por ejemplo sin permisos de escritura.",
+      20:"Crea la carpeta de cuarentena si no existe, y también las carpetas padre necesarias.",
+      21:"Si falla la creación, se captura la excepción de entrada/salida.",
+      22:"La relanza como RuntimeException con un mensaje descriptivo; un fallo aquí es grave, por eso se detiene la construcción del objeto.",
+      23:"Cierra el catch.",
+      24:"Cierra el constructor.",
+      26:"Mueve un archivo a cuarentena y devuelve la ruta donde quedó guardado.",
+      27:"Abre un try porque mover un archivo puede fallar por E/S.",
+      28:"Construye un nombre único para el archivo en cuarentena: timestamp actual (milisegundos) + '_' + nombre original, para evitar colisiones si se aíslan dos archivos con el mismo nombre.",
+      29:"Calcula la ruta destino dentro de la carpeta de cuarentena.",
+      30:"Mueve físicamente el archivo de su ubicación original a la cuarentena; REPLACE_EXISTING evita un error si por alguna razón ya existiera un archivo con ese nombre destino.",
+      31:"Guarda en el manifiesto la relación entre el nombre en cuarentena y la ruta absoluta original, necesaria para poder restaurarlo después.",
+      32:"Devuelve la ruta final donde quedó el archivo aislado.",
+      33:"Cierra el bloque try.",
+      34:"Si algo falla al mover el archivo, se captura la excepción.",
+      35:"La relanza como RuntimeException con contexto del error.",
+      36:"Cierra aislarArchivo().",
+      38:"Intenta devolver un archivo desde cuarentena a su ubicación original; devuelve true si lo logró, false si no lo encontró.",
+      39:"Carga el manifiesto actual desde disco.",
+      40:"Convierte la ruta original recibida a su forma absoluta como texto, para poder compararla con lo guardado en el manifiesto.",
+      41:"Recorre todas las claves, los nombres de archivo en cuarentena, guardadas en el manifiesto.",
+      42:"Compara si el valor guardado para esa clave, la ruta original de ese archivo, coincide con la ruta que se está buscando restaurar.",
+      43:"Si coincide, abre un try porque mover el archivo de vuelta puede fallar.",
+      44:"Calcula la ruta actual del archivo dentro de la carpeta de cuarentena.",
+      45:"Mueve el archivo de la cuarentena de vuelta a su ubicación original.",
+      46:"Elimina la entrada del manifiesto en memoria, ya que ese archivo ya no está en cuarentena.",
+      47:"Guarda el manifiesto actualizado, sin esa entrada, en disco.",
+      48:"Devuelve true: la restauración fue exitosa, y termina el método sin seguir buscando.",
+      49:"Si falla el movimiento del archivo, se captura la excepción de E/S.",
+      50:"La relanza como RuntimeException con contexto.",
+      51:"Cierra el catch.",
+      52:"Cierra el if que compara las rutas.",
+      53:"Cierra el bucle for.",
+      54:"Si el bucle terminó sin encontrar coincidencia, no había nada que restaurar: devuelve false.",
+      55:"Cierra restaurarArchivo().",
+      57:"Método privado que agrega o actualiza una entrada en el manifiesto y la guarda.",
+      58:"Carga el manifiesto actual.",
+      59:"Agrega o reemplaza la propiedad: nombre en cuarentena → ruta original.",
+      60:"Guarda el manifiesto completo en disco con el nuevo dato.",
+      61:"Cierra guardarEnManifiesto().",
+      63:"Método privado que lee manifest.properties desde disco y lo devuelve como un objeto Properties.",
+      64:"Crea un objeto Properties vacío para cargar los datos.",
+      65:"Solo intenta leer el archivo si realmente existe; la primera vez que se usa la cuarentena, todavía no existe.",
+      66:"Abre un flujo de lectura del archivo con try-with-resources, que garantiza que el flujo se cierre automáticamente al terminar, incluso si hay un error.",
+      67:"Carga el contenido del archivo, en formato clave=valor, dentro del objeto Properties.",
+      68:"Si falla la lectura, se captura la excepción.",
+      69:"La relanza como RuntimeException con contexto.",
+      70:"Cierra el catch.",
+      71:"Cierra el if de existencia del archivo.",
+      72:"Devuelve las propiedades cargadas, vacías si el archivo no existía.",
+      73:"Cierra cargarManifiesto().",
+      75:"Método privado que escribe un objeto Properties completo al archivo manifest.properties, sobrescribiéndolo.",
+      76:"Abre un flujo de escritura con try-with-resources, que se cierra automáticamente al terminar.",
+      77:"Guarda todas las propiedades en el archivo, con un comentario descriptivo como encabezado.",
+      78:"Si falla la escritura, se captura la excepción.",
+      79:"La relanza como RuntimeException con contexto.",
+      80:"Cierra el catch.",
+      81:"Cierra guardarManifiestoCompleto().",
+      82:"Cierra la clase Cuarentena."
+    },
+    code:`package core;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Properties;
+
+public class Cuarentena {
+
+    private final Path carpetaCuarentena;
+    private final Path manifiesto;
+
+    public Cuarentena(Path carpetaCuarentena) {
+        this.carpetaCuarentena = carpetaCuarentena;
+        this.manifiesto = carpetaCuarentena.resolve("manifest.properties");
+        try {
+            Files.createDirectories(carpetaCuarentena);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear carpeta de cuarentena: " + e.getMessage(), e);
+        }
+    }
+
+    public Path aislarArchivo(Path ruta) {
+        try {
+            String nombreDestino = System.currentTimeMillis() + "_" + ruta.getFileName();
+            Path destino = carpetaCuarentena.resolve(nombreDestino);
+            Files.move(ruta, destino, StandardCopyOption.REPLACE_EXISTING);
+            guardarEnManifiesto(nombreDestino, ruta.toAbsolutePath().toString());
+            return destino;
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo aislar el archivo: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean restaurarArchivo(Path rutaOriginal) {
+        Properties manifest = cargarManifiesto();
+        String claveOriginal = rutaOriginal.toAbsolutePath().toString();
+        for (String nombreCuarentena : manifest.stringPropertyNames()) {
+            if (manifest.getProperty(nombreCuarentena).equals(claveOriginal)) {
+                try {
+                    Path origen = carpetaCuarentena.resolve(nombreCuarentena);
+                    Files.move(origen, rutaOriginal, StandardCopyOption.REPLACE_EXISTING);
+                    manifest.remove(nombreCuarentena);
+                    guardarManifiestoCompleto(manifest);
+                    return true;
+                } catch (IOException e) {
+                    throw new RuntimeException("No se pudo restaurar el archivo: " + e.getMessage(), e);
+                }
+            }
+        }
+        return false;
+    }
+
+    private void guardarEnManifiesto(String nombreCuarentena, String rutaOriginal) {
+        Properties manifest = cargarManifiesto();
+        manifest.setProperty(nombreCuarentena, rutaOriginal);
+        guardarManifiestoCompleto(manifest);
+    }
+
+    private Properties cargarManifiesto() {
+        Properties props = new Properties();
+        if (Files.exists(manifiesto)) {
+            try (InputStream in = Files.newInputStream(manifiesto)) {
+                props.load(in);
+            } catch (IOException e) {
+                throw new RuntimeException("No se pudo leer manifest.properties: " + e.getMessage(), e);
+            }
+        }
+        return props;
+    }
+
+    private void guardarManifiestoCompleto(Properties props) {
+        try (OutputStream out = Files.newOutputStream(manifiesto)) {
+            props.store(out, "Manifiesto de cuarentena - Antivirus Java");
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo escribir manifest.properties: " + e.getMessage(), e);
+        }
+    }
+}
+`
+  },
+  {
+    id:"resultado", group:"Núcleo (src)", path:"src/core/Resultado.java", lang:"java", order:1,
+    role:"Objeto simple que junta las estadísticas de un escaneo.",
+    bullets:[
+      "Cuenta <code>archivosAnalizados</code> y guarda la lista de rutas marcadas como <code>archivosMaliciosos</code>.",
+      "<code>toString()</code> arma el texto legible que se muestra en la ventana: cuántos archivos se revisaron y cuáles fueron aislados."
+    ],
+    connects:"Lo llena → <b>Escaneador</b>. Lo muestra → <b>VentanaPrincipal</b>",
+    why:"Se crea primero porque no depende de ninguna otra clase del proyecto: es un simple contenedor de datos (un contador y una lista). Se puede escribir y compilar sola, sin que exista nada más todavía.",
+    learn:[
+      "<b>¿Qué es un getter?</b> <code>getArchivosAnalizados()</code> y <code>getArchivosMaliciosos()</code> son métodos que solo devuelven (con <code>return</code>) el valor de un atributo privado, sin dejar que nadie de afuera lo modifique directamente. Es el patrón estándar de Java para exponer datos de forma controlada.",
+      "<b>¿Qué es <code>@Override</code>?</b> Una anotación (una marca especial) que le avisa al compilador 'este método reemplaza uno que ya existía en la clase de la que hereda' (acá, <code>toString()</code> viene de Object, la clase de la que heredan todas las clases de Java).",
+      "<b>¿Qué es <code>toString()</code>?</b> El método que Java llama automáticamente cuando necesita convertir un objeto a texto legible. Acá se sobrescribe para armar el reporte que finalmente se ve en la ventana.",
+      "<b>¿Qué es <code>StringBuilder</code>?</b> Una herramienta para construir un texto largo pedazo por pedazo (con <code>.append(...)</code>) de forma eficiente, en vez de ir sumando strings con + una y otra vez.",
+      "<b>Esta clase no tiene ningún método complicado</b> — es a propósito: solo guarda datos (un contador y una lista) y los expone. A este tipo de clase simple se la suele llamar 'objeto de datos'."
+    ],
+    notes:{
+      1:"Pertenece al paquete core.",
+      3:"<code>ArrayList</code>: la implementación más común de List en Java, una lista dinámica respaldada por un arreglo.",
+      4:"<code>List</code>: la interfaz que define el contrato de 'colección ordenada'; se programa contra la interfaz, no contra ArrayList directamente, siguiendo buenas prácticas de Java.",
+      6:"Declara la clase pública Resultado: un objeto de datos simple, sin lógica compleja.",
+      8:"Contador de archivos revisados, inicializado en 0.",
+      9:"Lista de rutas marcadas como maliciosas; es <code>final</code> porque la referencia a la lista no cambia, aunque su contenido sí crece con add().",
+      11:"Método para incrementar el contador cada vez que se analiza un archivo, sin importar el resultado.",
+      12:"Incrementa el contador en uno.",
+      13:"Cierra registrarArchivoAnalizado().",
+      15:"Método para anotar que un archivo específico resultó malicioso.",
+      16:"Agrega la ruta recibida a la lista de maliciosos.",
+      17:"Cierra registrarArchivoMalicioso().",
+      19:"Getter estándar para consultar cuántos archivos se analizaron en total.",
+      20:"Devuelve el valor del contador.",
+      21:"Cierra el getter.",
+      23:"Getter que expone la lista de archivos maliciosos a quien la necesite, por ejemplo la UI.",
+      24:"Devuelve la lista completa.",
+      25:"Cierra el getter.",
+      27:"Anotación que le dice al compilador 'este método sobrescribe uno de la superclase Object'; ayuda a detectar errores de tipeo en el nombre del método.",
+      28:"Sobrescribe toString(), el método que Java usa por defecto para convertir un objeto a texto legible.",
+      29:"<code>StringBuilder</code>: forma eficiente de construir un texto por partes sin crear un nuevo String en cada concatenación.",
+      30:"Agrega la primera línea del reporte con el total de archivos analizados. <code>\\n</code> es el carácter de salto de línea dentro del texto.",
+      31:"Agrega la segunda línea con la cantidad de amenazas detectadas.",
+      32:"Recorre cada ruta maliciosa registrada, una por una.",
+      33:"Agrega una línea por cada amenaza, indicando que fue aislada en cuarentena.",
+      34:"Cierra el bucle for.",
+      35:"Convierte el StringBuilder acumulado en el String final que se devuelve.",
+      36:"Cierra toString().",
+      37:"Cierra la clase Resultado."
+    },
+    code:`package core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Resultado {
+
+    private int archivosAnalizados = 0;
+    private final List<String> archivosMaliciosos = new ArrayList<>();
+
+    public void registrarArchivoAnalizado() {
+        archivosAnalizados++;
+    }
+
+    public void registrarArchivoMalicioso(String ruta) {
+        archivosMaliciosos.add(ruta);
+    }
+
+    public int getArchivosAnalizados() {
+        return archivosAnalizados;
+    }
+
+    public List<String> getArchivosMaliciosos() {
+        return archivosMaliciosos;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Archivos analizados: ").append(archivosAnalizados).append("\\n");
+        sb.append("Amenazas detectadas: ").append(archivosMaliciosos.size()).append("\\n");
+        for (String ruta : archivosMaliciosos) {
+            sb.append("  - ").append(ruta).append(" -> aislado en cuarentena\\n");
+        }
+        return sb.toString();
+    }
+}
+`
+  },
+  {
+    id:"basefirmas", group:"Núcleo (src)", path:"src/database/BaseFirmas.java", lang:"java", order:2,
+    diagramIds:["ent0007","ent0008"], diagramLabel:"database (Firmas) → BaseFirmas",
+    role:"La 'base de datos' de firmas de virus conocidos.",
+    bullets:[
+      "<code>cargarFirmas()</code> lee <code>firmas.db</code> línea por línea, ignora líneas vacías o que empiezan con <code>#</code>, y guarda cada hash en un <code>HashSet</code> (en minúsculas).",
+      "<code>esHashMalicioso(Texto)</code> devuelve <code>true</code> si ese hash SHA-256 está en el set.",
+      "Usa un <code>HashSet</code> en vez de una lista para que la búsqueda sea O(1) sin importar cuántas firmas haya."
+    ],
+    connects:"La consulta → <b>Escaneador</b>. Se alimenta de → <b>firmas.db</b>",
+    why:"Tampoco depende de otras clases propias del proyecto, así que puede crearse justo después de Resultado (el orden entre ambas no importa). Lo único que necesita es el archivo <code>firmas.db</code> para tener algo que leer.",
+    learn:[
+      "<b>¿Qué diferencia hay entre <code>Set</code> y una lista?</b> Un <code>Set</code> (como HashSet) es una colección que no permite elementos repetidos y no le importa el orden; es ideal acá porque un hash o está en la lista de amenazas o no está, no hace falta más.",
+      "<b>¿Qué significa 'búsqueda O(1)'?</b> Es una forma de decir que buscar un hash en el HashSet tarda más o menos lo mismo sin importar si hay 5 firmas o 5 millones — muchísimo más rápido que revisar una lista una por una.",
+      "<b>¿Qué hace <code>hash.startsWith(\"#\")</code>?</b> Pregunta si el texto empieza con el carácter #, la forma que eligió este proyecto para marcar líneas de comentario en firmas.db (líneas que no son hashes reales).",
+      "<b>¿Qué hace <code>continue</code>?</b> Corta la vuelta actual del bucle <code>for</code> y salta directo a la siguiente línea del archivo, sin ejecutar el resto del código de esa vuelta.",
+      "<b>¿Por qué <code>toLowerCase()</code> aparece dos veces (al cargar y al consultar)?</b> Para que no importe si un hash está escrito en mayúsculas o minúsculas: ambos lados de la comparación se normalizan de la misma forma."
+    ],
+    notes:{
+      1:"Pertenece al paquete database, la capa de acceso a datos del proyecto (aunque aquí 'los datos' son solo un archivo de texto).",
+      3:"<code>IOException</code>: puede lanzarse si firmas.db no se puede leer.",
+      4:"<code>Files</code>: utilidad para comprobar si el archivo existe y leer todas sus líneas de una vez.",
+      5:"<code>Path</code>: representa la ubicación de firmas.db.",
+      6:"<code>HashSet</code>: implementación de Set respaldada por una tabla hash, con búsquedas en tiempo prácticamente constante, O(1).",
+      7:"<code>Set</code>: interfaz que representa una colección sin elementos duplicados; ideal aquí porque no importa el orden de los hashes, solo si un hash 'existe' o no.",
+      9:"Declara la clase pública BaseFirmas.",
+      11:"Ruta al archivo firmas.db, guardada para poder recargar las firmas más adelante si hace falta.",
+      12:"Conjunto en memoria con todos los hashes maliciosos conocidos, vacío hasta que se cargue el archivo.",
+      14:"Constructor: recibe la ruta al archivo de firmas.",
+      15:"Guarda la ruta recibida.",
+      16:"Carga inmediatamente las firmas al crear el objeto, para que esté listo para usarse apenas se construye.",
+      17:"Cierra el constructor.",
+      19:"Método público que (re)carga las firmas desde el archivo; se puede llamar de nuevo si firmas.db cambia.",
+      20:"Vacía el conjunto antes de recargar, para no acumular firmas viejas si este método se llama más de una vez.",
+      21:"Si el archivo firmas.db no existe todavía...",
+      22:"...simplemente termina el método; el conjunto queda vacío y nada se detecta como malicioso.",
+      23:"Cierra el if.",
+      24:"Abre un try porque leer el archivo puede fallar.",
+      25:"Lee todas las líneas del archivo de una vez y las recorre una por una.",
+      26:"Quita espacios en blanco al inicio/fin de la línea.",
+      27:"Si la línea quedó vacía, o es un comentario que empieza con #...",
+      28:"...se salta esta línea con continue y pasa a la siguiente, sin agregarla como firma.",
+      29:"Cierra el if de línea vacía o comentario.",
+      30:"Agrega el hash al conjunto, convertido a minúsculas para que la comparación no dependa de mayúsculas/minúsculas.",
+      31:"Cierra el bucle for.",
+      32:"Si falla la lectura del archivo, se captura la excepción.",
+      33:"La relanza como RuntimeException con contexto del error.",
+      34:"Cierra el catch.",
+      35:"Cierra cargarFirmas().",
+      37:"Método que responde la pregunta central del antivirus: ¿este hash es conocido como malicioso?",
+      38:"Comprueba si el conjunto contiene el hash recibido, normalizado a minúsculas igual que al cargarlo.",
+      39:"Cierra esHashMalicioso().",
+      41:"Método auxiliar que informa cuántas firmas hay cargadas; útil para mostrar estadísticas o depurar.",
+      42:"Devuelve el tamaño del conjunto de hashes.",
+      43:"Cierra totalFirmas().",
+      44:"Cierra la clase BaseFirmas."
+    },
+    code:`package database;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
+
+public class BaseFirmas {
+
+    private final Path rutaBaseDatos;
+    private final Set<String> hashesMaliciosos = new HashSet<>();
+
+    public BaseFirmas(Path rutaBaseDatos) {
+        this.rutaBaseDatos = rutaBaseDatos;
+        cargarFirmas();
+    }
+
+    public void cargarFirmas() {
+        hashesMaliciosos.clear();
+        if (!Files.exists(rutaBaseDatos)) {
+            return;
+        }
+        try {
+            for (String linea : Files.readAllLines(rutaBaseDatos)) {
+                String hash = linea.trim();
+                if (hash.isEmpty() || hash.startsWith("#")) {
+                    continue;
+                }
+                hashesMaliciosos.add(hash.toLowerCase());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo leer firmas.db: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean esHashMalicioso(String hash) {
+        return hashesMaliciosos.contains(hash.toLowerCase());
+    }
+
+    public int totalFirmas() {
+        return hashesMaliciosos.size();
+    }
+}
+`
+  },
+  {
+    id:"firmasdb", group:"Base de firmas", path:"firmas.db", lang:"db", order:3,
+    diagramIds:["ent0007","ent0009"], diagramLabel:"database (Firmas) → firmas.db",
+    role:"Base de firmas en texto plano: un hash SHA-256 por línea.",
+    bullets:[
+      "Las líneas que empiezan con <code>#</code> son comentarios; <code>BaseFirmas.cargarFirmas()</code> las ignora.",
+      "Trae de ejemplo el hash del archivo EICAR, el estándar de la industria para probar antivirus sin usar malware real.",
+      "Agregar una firma nueva es escribir un hash más, una línea — no requiere tocar código Java."
+    ],
+    connects:"La lee → <b>database.BaseFirmas</b>",
+    why:"Se crea junto con BaseFirmas.java porque es exactamente el archivo que esa clase necesita leer con <code>cargarFirmas()</code>; sin él, BaseFirmas arrancaría con cero firmas cargadas y nunca detectaría nada.",
+    learn:[
+      "<b>Este archivo no es código Java</b>, es un archivo de texto plano: BaseFirmas.java lo lee línea por línea como si fuera una lista de palabras prohibidas.",
+      "<b>¿Qué es SHA-256?</b> Un algoritmo que convierte cualquier archivo, sin importar su tamaño, en un código único de 64 caracteres (el 'hash'). Dos archivos idénticos siempre dan el mismo hash; cambiar un solo byte del archivo cambia el hash por completo.",
+      "<b>¿Qué es EICAR?</b> Un archivo de prueba oficial creado por la industria de la seguridad, sin ningún código dañino de verdad, que todos los antivirus del mundo están de acuerdo en detectar. Sirve para probar que un antivirus funciona sin arriesgarse a usar un virus real."
+    ],
+    notes:{
+      1:"Comentario descriptivo del propósito del archivo. BaseFirmas.cargarFirmas() ignora cualquier línea que empiece con <code>#</code>.",
+      2:"Comentario que documenta el formato esperado: un hash SHA-256 por línea.",
+      4:"Comentario que explica qué es el hash de abajo: EICAR es un archivo de prueba estándar de la industria, no es malware real, pensado para verificar que un antivirus detecta correctamente.",
+      5:"El hash SHA-256 real del archivo de prueba EICAR: es la única firma 'activa' del archivo. Agregar una amenaza nueva es tan simple como escribir su hash en una línea nueva."
+    },
+    code:`# Base de firmas de virus (hashes SHA-256)
+# Formato: un hash por linea. Las lineas que empiezan con # son comentarios.
+
+# EICAR - archivo de prueba estandar de la industria antivirus (no es malware real)
+275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
+`
+  },
+  {
+    id:"compilesh", group:"Ejecutar en Linux / macOS", path:"compile.sh", lang:"bash", order:8,
+    role:"Script de compilación para Linux/macOS.",
+    bullets:[
+      "<code>cd \"$(dirname \"$0\")\"</code> se ubica en la carpeta del propio script (la carpeta del proyecto, sea cual sea su nombre), para que las rutas relativas funcionen sin importar desde dónde se lo invoque.",
+      "Crea <code>out/</code> y compila con <code>javac</code> todos los <code>.java</code> que encuentra dentro de <code>src/</code>."
+    ],
+    connects:"Compila → <b>src/**/*.java</b> hacia <b>out/</b>",
+    why:"Recién tiene sentido escribirlo una vez que ya existen los seis archivos .java: busca y compila 'todo lo que haya dentro de src/', así que antes de eso no tendría nada que hacer.",
+    learn:[
+      "<b>Esto no es Java, es un script de shell</b> (bash): una lista de comandos de terminal escritos en un archivo para no tener que tipearlos a mano cada vez.",
+      "<b>¿Por qué hace falta compilar?</b> Java no ejecuta directamente el código que escribiste (.java); primero <code>javac</code> (el compilador) lo traduce a un formato que la máquina virtual de Java entiende (.class). Este script hace justo eso.",
+      "<b>¿Qué es una variable en bash?</b> Igual que en Java, un nombre que guarda un valor. Acá no se ve ninguna variable explícita, pero <code>$0</code> es una variable especial que siempre contiene el nombre del script que se está ejecutando."
+    ],
+    notes:{
+      1:"Shebang: indica al sistema operativo que este script debe ejecutarse con bash.",
+      2:"<code>set -e</code> hace que el script se detenga inmediatamente si cualquier comando falla, en vez de seguir ejecutando el resto con un error silencioso.",
+      3:"Se ubica en la carpeta donde está el propio script (la carpeta del proyecto), usando <code>$0</code> (el nombre del script) y <code>dirname</code>; así funciona sin importar desde qué carpeta se lo invoque, y sin importar cómo se llame esa carpeta.",
+      4:"Crea la carpeta out/ si no existe (<code>-p</code> evita error si ya existe), donde irán los .class compilados.",
+      5:"Compila: <code>find</code> busca todos los .java dentro de src/ recursivamente, y javac los compila todos juntos, guardando las clases en out/ con <code>-d out</code>.",
+      6:"Mensaje de confirmación al terminar."
+    },
+    code:`#!/bin/bash
+set -e
+cd "$(dirname "$0")"
+mkdir -p out
+javac -d out $(find src -name "*.java")
+echo "Compilado en out/"
+`
+  },
+  {
+    id:"runsh", group:"Ejecutar en Linux / macOS", path:"run.sh", lang:"bash", order:9,
+    role:"Script de ejecución para Linux/macOS.",
+    bullets:[
+      "Se posiciona en la carpeta del proyecto y ejecuta <code>java -cp out Main</code>.",
+      "Requiere haber corrido <code>compile.sh</code> antes (o que ya exista <code>out/</code>)."
+    ],
+    connects:"Ejecuta → <b>Main.class</b> (desde <b>out/</b>)",
+    why:"Depende de que compile.sh ya haya generado la carpeta <code>out/</code> con las clases compiladas: ejecutarlo antes de compilar no encontraría la clase Main y fallaría.",
+    learn:[
+      "<b>¿Por qué hay un script para compilar y otro para ejecutar?</b> Son dos pasos separados: primero se traduce el código (compile.sh) y después se corre lo ya traducido (run.sh). Si no cambiaste el código Java, no hace falta compilar de nuevo, solo ejecutar.",
+      "<b>¿Qué significa <code>-cp out</code>?</b> <code>-cp</code> es 'classpath': le dice a Java en qué carpeta buscar las clases compiladas (.class) que necesita para correr el programa. Acá esa carpeta es <code>out/</code>."
+    ],
+    notes:{
+      1:"Shebang: ejecutar con bash.",
+      2:"Detiene el script si algo falla.",
+      3:"Se ubica en la carpeta del script (la carpeta del proyecto), igual que compile.sh, para que las rutas relativas (firmas.db, cuarentena/) apunten siempre al mismo lugar, sin importar cómo se llame esa carpeta.",
+      4:"Ejecuta el programa: <code>-cp out</code> le dice a java dónde buscar las clases compiladas, y Main es la clase con el método main() que arranca todo."
+    },
+    code:`#!/bin/bash
+set -e
+cd "$(dirname "$0")"
+java -cp out Main
+`
+  },
+  {
+    id:"compilebat", group:"Ejecutar en Windows", path:"windows/compile.bat", lang:"bat", order:10,
+    role:"Equivalente a compile.sh, pero para cmd de Windows.",
+    bullets:[
+      "<code>cd /d \"%~dp0..\"</code> se mueve a la carpeta del proyecto (el padre de windows/, sea cual sea su nombre) — igual que hace compile.sh — así <code>firmas.db</code> y <code>cuarentena/</code> quedan en el mismo lugar en ambos sistemas.",
+      "Verifica con <code>where javac</code> que el JDK esté instalado antes de compilar, y avisa con un mensaje claro (y un link de descarga) si falta.",
+      "Junta todos los <code>.java</code> de <code>src\\</code> en <code>sources.txt</code> y se los pasa a <code>javac</code> con <code>@sources.txt</code>, para evitar los límites de longitud de línea de cmd."
+    ],
+    connects:"Compila → <b>src/**/*.java</b> hacia <b>out/</b>",
+    why:"Es el equivalente de compile.sh para Windows: se suele escribir después, una vez que la versión de Linux/macOS ya probó que el proyecto compila bien.",
+    learn:[
+      "<b>Es el mismo compile.sh, pero para Windows.</b> cmd (la terminal de Windows) usa comandos distintos a los de Linux/macOS, así que el proyecto trae una versión paralela para cada sistema operativo.",
+      "<b>¿Qué es el PATH?</b> Una lista de carpetas donde el sistema operativo busca programas ejecutables. Si <code>javac</code> no está 'en el PATH', Windows no sabe dónde encontrarlo aunque esté instalado — por eso el script lo verifica primero."
+    ],
+    notes:{
+      1:"Desactiva el eco de comandos en la consola (evita que cmd muestre cada línea que ejecuta), para una salida más limpia.",
+      2:"Comentario (<code>rem</code> = remark): describe qué hace el script.",
+      3:"Comentario: documenta el requisito de tener el JDK instalado.",
+      5:"Se ubica en la carpeta del proyecto (la carpeta padre de windows\\, donde está este .bat, sin importar cómo se llame), usando <code>%~dp0</code> (la ruta del propio script) y '..' para subir un nivel; así firmas.db y cuarentena\\ quedan en el mismo lugar que en Linux/macOS.",
+      7:"Busca si javac, el compilador de Java, está disponible en el PATH; redirige toda salida a nul para no mostrarla.",
+      8:"Si el comando anterior falló, errorlevel distinto de 0, es decir no se encontró javac, entra a este bloque.",
+      9:"Muestra un mensaje de error explicando el problema.",
+      10:"Sugiere dónde descargar el JDK.",
+      11:"Pausa la consola para que el usuario pueda leer el mensaje antes de que la ventana se cierre.",
+      12:"Termina el script con código de salida 1, error.",
+      13:"Cierra el bloque if.",
+      15:"Crea la carpeta out\\ solo si todavía no existe, equivalente al <code>mkdir -p</code> de Linux.",
+      17:"Busca recursivamente (<code>/s</code>) todos los .java dentro de src\\ y guarda la lista de rutas (<code>/b</code>, solo nombres) en sources.txt, en vez de pasarlos directo a javac.",
+      18:"Compila usando <code>@sources.txt</code>, que le indica a javac que lea la lista de archivos desde ese archivo; evita el límite de longitud de línea de cmd que rompería el comando si hubiera muchos .java.",
+      19:"Guarda el código de salida de la compilación (0 = éxito) en una variable, antes de que otro comando lo sobrescriba.",
+      20:"Borra el archivo temporal sources.txt, ya que no se necesita más.",
+      22:"Si el código guardado antes no es 0 (<code>neq</code> = 'not equal'), la compilación falló: entra a este bloque.",
+      23:"Imprime una línea en blanco para separar visualmente el mensaje.",
+      24:"Muestra el mensaje de error.",
+      25:"Pausa para que el usuario lea el mensaje.",
+      26:"Termina el script devolviendo el mismo código de error que tuvo la compilación.",
+      27:"Cierra el bloque if.",
+      29:"Línea en blanco antes del mensaje final.",
+      30:"Mensaje de éxito.",
+      31:"Pausa final para que la ventana no se cierre sola y el usuario pueda ver el resultado."
+    },
+    code:`@echo off
+rem Compila el Antivirus Java en Windows.
+rem Requiere tener el JDK instalado y "javac" disponible en el PATH.
+
+cd /d "%~dp0.."
+
+where javac >nul 2>nul
+if errorlevel 1 (
+    echo ERROR: no se encontro "javac". Instala el JDK y agregalo al PATH.
+    echo Descarga: https://adoptium.net
+    pause
+    exit /b 1
+)
+
+if not exist out mkdir out
+
+dir /s /b src\\*.java > sources.txt
+javac -d out @sources.txt
+set BUILD_RESULT=%errorlevel%
+del sources.txt
+
+if %BUILD_RESULT% neq 0 (
+    echo.
+    echo ERROR al compilar.
+    pause
+    exit /b %BUILD_RESULT%
+)
+
+echo.
+echo Compilado correctamente en out\\
+pause
+`
+  },
+  {
+    id:"runbat", group:"Ejecutar en Windows", path:"windows/run.bat", lang:"bat", order:11,
+    role:"Equivalente a run.sh, pero para cmd de Windows.",
+    bullets:[
+      "Igual que <code>compile.bat</code>, se posiciona primero en la carpeta del proyecto antes de ejecutar nada.",
+      "Verifica que exista <code>java</code> en el PATH y que la carpeta <code>out\\</code> ya esté compilada antes de lanzar <code>java -cp out Main</code>."
+    ],
+    connects:"Ejecuta → <b>Main.class</b> (desde <b>out\\</b>)",
+    why:"Igual que run.sh, depende de que ya exista la carpeta <code>out\\</code> generada por compile.bat. Es el último archivo del proyecto porque nada más depende de él.",
+    learn:[
+      "<b>Es el mismo run.sh, pero para Windows.</b> Ejecuta el mismo comando Java (<code>java -cp out Main</code>), solo que verifica antes con sintaxis de cmd que todo esté en su lugar."
+    ],
+    notes:{
+      1:"Desactiva el eco de comandos.",
+      2:"Comentario: describe qué hace el script.",
+      3:"Comentario: requisito del JRE/JDK.",
+      5:"Se ubica en la carpeta del proyecto (la carpeta padre de windows\\), igual que compile.bat.",
+      7:"Comprueba si java, la máquina virtual, está disponible en el PATH.",
+      8:"Si no se encontró java...",
+      9:"...muestra el error.",
+      10:"Sugiere dónde descargarlo.",
+      11:"Pausa para leer el mensaje.",
+      12:"Termina con código de error 1.",
+      13:"Cierra el if.",
+      15:"Comprueba si la carpeta out\\, con las clases compiladas, existe.",
+      16:"Si no existe, avisa que hay que compilar primero.",
+      17:"Pausa para leer el mensaje.",
+      18:"Termina con código de error 1.",
+      19:"Cierra el if.",
+      21:"Ejecuta el programa: <code>-cp out</code> indica dónde están las clases, Main es el punto de entrada.",
+      22:"Si la ejecución de Java terminó con error, por ejemplo una excepción no capturada...",
+      23:"...imprime una línea en blanco...",
+      24:"...y un mensaje indicando que hubo un problema.",
+      25:"Pausa para que el usuario vea el mensaje antes de que la ventana se cierre.",
+      26:"Cierra el if."
+    },
+    code:`@echo off
+rem Ejecuta el Antivirus Java en Windows.
+rem Requiere tener el JRE/JDK instalado y "java" disponible en el PATH.
+
+cd /d "%~dp0.."
+
+where java >nul 2>nul
+if errorlevel 1 (
+    echo ERROR: no se encontro "java". Instala el JDK/JRE y agregalo al PATH.
+    echo Descarga: https://adoptium.net
+    pause
+    exit /b 1
+)
+
+if not exist out (
+    echo No se encontro la carpeta "out". Ejecuta primero windows\\compile.bat
+    pause
+    exit /b 1
+)
+
+java -cp out Main
+if errorlevel 1 (
+    echo.
+    echo El programa termino con un error.
+    pause
+)
+`
+  }
+];
+
+const KEYWORDS = {
+  java: /\b(?:public|private|protected|class|package|import|static|final|void|new|return|if|else|for|while|try|catch|finally|throws|throw|extends|implements|this|super|boolean|int|long|double|float|char|byte|short|true|false|null|interface|enum|break|continue|instanceof)\b/,
+  bash: /\b(?:if|then|else|fi|for|do|done|while|set|cd|echo|mkdir|find|exit)\b/,
+  bat: /\b(?:echo|off|if|else|not|exist|errorlevel|goto|set|cd|mkdir|del|pause|exit|where|call|rem)\b/i,
+  db: /(?!)x/
+};
+
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function tokenizeLine(line, lang){
+  let patterns = [];
+  if(lang === "java"){
+    patterns = [
+      {re:/\/\/.*/, cls:"tk-cmt"},
+      {re:/"(?:\\.|[^"\\])*"/, cls:"tk-str"},
+      {re:/@\w+/, cls:"tk-ann"},
+      {re:KEYWORDS.java, cls:"tk-kw"},
+      {re:/\b[A-Z][A-Za-z0-9_]*\b/, cls:"tk-type"},
+      {re:/\b\d+\.?\d*[lLfFdD]?\b/, cls:"tk-num"}
+    ];
+  } else if(lang === "bash"){
+    patterns = [
+      {re:/#.*/, cls:"tk-cmt"},
+      {re:/"(?:\\.|[^"\\])*"/, cls:"tk-str"},
+      {re:/\$\w+|\$\{[^}]+\}|\$\([^)]*\)/, cls:"tk-ann"},
+      {re:KEYWORDS.bash, cls:"tk-kw"}
+    ];
+  } else if(lang === "bat"){
+    patterns = [
+      {re:/rem\s.*/i, cls:"tk-cmt"},
+      {re:/::.*/, cls:"tk-cmt"},
+      {re:/"[^"]*"/, cls:"tk-str"},
+      {re:/%~?\w*%?/, cls:"tk-ann"},
+      {re:KEYWORDS.bat, cls:"tk-kw"}
+    ];
+  } else if(lang === "db"){
+    patterns = [
+      {re:/#.*/, cls:"tk-cmt"}
+    ];
+  }
+
+  if(patterns.length === 0) return escapeHtml(line);
+
+  const master = new RegExp(patterns.map(p => "(" + p.re.source + ")").join("|"), patterns[0].re.flags.includes("i") ? "gi" : "g");
+
+  let out = "";
+  let last = 0;
+  let m;
+  while((m = master.exec(line)) !== null){
+    out += escapeHtml(line.slice(last, m.index));
+    let idx = m.slice(1).findIndex(g => g !== undefined);
+    const cls = patterns[idx].cls;
+    out += '<span class="' + cls + '">' + escapeHtml(m[0]) + '</span>';
+    last = m.index + m[0].length;
+    if(m[0].length === 0) master.lastIndex++;
+  }
+  out += escapeHtml(line.slice(last));
+  return out;
+}
+
+function renderCode(code, lang, notes){
+  const lines = code.replace(/\n$/, "").split("\n");
+  return lines.map((line, i) => {
+    const n = i + 1;
+    const note = notes && notes[n];
+    const lineHtml =
+      '<div class="line' + (note ? ' has-note' : '') + '" data-line="' + n + '">' +
+        '<span class="ln">' + n + '</span>' +
+        '<span class="lc">' + (tokenizeLine(line, lang) || "&nbsp;") + '</span>' +
+        (note ? '<span class="note-flag">?</span>' : '') +
+      '</div>';
+    const noteHtml = note ? '<div class="note-box" hidden>' + note + '</div>' : '';
+    return lineHtml + noteHtml;
+  }).join("");
+}
+
+function renderLearnItem(html){
+  const idx = html.indexOf("</b>");
+  const question = idx === -1 ? html : html.slice(0, idx).replace(/^<b>/, "");
+  const answer = idx === -1 ? "" : html.slice(idx + 4).trim();
+  return '<details class="learn-item"><summary>' + question + '</summary><div class="learn-answer">' + answer + '</div></details>';
+}
+
+const tree = document.getElementById("tree");
+const detail = document.getElementById("detail");
+
+const groups = [];
+FILES.forEach(f => { if(!groups.includes(f.group)) groups.push(f.group); });
+
+const totalOrdered = FILES.filter(f => f.order).length;
+
+const caption = document.createElement("div");
+caption.className = "tree-caption";
+caption.innerHTML = '<b>🔢 Los números</b> muestran el orden en que conviene crear cada archivo (primero lo que no depende de nada, al final lo que depende de todo lo anterior).';
+tree.appendChild(caption);
+
+groups.forEach(g => {
+  const label = document.createElement("div");
+  label.className = "group-title";
+  label.textContent = g;
+  tree.appendChild(label);
+  FILES.filter(f => f.group === g).forEach(f => {
+    const btn = document.createElement("button");
+    btn.className = "file-btn";
+    btn.dataset.id = f.id;
+    btn.title = f.order ? ('Paso ' + f.order + ' de ' + totalOrdered + ' en el orden de creación sugerido') : '';
+    btn.innerHTML =
+      (f.order ? '<span class="order-badge">' + f.order + '</span>' : '') +
+      '<span class="tag tag-' + f.lang + '">' + f.lang.toUpperCase() + '</span><span>' + f.path.split("/").pop() + '</span>';
+    btn.addEventListener("click", () => select(f.id));
+    tree.appendChild(btn);
+  });
+});
+
+function select(id){
+  const f = FILES.find(x => x.id === id);
+  if(!f) return;
+
+  document.querySelectorAll(".file-btn").forEach(b => b.classList.toggle("active", b.dataset.id === id));
+
+  const pathParts = f.path.split("/");
+  const fileName = pathParts.pop();
+  const dirPart = pathParts.length ? pathParts.join("/") + "/" : "";
+
+  const hasNotes = f.notes && Object.keys(f.notes).length > 0;
+
+  detail.innerHTML =
+    '<div class="detail-head">' +
+      '<p class="path">' + dirPart + '<b>' + fileName + '</b></p>' +
+      (f.diagramIds
+        ? '<button class="diagram-jump">📍 Ver en el diagrama: <b>' + f.diagramLabel + '</b></button>'
+        : '<p class="diagram-none">Este archivo no tiene una caja propia en el diagrama de arriba.</p>') +
+      '<p class="role">' + f.role + '</p>' +
+      '<ul class="bullets">' + f.bullets.map(b => '<li>' + b + '</li>').join("") + '</ul>' +
+      (f.connects ? '<p class="connects">' + f.connects + '</p>' : '') +
+      (f.why ? '<p class="order-why"><b>🔢 Paso ' + f.order + ' de ' + totalOrdered + ':</b> ' + f.why + '</p>' : '') +
+      (f.learn ? '<div class="learn"><p class="learn-title">🎓 Para quien nunca programó</p><div class="learn-list">' + f.learn.map(renderLearnItem).join("") + '</div></div>' : '') +
+    '</div>' +
+    (hasNotes ? '<div class="code-toolbar"><button class="notes-toggle" id="notesToggle" data-state="closed">Explicar cada línea</button></div>' : '') +
+    '<div class="code-scroll"><pre class="code">' + renderCode(f.code, f.lang, f.notes) + '</pre></div>';
+
+  updateDiagramHighlight(f);
+}
+
+function updateDiagramHighlight(f){
+  document.querySelectorAll(".architecture-svg .diagram-highlight").forEach(el => el.classList.remove("diagram-highlight"));
+  if(f.diagramIds){
+    f.diagramIds.forEach(elId => {
+      const el = document.getElementById(elId);
+      if(el) el.classList.add("diagram-highlight");
+    });
+  }
+}
+
+function toggleAllNotes(btn){
+  const willShow = btn.dataset.state !== "open";
+  document.querySelectorAll(".note-box").forEach(b => { b.hidden = !willShow; });
+  btn.dataset.state = willShow ? "open" : "closed";
+  btn.textContent = willShow ? "Ocultar explicaciones" : "Explicar cada línea";
+  btn.classList.toggle("active", willShow);
+}
+
+detail.addEventListener("click", (ev) => {
+  const toggleBtn = ev.target.closest("#notesToggle");
+  if(toggleBtn){
+    toggleAllNotes(toggleBtn);
+    return;
+  }
+  const jumpBtn = ev.target.closest(".diagram-jump");
+  if(jumpBtn){
+    const card = document.querySelector(".architecture");
+    if(card) card.scrollIntoView({behavior:"smooth", block:"start"});
+    return;
+  }
+  const line = ev.target.closest(".line.has-note");
+  if(line){
+    const box = line.nextElementSibling;
+    if(box && box.classList.contains("note-box")){
+      box.hidden = !box.hidden;
+    }
+  }
+});
+
+document.querySelectorAll("[data-goto]").forEach(chip => {
+  chip.addEventListener("click", () => select(chip.dataset.goto));
+});
+
+select("main");
+</script>
