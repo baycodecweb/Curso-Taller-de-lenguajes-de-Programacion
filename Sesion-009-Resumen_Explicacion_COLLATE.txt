@@ -1,0 +1,97 @@
+COLLATE=utf8mb4_uca1400_ai_ci;   →   COLLATE=utf8mb4_unicode_ci;
+Qué es una collation
+
+Una base de datos guarda texto como bytes. El charset define cómo se convierte una letra en bytes. Pero para comparar y ordenar texto hacen falta reglas, porque el idioma no es tan simple:
+
+- ¿"A" es igual a "a"?
+- ¿"José" es igual a "Jose"?
+- ¿La ñ va después de la n o al final del alfabeto?
+- ¿Dónde se ordena un emoji 😀?
+
+Ese conjunto de reglas es la collation: el reglamento que usa MySQL/MariaDB para cada WHERE, ORDER BY, GROUP BY, UNIQUE y búsqueda de texto.
+
+La historia, paso a paso
+
+1. Los inicios: utf8 incompleto (años 2000). MySQL implementó un utf8 que solo usaba hasta 3 bytes por carácter. Alcanzaba para casi todos los idiomas, pero no para emojis ni algunos símbolos, que necesitan 4 bytes.
+
+2. 2003: Unicode crea el UCA. El consorcio Unicode publicó el UCA (Unicode Collation Algorithm), un estándar mundial para ordenar texto en cualquier idioma. Se actualiza con cada versión de Unicode, porque cada año se agregan caracteres nuevos.
+
+3. 2010: llega utf8mb4 (MySQL 5.5). MySQL corrigió el problema con utf8mb4 ("mb4" = máximo 4 bytes), que ya admite emojis. Trajo dos collations:
+- utf8mb4_general_ci: rápida pero simplificada, comete errores en algunos idiomas.
+- utf8mb4_unicode_ci: basada en UCA 4.0 (de 2003). Más correcta.
+
+Como lleva más de 15 años en todas las versiones de MySQL y MariaDB, utf8mb4_unicode_ci se volvió la opción más compatible. Por eso es el reemplazo que usamos.
+
+4. MySQL y MariaDB se separan. Desde 2009, MariaDB es un "fork" (una copia independiente) de MySQL, creado por su fundador original cuando Oracle compró MySQL. Al principio eran casi iguales, pero con los años cada uno agregó cosas propias.
+
+5. 2018: MySQL 8 crea su propia collation moderna. MySQL agregó utf8mb4_0900_ai_ci (UCA 9.0) y la puso por defecto. Esto causó exactamente el mismo problema que tienes tú: miles de personas exportaban de MySQL 8 y al importar en MariaDB o MySQL 5.7 veían:
+Unknown collation: 'utf8mb4_0900_ai_ci'
+La solución era la misma: cambiarla por utf8mb4_unicode_ci.
+
+6. 2022–2024: MariaDB hace lo suyo. MariaDB no copió la collation de MySQL. Creó la suya, basada en un Unicode aún más nuevo:
+- MariaDB 10.10 (2022) agregó utf8mb4_uca1400_ai_ci (UCA 14.0).
+- MariaDB 11.5 (2024) la puso por defecto.
+
+7. Tu caso (2026). Tu Linux tiene MariaDB 11.8, así que cada tabla que creaste recibió uca1400_ai_ci automáticamente, sin que lo pidieras. Windows con XAMPP trae MariaDB 10.4 (de 2019), que no sabe que existe.
+
+Cómo leer el nombre
+
+utf8mb4 _ uca1400 _ ai _ ci
+   │         │       │    └── ci = case insensitive    → "A" = "a"
+   │         │       └─────── ai = accent insensitive  → "é" = "e"
+   │         └─────────────── algoritmo UCA versión 14.0.0
+   └───────────────────────── charset (cómo se guardan los bytes)
+
+utf8mb4 _ unicode _ ci
+   │         │       └── ci = case insensitive
+   │         └────────── algoritmo UCA versión 4.0.0 (el nombre es de antes de que hubiera varias versiones)
+   └──────────────────── charset
+
+Lo curioso es que unicode_ci es la más vieja, aunque su nombre parezca más general. Se llama así porque cuando se creó era la única basada en
+
+Por qué es un error de compatibilidad
+
+Un archivo .sql es solo texto con instrucciones. Cuando el servidor lee:
+
+COLLATE=utf8mb4_uca1400_ai_ci
+
+busca ese nombre en su lista interna de collations, que viene incluida en el programa. Si la versión es anterior a 10.10, el nombre no está y  las reglas, así que se detiene:
+
+#1273 - Unknown collation: 'utf8mb4_uca1400_ai_ci'
+
+Es la regla general de la compatibilidad de software:
+
+┌───────────────────────────────┬──────────────────────────────────┐
+│           Dirección           │            ¿Funciona?            │
+├───────────────────────────────┼──────────────────────────────────┤
+│ Versión vieja → versión nueva │ ✅ La nueva conoce todo lo viejo │
+├───────────────────────────────┼──────────────────────────────────┤
+│ Versión nueva → versión vieja │ ❌ La vieja no conoce lo nuevo   │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Es como guardar un documento en Word 2024 con una función nueva e intentar abrirlo en Word 2007: el archivo no está dañado, simplemente el proque se inventó después.
+
+Por qué el cambio es seguro
+
+- Los datos no cambian: el charset sigue siendo utf8mb4, así que acentos, ñ y emojis se guardan exactamente igual.
+- Solo cambian las reglas de comparación, y de forma mínima:
+
+┌───────────────────────────────────────────┬─────────────────────────┬───────────────────────────────────────────────┐
+│                                           │  uca1400_ai_ci (antes)  │              unicode_ci (ahora)               │
+├───────────────────────────────────────────┼─────────────────────────┼───────────────────────────────────────────────┤
+│ "A" = "a"                                 │ ✅ igual                │ ✅ igual                                      │
+├───────────────────────────────────────────┼─────────────────────────┼───────────────────────────────────────────────┤
+│ "José" = "Jose"                           │ ✅ igual                │ ❌ diferente                                  │
+├───────────────────────────────────────────┼─────────────────────────┼───────────────────────────────────────────────┤
+│ Emojis y caracteres nuevos                │ Ordena según Unicode 14 │ Ordena según Unicode 4 (puede variar un poco) │
+├───────────────────────────────────────────┼─────────────────────────┼───────────────────────────────────────────────┤
+│ Funciona en XAMPP / MySQL / MariaDB viejo │ ❌                      │ ✅                                            │
+└───────────────────────────────────────────┴─────────────────────────┴───────────────────────────────────────────────┘
+
+Para una tienda como esta (productos, clientes, pedidos), la diferencia en la práctica es casi nula.
+
+En resumen
+
+▎ MariaDB 11.8 usa por defecto una collation moderna (uca1400, de 2022). La versión de Windows es más vieja y no la conoce, así que rechaza elicode_ci, que existe en todas las versiones desde 2010 y se comporta casi igual.
+
+Para evitarlo en el futuro, usa la misma versión de base de datos en Linux y Windows, o cambia la collation de la base en Linux a utf8mb4_unic se cree compatible.
